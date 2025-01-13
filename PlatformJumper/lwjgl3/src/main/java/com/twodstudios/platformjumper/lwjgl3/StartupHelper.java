@@ -14,7 +14,7 @@
  */
 //Note, the above license and copyright applies to this file only.
 
-package com.twodstudios.gametest.lwjgl3;
+package com.twodstudios.platformjumper.lwjgl3;
 
 import org.lwjgl.system.macosx.LibC;
 

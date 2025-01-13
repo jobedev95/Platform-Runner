@@ -1,4 +1,4 @@
-package com.twodstudios.gametest;
+package com.twodstudios.platformjumper;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -12,7 +12,7 @@ import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
-public class InitialGame extends ApplicationAdapter {
+public class Main extends ApplicationAdapter {
 
     // CREATE ALL ASSET VARIABLES
     private SpriteBatch spriteBatch;
@@ -43,7 +43,6 @@ public class InitialGame extends ApplicationAdapter {
     private float maxTileDistance = 630; // Maximum horizontal distance between each tile
     private float minVerticalDistance = 130;  // Minimum vertical distance (height difference) between each tile
     private float maxVerticalDistance = 200;   // Maximum vertical distance (height difference) between each tile
-    private float minTileHeight; // Minimum y-coordinate for any tile
     private float maxTileHeight; // Maximum y-coordinate for any tile
 
     // COLLISION VARIABLES
@@ -83,8 +82,7 @@ public class InitialGame extends ApplicationAdapter {
         bg1XPosition = 0;
         bg2XPosition = backgroundImage.getWidth();
 
-        // Set minimum and maximum height placement of tiles
-        minTileHeight = 0;
+        // Set maximum height placement of tiles
         maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
 
         // TILE LOGIC
@@ -117,18 +115,18 @@ public class InitialGame extends ApplicationAdapter {
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
 
         spriteBatch.begin();
-            // IF CHARACTER IS ALIVE
-            if (!isDead) {
-                drawBackground(true, deltaTime); // Draw scrolling background animation
-                drawTiles();
-                drawRunOrJump();// Draw running or jumping animation depending on character state
+        // IF CHARACTER IS ALIVE
+        if (!isDead) {
+            drawBackground(true, deltaTime); // Draw scrolling background animation
+            drawTiles();
+            drawRunOrJump();// Draw running or jumping animation depending on character state
 
             // IF CHARACTER IS DEAD
-            } else {
-                drawBackground(false, deltaTime); // Draw last state of background
-                drawTiles(); // Draw last state of the tiles
-                drawDeathAnimation();
-            }
+        } else {
+            drawBackground(false, deltaTime); // Draw last state of background
+            drawTiles(); // Draw last state of the tiles
+            drawDeathAnimation();
+        }
         spriteBatch.end();
     }
 
@@ -235,7 +233,7 @@ public class InitialGame extends ApplicationAdapter {
         float verticalDistance;
         do {
             randomY = random.nextFloat() * maxTileHeight; // Generate a random float between 0.0 and maxTileHeight
-            verticalDistance = Math.abs(randomY - lastTileYPosition); // Get the absolute difference of distance from the last tile
+            verticalDistance = abs(randomY - lastTileYPosition); // Get the absolute difference of distance from the last tile
         }
         // Loop until the vertical distance is within the specified range
         while (verticalDistance < minVerticalDistance || verticalDistance > maxVerticalDistance);

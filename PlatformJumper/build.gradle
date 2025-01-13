@@ -58,7 +58,7 @@ configure(subprojects) {
 
 subprojects {
   version = '$projectVersion'
-  ext.appName = 'GameTest'
+  ext.appName = 'PlatformJumper'
   repositories {
     mavenCentral()
     maven { url 'https://s01.oss.sonatype.org' }
@@ -70,4 +70,4 @@ subprojects {
   }
 }
 
-eclipse.project.name = 'GameTest' + '-parent'
+eclipse.project.name = 'PlatformJumper' + '-parent'
