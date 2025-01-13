@@ -51,6 +51,10 @@ public class PlayScreen implements Screen {
 
     public PlayScreen(Main game){
         this.game = game;
+    }
+
+    @Override
+    public void show() {
         backgroundImage = new Texture("gameBG.png");
         tile = new Texture("tile.png");
 
@@ -93,11 +97,6 @@ public class PlayScreen implements Screen {
         // COLLISION RECTANGLES (for collision checks)
         characterRectangle = new Rectangle(0, characterYPosition, characterWidth, characterHeight);
         tileRectangle = new Rectangle(0, 100, tileWidth, tileHeight);
-    }
-
-    @Override
-    public void show() {
-
     }
 
     @Override
