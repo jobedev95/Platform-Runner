@@ -7,6 +7,8 @@ import com.twodstudios.platformjumper.screens.PlayScreen;
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
     public SpriteBatch spriteBatch;
+    public static final float WORLD_WIDTH = 1171;
+    public static final float WORLD_HEIGHT = 659;
 
     @Override
     public void create() {

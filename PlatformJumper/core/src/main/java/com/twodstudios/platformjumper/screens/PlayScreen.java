@@ -3,10 +3,13 @@ package com.twodstudios.platformjumper.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.Main;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -49,12 +52,24 @@ public class PlayScreen implements Screen {
     Rectangle characterRectangle;
     Rectangle tileRectangle;
 
+    // Camera and Viewport
+    private OrthographicCamera camera;
+    private Viewport viewport;
+
+    // Constructor
     public PlayScreen(Main game){
         this.game = game;
     }
 
     @Override
     public void show() {
+        // Camera and Viewport
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
+        camera.setToOrtho(false, Main.WORLD_WIDTH, Main.WORLD_HEIGHT);
+        camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0); // Center the camera
+        camera.update();
+
         backgroundImage = new Texture("gameBG.png");
         tile = new Texture("tile.png");
 
@@ -114,6 +129,8 @@ public class PlayScreen implements Screen {
         generateBufferTiles(); // Prepares a buffer of tiles when needed
         moveTiles(deltaTime); // Continuously moves all tiles towards the left
 
+        camera.update();
+        game.spriteBatch.setProjectionMatrix(camera.combined); // Link spritBatch to camera
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
 
         game.spriteBatch.begin();
@@ -134,7 +151,9 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-
+        viewport.update(width, height, true); // Adapt viewport after window size
+        camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
+        camera.update();
     }
 
     @Override
@@ -159,8 +178,6 @@ public class PlayScreen implements Screen {
         disposeAnimationTextures(runAnimation);
         disposeAnimationTextures(jumpAnimation);
         disposeAnimationTextures(deathAnimation);
-
-
     }
 
     private void disposeAnimationTextures(Texture[] textures){
