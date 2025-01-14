@@ -5,11 +5,13 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.twodstudios.platformjumper.Coin;
 import com.twodstudios.platformjumper.Main;
 
 import static com.badlogic.gdx.math.MathUtils.random;
@@ -24,6 +26,12 @@ public class PlayScreen implements Screen {
     private Texture[] runAnimation;
     private Texture[] jumpAnimation;
     private Texture[] deathAnimation;
+
+    // Variables for Coins and coin tracker
+    private Texture coinTexture; // Coin Texture
+    private Array<Coin> coins; // Array to hold coin objects
+    private int collectedCoins; // CoinTracker
+    private BitmapFont font;
 
     private float animationTime; // Time since start of animation
     private int currentFrame; // Index for animation frames
@@ -72,6 +80,10 @@ public class PlayScreen implements Screen {
 
         backgroundImage = new Texture("gameBG.png");
         tile = new Texture("tile.png");
+
+        coinTexture = new Texture("coin.png");
+        coins = new Array<>();
+        collectedCoins = 0;
 
         runAnimation = new Texture[10];
         for (int i = 0; i < runAnimation.length; i++) {
@@ -138,6 +150,7 @@ public class PlayScreen implements Screen {
         if (!isDead) {
             drawBackground(true, deltaTime); // Draw scrolling background animation
             drawTiles();
+            drawCoins();
             drawRunOrJump();// Draw running or jumping animation depending on character state
 
             // IF CHARACTER IS DEAD
@@ -146,6 +159,11 @@ public class PlayScreen implements Screen {
             drawTiles(); // Draw last state of the tiles
             drawDeathAnimation();
         }
+
+        // Render score
+        BitmapFont font = new BitmapFont();
+        font.draw(game.spriteBatch, "Score: " + collectedCoins, 10, Gdx.graphics.getHeight() - 10);
+
         game.spriteBatch.end();
     }
 
@@ -178,6 +196,8 @@ public class PlayScreen implements Screen {
         disposeAnimationTextures(runAnimation);
         disposeAnimationTextures(jumpAnimation);
         disposeAnimationTextures(deathAnimation);
+        coinTexture.dispose();
+        font.dispose();
     }
 
     private void disposeAnimationTextures(Texture[] textures){
@@ -232,6 +252,15 @@ public class PlayScreen implements Screen {
                     break;
                 }
             }
+            // Check for coin collision
+            for (int i = 0; i < coins.size; i++) {
+                Coin coin = coins.get(i);
+                if (characterRectangle.overlaps(coin.getRectangle())) {
+                    coins.removeIndex(i);
+                    collectedCoins++;
+                    break;
+                }
+            }
         }
         // Logic that checks if character touches the ground
         if (characterYPosition <= 0) {
@@ -263,6 +292,15 @@ public class PlayScreen implements Screen {
             // Add latest tile X- and Y-coordinates to their respective array
             tileXPositions.add(newXPosition);
             tileYPositions.add(newYPosition);
+
+            // 30% chance of spawning coin on new tile
+            if (random.nextFloat() < 0.3f) {
+                float coinX = newXPosition + tileWidth / 2f - 25;
+                float coinY = newYPosition + tileHeight + characterHeight / 2f;
+                coins.add(new Coin(coinX, coinY));
+                System.out.println("Coin spawned att: " + coinX + ", " + coinY);
+            }
+
 
             // Update lastTileX to store the x-position of the recently added tile
             lastTileXPosition = newXPosition;
@@ -297,6 +335,10 @@ public class PlayScreen implements Screen {
                 float updatedXPosition = tileXPositions.get(i) - backgroundSpeed * deltaTime;
                 tileXPositions.set(i, updatedXPosition);
             }
+            for (Coin coin : coins) {
+                float updatedCoinX = coin.getX() - backgroundSpeed * deltaTime;
+                coin.setX(updatedCoinX);
+            }
         }
     }
 
@@ -329,6 +371,13 @@ public class PlayScreen implements Screen {
             game.spriteBatch.draw(tile, tileXPositions.get(i), tileYPositions.get(i), tileWidth, tileHeight);
         }
     }
+
+    private void drawCoins(){
+        for (Coin coin : coins) {
+            game.spriteBatch.draw(coinTexture, coin.getX(), coin.getY(), 50, 50);
+        }
+    }
+
     /** Draw run or jump animation depending on character state. */
     private void drawRunOrJump(){
         Texture[] runOrJumpAnimation = isJumping ? jumpAnimation : runAnimation;
