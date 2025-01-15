@@ -3,6 +3,7 @@ package com.twodstudios.platformjumper.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -46,6 +47,8 @@ public class PlayScreen implements Screen {
     private float backgroundSpeed = 300f; // Background movement speed
     private float verticalVelocity = 0f;
     private float characterYPosition;  // y-position of the character
+    private Sound gameOverSound; // Sound effect for game over
+    private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
 
     // TILE VARIABLES
     private Array<Float> tileXPositions;  // Dynamic array for x-coordinates of tiles
@@ -55,6 +58,7 @@ public class PlayScreen implements Screen {
     private float minVerticalDistance = 130;  // Minimum vertical distance (height difference) between each tile
     private float maxVerticalDistance = 200;   // Maximum vertical distance (height difference) between each tile
     private float maxTileHeight; // Maximum y-coordinate for any tile
+
 
     // COLLISION VARIABLES
     Rectangle characterRectangle;
@@ -99,6 +103,7 @@ public class PlayScreen implements Screen {
         for (int i = 0; i < deathAnimation.length; i++) {
             deathAnimation[i] = new Texture("Dead__00" + i + ".png");
         }
+        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("losetrumpet.wav"));
 
         animationTime = 0f;
         currentFrame = 0;
@@ -158,6 +163,10 @@ public class PlayScreen implements Screen {
             drawBackground(false, deltaTime); // Draw last state of background
             drawTiles(); // Draw last state of the tiles
             drawDeathAnimation();
+
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
+                resetGame();
+            }
         }
 
         // Render score
@@ -198,6 +207,7 @@ public class PlayScreen implements Screen {
         disposeAnimationTextures(deathAnimation);
         coinTexture.dispose();
         font.dispose();
+        gameOverSound.dispose();
     }
 
     private void disposeAnimationTextures(Texture[] textures){
@@ -268,6 +278,12 @@ public class PlayScreen implements Screen {
             isDead = true; // Change flag to initiate death animation
             verticalVelocity = 0; // Set velocity to 0 to stop character from falling
             isJumping = false; // Stop jumping animation instantly
+
+            // Play game over sound only once
+            if(!isGameOverSoundPlayed) {
+                gameOverSound.play(); // Play game over sound
+                isGameOverSoundPlayed = true; // Mark that sound has been played
+            }
         }
     }
 
@@ -396,5 +412,20 @@ public class PlayScreen implements Screen {
             animationTime = 0f; // Reset animation time
         }
         game.spriteBatch.draw(deathAnimation[currentDeathFrame], 0, 0, characterWidth, characterHeight);
+    }
+
+    // Reset the game
+    private void resetGame() {
+        characterYPosition = 200f; // Reset characters y-position
+        verticalVelocity = 0f; // Reset vertical speed
+        isDead = false; // Set dead flag to false
+        isJumping = false; // Set jumping flag to false
+        currentDeathFrame = 0; // Reset death animation frame
+        tileXPositions.clear(); // Clear X-position of tiles
+        tileYPositions.clear(); // Clear Y-position of tiles
+        prepareInitialTiles(); // Create the starting tiles
+        collectedCoins = 0; // Reset score
+        coins.clear(); // Clear coin objects from array
+        isGameOverSoundPlayed = false; // Reset sound play flag
     }
 }
