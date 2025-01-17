@@ -127,23 +127,25 @@ public class Background {
     /**
      * Draws moving ground texture in the set background speed.
      */
-    public void drawGround(float deltaTime){
-        // Update base x position of ground for endless scrolling of ground.
-        groundXPosition -= this.backgroundSpeed * deltaTime;
+    public void drawGround(boolean shouldMove, float deltaTime){
 
-        // Reset base x position when ground textures reaches the edge.
-        if(groundXPosition < -Main.WORLD_WIDTH){
-            groundXPosition += this.numOfGrounds * groundWidth;
-        }
+        if (shouldMove) {
+            // Update base x position of ground for endless scrolling of ground.
+            groundXPosition -= this.backgroundSpeed * deltaTime;
 
-        // Draw ground textures.
-        for(int i = 0; i < this.totalDuplicateGrounds; i++){
-            float currentGroundX = groundXPosition + (groundWidth * i); // Stores x position of texture about to be drawn.
-            // Draws texture if it is within view.
-            if(currentGroundX > -groundWidth && currentGroundX < Main.WORLD_WIDTH){
-                game.spriteBatch.draw(this.ground, groundXPosition + (groundWidth * i),0);
+            // Reset base x position when ground textures reaches the edge.
+            if (groundXPosition < -Main.WORLD_WIDTH) {
+                groundXPosition += this.numOfGrounds * groundWidth;
             }
         }
 
+        // Draw ground textures.
+        for (int i = 0; i < this.totalDuplicateGrounds; i++) {
+            float currentGroundX = groundXPosition + (groundWidth * i); // Stores x position of texture about to be drawn.
+            // Draws texture if it is within view.
+            if (currentGroundX > -groundWidth && currentGroundX < Main.WORLD_WIDTH) {
+                game.spriteBatch.draw(this.ground, groundXPosition + (groundWidth * i), 0);
+            }
+        }
     }
 }

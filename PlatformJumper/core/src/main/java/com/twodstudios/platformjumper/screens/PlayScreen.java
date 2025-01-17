@@ -172,17 +172,16 @@ public class PlayScreen implements Screen {
         game.spriteBatch.begin();
         // IF CHARACTER IS ALIVE
         if (!isDead) {
-            //drawBackground(true, deltaTime);// Draw scrolling background animation
             background.drawBackgroundSet(true, deltaTime);
-            background.drawGround(deltaTime);
+            background.drawGround(true, deltaTime);
             drawTiles();
             drawCoins();
             drawRunOrJump();// Draw running or jumping animation depending on character state
 
             // IF CHARACTER IS DEAD
         } else {
-            //drawBackground(false, deltaTime); // Draw last state of background
             background.drawBackgroundSet(false, deltaTime);
+            background.drawGround(false, deltaTime);
             drawTiles(); // Draw last state of the tiles
             drawDeathAnimation();
 
@@ -380,28 +379,6 @@ public class PlayScreen implements Screen {
         }
     }
 
-    /** Draws the background. Enable or disable moving background using the shouldMove parameter.
-     * @param shouldMove If true the background will move, or else it will stay static. */
-    private void drawBackground(boolean shouldMove, float deltaTime){
-
-        if (shouldMove) {
-            // Update background positions for endless scrolling of background
-            bg1XPosition -= backgroundSpeed * deltaTime;
-            bg2XPosition -= backgroundSpeed * deltaTime;
-
-            // Reset background positions when they reach the edge
-            if (bg1XPosition + backgroundImage.getWidth() <= 0) { // If background 1 is fully off the screen...
-                bg1XPosition = bg2XPosition + backgroundImage.getWidth(); // Set position of background 1 to the right of bg2
-            }
-            if (bg2XPosition + backgroundImage.getWidth() <= 0) { // If background 2 is fully off the screen...
-                bg2XPosition = bg1XPosition + backgroundImage.getWidth(); // Set position of background 2 to the right of bg1
-            }
-        }
-
-        // Draw background images
-        game.spriteBatch.draw(backgroundImage, bg1XPosition, 0);
-        game.spriteBatch.draw(backgroundImage, bg2XPosition, 0);
-    }
 
     /** Draw all current tiles. */
     private void drawTiles(){
