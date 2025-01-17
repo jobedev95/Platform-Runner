@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.twodstudios.platformjumper.Background;
 import com.twodstudios.platformjumper.Coin;
 import com.twodstudios.platformjumper.Main;
 
@@ -27,6 +28,7 @@ public class PlayScreen implements Screen {
     private Texture[] runAnimation;
     private Texture[] jumpAnimation;
     private Texture[] deathAnimation;
+    private Background background;
 
     // Variables for Coins and coin tracker
     private Texture coinTexture; // Coin Texture
@@ -83,6 +85,7 @@ public class PlayScreen implements Screen {
         camera.update();
 
         backgroundImage = new Texture("gameBG.png");
+        background = new Background(backgroundSpeed, "atlas/lava_theme.atlas", 6, game);
         tile = new Texture("tile.png");
 
         coinTexture = new Texture("coin.png");
@@ -153,14 +156,16 @@ public class PlayScreen implements Screen {
         game.spriteBatch.begin();
         // IF CHARACTER IS ALIVE
         if (!isDead) {
-            drawBackground(true, deltaTime); // Draw scrolling background animation
+            //drawBackground(true, deltaTime);// Draw scrolling background animation
+            background.drawBackgroundSet(true, deltaTime);
             drawTiles();
             drawCoins();
             drawRunOrJump();// Draw running or jumping animation depending on character state
 
             // IF CHARACTER IS DEAD
         } else {
-            drawBackground(false, deltaTime); // Draw last state of background
+            //drawBackground(false, deltaTime); // Draw last state of background
+            background.drawBackgroundSet(false, deltaTime);
             drawTiles(); // Draw last state of the tiles
             drawDeathAnimation();
 
