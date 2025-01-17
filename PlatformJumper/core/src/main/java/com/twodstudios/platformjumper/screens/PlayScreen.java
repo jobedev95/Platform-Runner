@@ -7,6 +7,8 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -24,11 +26,12 @@ public class PlayScreen implements Screen {
 
     // CREATE ALL ASSET VARIABLES
     private Texture backgroundImage;
-    private Texture tile;
     private Texture[] runAnimation;
     private Texture[] jumpAnimation;
     private Texture[] deathAnimation;
     private Background background;
+    private TextureAtlas tileAtlas;
+    private TextureRegion tileRegion = new TextureRegion();
 
     // Variables for Coins and coin tracker
     private Texture coinTexture; // Coin Texture
@@ -90,7 +93,8 @@ public class PlayScreen implements Screen {
 
         backgroundImage = new Texture("gameBG.png");
         background = new Background(backgroundSpeed, "atlas/lava_theme.atlas", 6, game);
-        tile = new Texture("tile.png");
+        tileAtlas = new TextureAtlas(Gdx.files.internal("atlas/lava_theme.atlas"));
+        tileRegion = tileAtlas.findRegion("tile_01");
 
         coinTexture = new Texture("coin.png");
         coins = new Array<>();
@@ -128,7 +132,7 @@ public class PlayScreen implements Screen {
 
         // TILE LOGIC
         tileWidth = 230;
-        tileHeight = 30;
+        tileHeight = 40;
         tileXPositions = new Array<>(); // Array to hold x-positions of all tiles to be drawn
         tileYPositions = new Array<>(); // Array to hold y-positions of all tiles to be drawn
         prepareInitialTiles(); // Preparing the first 15 tiles to be rendered
@@ -218,7 +222,7 @@ public class PlayScreen implements Screen {
     @Override
     public void dispose() {
         backgroundImage.dispose();
-        tile.dispose();
+        tileAtlas.dispose();
         disposeAnimationTextures(runAnimation);
         disposeAnimationTextures(jumpAnimation);
         disposeAnimationTextures(deathAnimation);
@@ -401,7 +405,7 @@ public class PlayScreen implements Screen {
     /** Draw all current tiles. */
     private void drawTiles(){
         for (int i = 0; i < tileXPositions.size; i++) {
-            game.spriteBatch.draw(tile, tileXPositions.get(i), tileYPositions.get(i), tileWidth, tileHeight);
+            game.spriteBatch.draw(tileRegion, tileXPositions.get(i), tileYPositions.get(i), tileWidth, tileHeight);
         }
     }
 
