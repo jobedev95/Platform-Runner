@@ -92,7 +92,7 @@ public class PlayScreen implements Screen {
         camera.update();
 
         backgroundImage = new Texture("gameBG.png");
-        background = new Background(backgroundSpeed, "atlas/lava_theme.atlas", 6, game);
+        background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
         tileAtlas = new TextureAtlas(Gdx.files.internal("atlas/lava_theme.atlas"));
         tileRegion = tileAtlas.findRegion("tile_01");
 
@@ -128,7 +128,7 @@ public class PlayScreen implements Screen {
         bg2XPosition = backgroundImage.getWidth();
 
         // Set maximum height placement of tiles
-        maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
+        maxTileHeight = Gdx.graphics.getHeight() - 300;// 300 pixels from the top of the screen
 
         // TILE LOGIC
         tileWidth = 230;
@@ -174,6 +174,7 @@ public class PlayScreen implements Screen {
         if (!isDead) {
             //drawBackground(true, deltaTime);// Draw scrolling background animation
             background.drawBackgroundSet(true, deltaTime);
+            background.drawGround(deltaTime);
             drawTiles();
             drawCoins();
             drawRunOrJump();// Draw running or jumping animation depending on character state
