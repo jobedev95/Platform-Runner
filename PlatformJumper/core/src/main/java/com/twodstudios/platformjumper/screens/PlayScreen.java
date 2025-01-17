@@ -74,9 +74,13 @@ public class PlayScreen implements Screen {
     public PlayScreen(Main game){
         this.game = game;
     }
+    // Pause state
+    private boolean paused = false;
 
     @Override
     public void show() {
+        // init font
+        font = new BitmapFont();
         // Camera and Viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
@@ -138,7 +142,15 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
         animationTime += deltaTime; // Update animation time
-
+        // toggle pause state if "p" is pressed
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            paused = !paused;
+        }
+        // if game is paused show paus screen and stop game logic
+        if (paused) {
+            drawPausedScreen();
+            return;
+        }
         // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
         if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping) {
             isJumping = true;
@@ -433,4 +445,17 @@ public class PlayScreen implements Screen {
         coins.clear(); // Clear coin objects from array
         isGameOverSoundPlayed = false; // Reset sound play flag
     }
+    // draw pause on screen when p is pressed and return to normal once pressed again
+    private void drawPausedScreen() {
+        game.spriteBatch.begin();
+        // draw darkened background
+        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
+        game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // Set opacity to 70%
+        game.spriteBatch.draw(backgroundImage, 0, 0, Main.WORLD_WIDTH, Main.WORLD_HEIGHT); // Draw background with 70% opacity
+        game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
+        // Print paused on screen
+        font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 50, Main.WORLD_HEIGHT / 2f);
+        game.spriteBatch.end();
+    }
 }
+
