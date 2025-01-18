@@ -140,7 +140,7 @@ public class PlayScreen implements Screen {
         // Camera and Viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
-        camera.setToOrtho(false, Main.WORLD_WIDTH, Main.WORLD_HEIGHT);
+        camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0); // Center the camera
         camera.position.set(characterXPosition, characterYPosition, 0); // Center the camera
         camera.zoom = initialCameraZoom; // Start with camera zoomed in
         camera.update();
@@ -188,6 +188,17 @@ public class PlayScreen implements Screen {
     public void render(float delta) {
 
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
+
+        // Toggle pause state if "p" is pressed
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            paused = !paused;
+        }
+        // If game is paused show pause screen and stop game logic
+        if (paused) {
+            drawPausedScreen(deltaTime);
+            return;
+        }
+
         characterAnimationTime += deltaTime; // Update animation time
         logoAnimationTime += deltaTime;
 
@@ -210,17 +221,9 @@ public class PlayScreen implements Screen {
             generateBufferTiles(); // Prepares a buffer of tiles when needed
             moveTiles(deltaTime); // Continuously moves all tiles towards the left
         }
-        // Toggle pause state if "p" is pressed
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            paused = !paused;
-        }
-        // If game is paused show pause screen and stop game logic
-        if (paused) {
-            drawPausedScreen(deltaTime);
-            return;
-        }
+
         // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping) {
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping && !startMode) {
             isJumping = true;
             verticalVelocity = 600;
         }
