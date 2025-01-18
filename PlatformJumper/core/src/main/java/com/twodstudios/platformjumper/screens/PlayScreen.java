@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.Background;
 import com.twodstudios.platformjumper.Coin;
 import com.twodstudios.platformjumper.Main;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
@@ -29,10 +30,15 @@ public class PlayScreen implements Screen {
     private TextureRegion tileRegion = new TextureRegion();
 
     // Variables for Coins and coin tracker
+    private TextureAtlas coinAtlas;
     private Texture coinTexture; // Coin Texture
+    private TextureRegion[] coinTextureRegions = new TextureRegion[10];
     private Array<Coin> coins; // Array to hold coin objects
     private int collectedCoins; // CoinTracker
     private BitmapFont font;
+    private float coinAnimationTime;
+    private int coinWidth;
+    private int coinHeight;
 
     // Character variables
     private float characterXPosition;
@@ -97,6 +103,7 @@ public class PlayScreen implements Screen {
     private Animation<TextureRegion> runningAnimation;
     private Animation<TextureRegion> jumpingAnimation;
     private Animation<TextureRegion> deathAnimation;
+    private Animation<TextureRegion> coinAnimation;
 
     // Constructor
     public PlayScreen(Main game){
@@ -105,12 +112,28 @@ public class PlayScreen implements Screen {
     // Pause state
     private boolean paused = false;
 
+    // Particle effects
+    private ParticleEffect sparklesParticleEffect;
+    private ParticleEffect lavaExplosionParticleEffect;
+
     @Override
     public void show() {
 
-        // Texture Atlas
+        // Load all texture Atlases
         logoAtlas = new TextureAtlas(Gdx.files.internal("atlas/main_logo.atlas"));
         characterAtlas = new TextureAtlas(Gdx.files.internal("atlas/character.atlas"));
+        coinAtlas = new TextureAtlas(Gdx.files.internal("atlas/coin.atlas"));
+
+        // Store all coin texture regions in a TextureRegion array
+        for (int i = 0; i < coinTextureRegions.length; i++) {
+            String frameName = String.format("coin" + i);
+            coinTextureRegions[i] = coinAtlas.findRegion(frameName);
+        }
+
+        // Create coin animation object
+        float coinFrameDuration = 1/10f;
+        coinAnimation = new Animation<TextureRegion>(coinFrameDuration, coinTextureRegions);
+        coinAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         // Create idle animation
         idleAnimation = createCharacterAnimation(idleTextureRegions, "Idle__00", 1/10f);
@@ -162,6 +185,8 @@ public class PlayScreen implements Screen {
         coinTexture = new Texture("coin.png");
         coins = new Array<>();
         collectedCoins = 0;
+        coinWidth = 60;
+        coinHeight = 60;
 
         // Loading game over sound
         gameOverSound = Gdx.audio.newSound(Gdx.files.internal("losetrumpet.wav"));
@@ -169,6 +194,7 @@ public class PlayScreen implements Screen {
         // Initialise animation time for logo and character
         logoAnimationTime = 0f;
         characterAnimationTime = 0f;
+        coinAnimationTime = 0f;
 
         // Set maximum height placement of tiles
         maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
@@ -179,6 +205,24 @@ public class PlayScreen implements Screen {
         tileXPositions = new Array<>(); // Array to hold x-positions of all tiles to be drawn
         tileYPositions = new Array<>(); // Array to hold y-positions of all tiles to be drawn
         prepareInitialTiles(); // Preparing the first 15 tiles to be rendered
+
+        // PARTICLE EFFECTS
+        // Fire sparkles effect
+        sparklesParticleEffect = new ParticleEffect();
+        sparklesParticleEffect.load(Gdx.files.internal("effects/lava_sparkles.p"), Gdx.files.internal("effects"));
+        sparklesParticleEffect.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() - 150);
+        ParticleEmitter sparklesEmitter =  sparklesParticleEffect.getEmitters().first();
+        sparklesEmitter.setPosition(Gdx.graphics.getWidth() / 2f,120);
+        sparklesEmitter.getVelocity().setHigh(100, 200);
+        sparklesEmitter.getWind().setHigh(-100, -400);
+        sparklesParticleEffect.scaleEffect(1.2f);
+
+        // Lava explosion effect
+        lavaExplosionParticleEffect = new ParticleEffect();
+        lavaExplosionParticleEffect.load(Gdx.files.internal("effects/lava_explosion.p"), Gdx.files.internal("effects"));
+        lavaExplosionParticleEffect.setPosition(0, 0);
+        ParticleEmitter lavaExplosionEmitter = lavaExplosionParticleEffect.getEmitters().first();
+        lavaExplosionParticleEffect.scaleEffect(2f);
 
         // COLLISION RECTANGLES (for collision checks)
         characterRectangle = new Rectangle(characterXPosition - characterWidth / 2f, characterYPosition, characterWidth * 0.8f, characterHeight);
@@ -200,8 +244,10 @@ public class PlayScreen implements Screen {
             return;
         }
 
-        characterAnimationTime += deltaTime; // Update animation time
+        // Update animation times
+        characterAnimationTime += deltaTime;
         logoAnimationTime += deltaTime;
+        coinAnimationTime += deltaTime;
 
         // Exits start mode when Enter is pressed
         if (startMode && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
@@ -242,6 +288,7 @@ public class PlayScreen implements Screen {
             drawTiles();
             drawLogoAnimation(logoAnimationTime, false);
             drawIdleAnimation(); // Draw the character idle animation if in start mode
+            sparklesParticleEffect.draw(game.spriteBatch, delta); // Draw continous particle effect
         } else {
             // Zoom out camera smoothly to the game mode zoom position in slow speed
             smoothZoom(newZoomLevel, zoomSpeed, deltaTime);
@@ -258,6 +305,8 @@ public class PlayScreen implements Screen {
                 }
                 drawRunOrJump(); // Draw running or jumping animation depending on character state
 
+                sparklesParticleEffect.draw(game.spriteBatch, delta); // Draw continous sparkles particle effect
+
             // IF CHARACTER IS DEAD
             } else {
                 smoothZoom(newZoomLevel, 0.5f, deltaTime);
@@ -265,6 +314,7 @@ public class PlayScreen implements Screen {
                 background.drawGround(false, deltaTime);  // Draw last state of ground
                 drawTiles(); // Draw last state of the tiles
                 drawDeathAnimation();
+                lavaExplosionParticleEffect.draw(game.spriteBatch, delta); // Draw lava explosion effect
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
                     resetGame();
@@ -379,6 +429,10 @@ public class PlayScreen implements Screen {
                 gameOverSound.play(); // Play game over sound
                 isGameOverSoundPlayed = true; // Mark that sound has been played
             }
+
+            // Set position of lava explosion and start the effect
+            lavaExplosionParticleEffect.setPosition(characterXPosition - characterWidth / 5, background.getGroundHeight() / 2);
+            lavaExplosionParticleEffect.start();
         }
     }
 
@@ -406,8 +460,8 @@ public class PlayScreen implements Screen {
 
             // 30% chance of spawning coin on new tile
             if (random.nextFloat() < 0.3f) {
-                float coinX = newXPosition + tileWidth / 2f - 25;
-                float coinY = newYPosition + tileHeight + characterHeight / 2f;
+                float coinX = newXPosition + (tileWidth / 2f) - (coinWidth / 2f);
+                float coinY = newYPosition + characterHeight / 2f;
                 coins.add(new Coin(coinX, coinY));
             }
 
@@ -494,8 +548,20 @@ public class PlayScreen implements Screen {
 
     private void drawCoins(){
         for (Coin coin : coins) {
-            game.spriteBatch.draw(coinTexture, coin.getX(), coin.getY(), 50, 50);
+            drawCoinAnimation(coin);
         }
+    }
+
+    /**
+     * Draw coin animation.
+     * @param coin Coin object to be drawn.
+     */
+    private void drawCoinAnimation(Coin coin) {
+        TextureRegion atlasFrame;
+        atlasFrame = coinAnimation.getKeyFrame(coinAnimationTime, true); // Looping set to true
+
+        // Draw the current frame
+        game.spriteBatch.draw(atlasFrame, coin.getX(), coin.getY(), coinWidth, coinHeight);
     }
 
     /** Draw run or jump animation depending on character state. */
@@ -601,6 +667,7 @@ public class PlayScreen implements Screen {
         startMode = true; // Set flag to show start mode again
         characterYPosition = 135f; // Reset character x position
         logoAnimationTime = 0; // Reset logo animation
+        lavaExplosionParticleEffect.reset(); // Reset particle effect
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
@@ -618,4 +685,3 @@ public class PlayScreen implements Screen {
         game.spriteBatch.end();
     }
 }
-
