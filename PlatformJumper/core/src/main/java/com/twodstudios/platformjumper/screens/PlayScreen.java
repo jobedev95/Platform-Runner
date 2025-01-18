@@ -3,14 +3,20 @@ package com.twodstudios.platformjumper.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.twodstudios.platformjumper.Background;
+import com.twodstudios.platformjumper.Coin;
 import com.twodstudios.platformjumper.Main;
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
@@ -20,7 +26,18 @@ public class PlayScreen implements Screen {
 
     // Textures
     private Texture backgroundImage;
-    private Texture tile;
+    private Texture[] runAnimation;
+    private Texture[] jumpAnimation;
+    private Texture[] deathAnimation;
+    private Background background;
+    private TextureAtlas tileAtlas;
+    private TextureRegion tileRegion = new TextureRegion();
+
+    // Variables for Coins and coin tracker
+    private Texture coinTexture; // Coin Texture
+    private Array<Coin> coins; // Array to hold coin objects
+    private int collectedCoins; // CoinTracker
+    private BitmapFont font;
 
     // Character variables
     private float characterXPosition;
@@ -39,6 +56,10 @@ public class PlayScreen implements Screen {
     // Background variables
     private float bg1XPosition, bg2XPosition; // X-positions of the two looping backgrounds
     private float backgroundSpeed = 300f; // Background movement speed
+    private float verticalVelocity = 0f;
+    private float characterYPosition;  // y-position of the character
+    private Sound gameOverSound; // Sound effect for game over
+    private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
 
     // Tile variables
     private Array<Float> tileXPositions;  // Dynamic array for x-coordinates of tiles
@@ -87,6 +108,8 @@ public class PlayScreen implements Screen {
     public PlayScreen(Main game){
         this.game = game;
     }
+    // Pause state
+    private boolean paused = false;
 
     @Override
     public void show() {
@@ -118,6 +141,9 @@ public class PlayScreen implements Screen {
         logoAnimation = new Animation<TextureRegion>(frameDuration, logoTextureRegions);
         logoAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
+        // init font
+        font = new BitmapFont();
+
         // Camera and Viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
@@ -127,7 +153,13 @@ public class PlayScreen implements Screen {
         camera.update();
 
         backgroundImage = new Texture("gameBG.png");
-        tile = new Texture("tile.png");
+        background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
+        tileAtlas = new TextureAtlas(Gdx.files.internal("atlas/lava_theme.atlas"));
+        tileRegion = tileAtlas.findRegion("tile_01");
+
+        coinTexture = new Texture("coin.png");
+        coins = new Array<>();
+        collectedCoins = 0;
 
         // Initialise animation time for logo and character
         logoAnimationTime = 0f;
@@ -144,11 +176,11 @@ public class PlayScreen implements Screen {
         bg2XPosition = -backgroundImage.getWidth();
 
         // Set maximum height placement of tiles
-        maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
+        maxTileHeight = Gdx.graphics.getHeight() - 300;// 300 pixels from the top of the screen
 
         // TILE LOGIC
         tileWidth = 230;
-        tileHeight = 30;
+        tileHeight = 40;
         tileXPositions = new Array<>(); // Array to hold x-positions of all tiles to be drawn
         tileYPositions = new Array<>(); // Array to hold y-positions of all tiles to be drawn
         prepareInitialTiles(); // Preparing the first 15 tiles to be rendered
@@ -183,6 +215,20 @@ public class PlayScreen implements Screen {
             checkCollision(); // Check for tile and floor collisions
             generateBufferTiles(); // Prepares a buffer of tiles when needed
             moveTiles(deltaTime); // Continuously moves all tiles towards the left
+
+        // Toggle pause state if "p" is pressed
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            paused = !paused;
+        }
+        // If game is paused show pause screen and stop game logic
+        if (paused) {
+            drawPausedScreen();
+            return;
+        }
+        // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping) {
+            isJumping = true;
+            verticalVelocity = 600;
         }
 
         camera.update();
@@ -198,27 +244,37 @@ public class PlayScreen implements Screen {
             drawLogoAnimation(logoAnimationTime, false);
             drawIdleAnimation(); // Draw the character idle animation if in start mode
         } else {
-            // Zoom out camera smootly to game mode zoom position in slow speed
+            // Zoom out camera smoothly to the game mode zoom position in slow speed
             smoothZoom(newZoomLevel, zoomSpeed, deltaTime);
 
             // IF CHARACTER IS ALIVE
             if (!isDead) {
-                drawBackground(true, deltaTime); // Draw scrolling background animation
+                background.drawBackgroundSet(true, deltaTime);
+                background.drawGround(true, deltaTime);
                 drawTiles();
+                drawCoins();
                 if (!logoAnimationFinished){
                     System.out.println("HELLO" + logoAnimationFinished );
                     drawLogoAnimation(logoAnimationTime, true);
                 }
-                drawRunOrJump();// Draw running or jumping animation depending on character state
+                drawRunOrJump(); // Draw running or jumping animation depending on character state
 
             // IF CHARACTER IS DEAD
             } else {
                 smoothZoom(newZoomLevel, 0.5f, deltaTime);
-                drawBackground(false, deltaTime); // Draw last state of background
+                background.drawBackgroundSet(false, deltaTime);  // Draw last state of background
+                background.drawGround(false, deltaTime);  // Draw last state of ground
+                drawBackground(false, deltaTime);
                 drawTiles(); // Draw last state of the tiles
                 drawDeathAnimation();
+                if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
+                    resetGame();
+                }
             }
-        }
+        // Render score
+        BitmapFont font = new BitmapFont();
+        font.draw(game.spriteBatch, "Score: " + collectedCoins, 10, Gdx.graphics.getHeight() - 10);
+
         game.spriteBatch.end();
     }
 
@@ -250,6 +306,10 @@ public class PlayScreen implements Screen {
         tile.dispose();
         characterAtlas.dispose();
         logoAtlas.dispose();
+        tileAtlas.dispose();
+        coinTexture.dispose();
+        font.dispose();
+        gameOverSound.dispose();
     }
 
     /** Prepares the initial tiles for rendering. */
@@ -298,6 +358,15 @@ public class PlayScreen implements Screen {
                     break;
                 }
             }
+            // Check for coin collision
+            for (int i = 0; i < coins.size; i++) {
+                Coin coin = coins.get(i);
+                if (characterRectangle.overlaps(coin.getRectangle())) {
+                    coins.removeIndex(i);
+                    collectedCoins++;
+                    break;
+                }
+            }
         }
         // Logic that checks if character touches the ground
         if (characterYPosition <= 0) {
@@ -306,6 +375,12 @@ public class PlayScreen implements Screen {
             characterAnimationTime = 0; // Reset animation time so death animation starts at first animation frame
             verticalVelocity = 0; // Set velocity to 0 to stop character from falling
             isJumping = false; // Stop jumping animation instantly
+
+            // Play game over sound only once
+            if(!isGameOverSoundPlayed) {
+                gameOverSound.play(); // Play game over sound
+                isGameOverSoundPlayed = true; // Mark that sound has been played
+            }
         }
     }
 
@@ -330,6 +405,15 @@ public class PlayScreen implements Screen {
             // Add latest tile X- and Y-coordinates to their respective array
             tileXPositions.add(newXPosition);
             tileYPositions.add(newYPosition);
+
+            // 30% chance of spawning coin on new tile
+            if (random.nextFloat() < 0.3f) {
+                float coinX = newXPosition + tileWidth / 2f - 25;
+                float coinY = newYPosition + tileHeight + characterHeight / 2f;
+                coins.add(new Coin(coinX, coinY));
+                System.out.println("Coin spawned att: " + coinX + ", " + coinY);
+            }
+
 
             // Update lastTileX to store the x-position of the recently added tile
             lastTileXPosition = newXPosition;
@@ -364,42 +448,24 @@ public class PlayScreen implements Screen {
                 float updatedXPosition = tileXPositions.get(i) - backgroundSpeed * deltaTime;
                 tileXPositions.set(i, updatedXPosition);
             }
+            for (Coin coin : coins) {
+                float updatedCoinX = coin.getX() - backgroundSpeed * deltaTime;
+                coin.setX(updatedCoinX);
+            }
         }
     }
 
-    /** Draws the background. Enable or disable moving background using the shouldMove parameter.
-     * @param shouldMove If true the background will move, or else it will stay static. */
-    private void drawBackground(boolean shouldMove, float deltaTime){
-
-        if (shouldMove) {
-            // Update background positions for endless scrolling of background
-            bg1XPosition -= backgroundSpeed * deltaTime;
-            bg2XPosition -= backgroundSpeed * deltaTime;
-
-            // Reset background positions when they reach the edge
-            if (bg1XPosition + backgroundImage.getWidth() <= 0) { // If background 1 is fully off the screen...
-                bg1XPosition = bg2XPosition + backgroundImage.getWidth(); // Set position of background 1 to the right of bg2
-            }
-            if (bg2XPosition + backgroundImage.getWidth() <= 0) { // If background 2 is fully off the screen...
-                bg2XPosition = bg1XPosition + backgroundImage.getWidth(); // Set position of background 2 to the right of bg1
-            }
-        }
-
-        // Draw background images
-        game.spriteBatch.draw(backgroundImage, bg1XPosition, 0);
-        game.spriteBatch.draw(backgroundImage, bg2XPosition, 0);
-    }
 
     /** Draw all current tiles. */
     private void drawTiles(){
         for (int i = 0; i < tileXPositions.size; i++) {
-            game.spriteBatch.draw(tile, tileXPositions.get(i), tileYPositions.get(i), tileWidth, tileHeight);
+            game.spriteBatch.draw(tileRegion, tileXPositions.get(i), tileYPositions.get(i), tileWidth, tileHeight);
         }
     }
     /** Draw idle animation for the start screen. */
     private void drawIdleAnimation() {
         TextureRegion atlasFrame;
-        atlasFrame = idleAnimation.getKeyFrame(characterAnimationTime, true); // Looping
+        atlasFrame = idleAnimation.getKeyFrame(characterAnimationTime, true); // Looping set to true
 
         // Draw the current frame
         game.spriteBatch.draw(atlasFrame, characterXPosition - characterWidth / 2f, characterYPosition, characterWidth, characterHeight);
@@ -423,6 +489,11 @@ public class PlayScreen implements Screen {
 
         // Draw the current frame
         game.spriteBatch.draw(atlasFrame, Main.WORLD_WIDTH / 2f - 250, Main.WORLD_HEIGHT - 300, 500, 109);
+
+    private void drawCoins(){
+        for (Coin coin : coins) {
+            game.spriteBatch.draw(coinTexture, coin.getX(), coin.getY(), 50, 50);
+        }
     }
 
     /** Draw run or jump animation depending on character state. */
@@ -512,4 +583,32 @@ public class PlayScreen implements Screen {
             camera.update();
         }
     }
+
+    // Reset the game
+    private void resetGame() {
+        characterYPosition = 200f; // Reset characters y-position
+        verticalVelocity = 0f; // Reset vertical speed
+        isDead = false; // Set dead flag to false
+        isJumping = false; // Set jumping flag to false
+        currentDeathFrame = 0; // Reset death animation frame
+        tileXPositions.clear(); // Clear X-position of tiles
+        tileYPositions.clear(); // Clear Y-position of tiles
+        prepareInitialTiles(); // Create the starting tiles
+        collectedCoins = 0; // Reset score
+        coins.clear(); // Clear coin objects from array
+        isGameOverSoundPlayed = false; // Reset sound play flag
+    }
+    // draw pause on screen when p is pressed and return to normal once pressed again
+    private void drawPausedScreen() {
+        game.spriteBatch.begin();
+        // draw darkened background
+        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
+        game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // Set opacity to 70%
+        game.spriteBatch.draw(backgroundImage, 0, 0, Main.WORLD_WIDTH, Main.WORLD_HEIGHT); // Draw background with 70% opacity
+        game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
+        // Print paused on screen
+        font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 50, Main.WORLD_HEIGHT / 2f);
+        game.spriteBatch.end();
+    }
 }
+
