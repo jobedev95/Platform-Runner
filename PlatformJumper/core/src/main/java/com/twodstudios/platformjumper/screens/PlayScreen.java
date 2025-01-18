@@ -6,6 +6,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -17,19 +18,13 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.Background;
 import com.twodstudios.platformjumper.Coin;
 import com.twodstudios.platformjumper.Main;
-
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
 public class PlayScreen implements Screen {
     private Main game;
 
-    // CREATE ALL ASSET VARIABLES
-    private Texture backgroundImage;
-    private Texture[] runAnimation;
-    private Texture[] jumpAnimation;
-    private Texture[] deathAnimation;
-    private Background background;
+    // Textures
     private TextureAtlas tileAtlas;
     private TextureRegion tileRegion = new TextureRegion();
 
@@ -39,23 +34,27 @@ public class PlayScreen implements Screen {
     private int collectedCoins; // CoinTracker
     private BitmapFont font;
 
-    private float animationTime; // Time since start of animation
-    private int currentFrame; // Index for animation frames
-    private int currentDeathFrame; // Index of death animation frames
+    // Character variables
+    private float characterXPosition;
+    private float characterYPosition;  // Y-position of the character
+    private float characterAnimationTime; // Time since start of animation
+    private float verticalVelocity = 0f; // Speed of which character moves up or down
     private int characterWidth;
     private int characterHeight;
-    private int tileWidth;
-    private int tileHeight;
     private boolean isJumping; // Flag to check if the character is jumping
     private boolean isDead; // Flag to check if the character is dead
-    private float bg1XPosition, bg2XPosition; // X-positions of the two looping backgrounds
+
+    // Tile variables
+    private int tileWidth;
+    private int tileHeight;
+
+    // Background variables
+    private Background background;
     private float backgroundSpeed = 300f; // Background movement speed
-    private float verticalVelocity = 0f;
-    private float characterYPosition;  // y-position of the character
     private Sound gameOverSound; // Sound effect for game over
     private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
 
-    // TILE VARIABLES
+    // Tile variables
     private Array<Float> tileXPositions;  // Dynamic array for x-coordinates of tiles
     private Array<Float> tileYPositions;  // Dynamic array for y-coordinates of tiles
     private float minTileDistance = 300; // Minimum horizontal distance between each tile
@@ -64,14 +63,39 @@ public class PlayScreen implements Screen {
     private float maxVerticalDistance = 200;   // Maximum vertical distance (height difference) between each tile
     private float maxTileHeight; // Maximum y-coordinate for any tile
 
-
-    // COLLISION VARIABLES
-    Rectangle characterRectangle;
-    Rectangle tileRectangle;
+    // Collision variables
+    private Rectangle characterRectangle;
+    private Rectangle tileRectangle;
 
     // Camera and Viewport
     private OrthographicCamera camera;
     private Viewport viewport;
+
+    // Start Mode logic
+    private boolean startMode = true; // Flag to initiate the start screen
+    private boolean zoomingOut = false; // Flag
+    private float initialCameraZoom = 1.0f; // Initial zoom for camera in start mode
+    private float newZoomLevel = 1f; // Game Mode zoom level
+    private float zoomSpeed = 0.05f; // Camera zoom speed
+
+    // Logo Atlas & Texture Regions
+    private TextureAtlas logoAtlas;
+    private TextureRegion[] logoTextureRegions = new TextureRegion[66];
+    private Animation<TextureRegion> logoAnimation;
+    private float logoAnimationTime; // Time since start of logo animation
+    private boolean logoAnimationFinished;
+
+
+    // Character Atlas, Texture Regions & Animation Objects
+    private TextureAtlas characterAtlas; // Atlas with all character animation frames
+    private TextureRegion[] idleTextureRegions = new TextureRegion[10];
+    private TextureRegion[] runningTextureRegions = new TextureRegion[10];
+    private TextureRegion[] jumpingTextureRegions = new TextureRegion[10];
+    private TextureRegion[] deadTextureRegions = new TextureRegion[10];
+    private Animation<TextureRegion> idleAnimation;
+    private Animation<TextureRegion> runningAnimation;
+    private Animation<TextureRegion> jumpingAnimation;
+    private Animation<TextureRegion> deathAnimation;
 
     // Constructor
     public PlayScreen(Main game){
@@ -82,53 +106,71 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-        // init font
+
+        // Texture Atlas
+        logoAtlas = new TextureAtlas(Gdx.files.internal("atlas/main_logo.atlas"));
+        characterAtlas = new TextureAtlas(Gdx.files.internal("atlas/character.atlas"));
+
+        // Create idle animation
+        idleAnimation = createCharacterAnimation(idleTextureRegions, "Idle__00", 1/10f);
+
+        // Create running animation
+        runningAnimation = createCharacterAnimation(runningTextureRegions, "Run__00", 1/10f);
+
+        // Create jumping animation
+        jumpingAnimation = createCharacterAnimation(jumpingTextureRegions, "Jump__00", 1/10f);
+
+        // Create death animation
+        deathAnimation = createCharacterAnimation(deadTextureRegions, "Dead__00", 1/25f);
+
+        // Create main logo animation
+        for (int i = 0; i < logoTextureRegions.length; i++) {
+            String frameName = String.format("main_logo" + i);
+            logoTextureRegions[i] = logoAtlas.findRegion(frameName);
+        }
+
+        // Create the animation game logo object
+        float frameDuration = 1/30f;
+        logoAnimation = new Animation<TextureRegion>(frameDuration, logoTextureRegions);
+        logoAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+        // Creating bitmap font object
         font = new BitmapFont();
+
         // Camera and Viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
-        camera.setToOrtho(false, Main.WORLD_WIDTH, Main.WORLD_HEIGHT);
         camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0); // Center the camera
+        camera.position.set(characterXPosition, characterYPosition, 0); // Center the camera
+        camera.zoom = initialCameraZoom; // Start with camera zoomed in
         camera.update();
 
-        backgroundImage = new Texture("gameBG.png");
         background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
         tileAtlas = new TextureAtlas(Gdx.files.internal("atlas/lava_theme.atlas"));
         tileRegion = tileAtlas.findRegion("tile_01");
 
+        // Coin variables
         coinTexture = new Texture("coin.png");
         coins = new Array<>();
         collectedCoins = 0;
 
-        runAnimation = new Texture[10];
-        for (int i = 0; i < runAnimation.length; i++) {
-            runAnimation[i] = new Texture("Run__00" + i + ".png");
-        }
-
-        jumpAnimation = new Texture[10];
-        for (int i = 0; i < jumpAnimation.length; i++) {
-            jumpAnimation[i] = new Texture("Jump__00" + i + ".png");
-        }
-
-        deathAnimation = new Texture[10];
-        for (int i = 0; i < deathAnimation.length; i++) {
-            deathAnimation[i] = new Texture("Dead__00" + i + ".png");
-        }
+        // Loading game over sound
         gameOverSound = Gdx.audio.newSound(Gdx.files.internal("losetrumpet.wav"));
 
-        animationTime = 0f;
-        currentFrame = 0;
-        currentDeathFrame = 0;
+        // Initialise animation time for logo and character
+        logoAnimationTime = 0f;
+        characterAnimationTime = 0f;
+
+        // Initialise character variables
         characterWidth = 120;
         characterHeight = 150;
-        characterYPosition = 200f; // Initial y-position of the character
+        characterXPosition = viewport.getWorldWidth() / 2;
+        characterYPosition = 135f; // Initial y-position of the character
         isDead = false;
         isJumping = false;
-        bg1XPosition = 0;
-        bg2XPosition = backgroundImage.getWidth();
 
         // Set maximum height placement of tiles
-        maxTileHeight = Gdx.graphics.getHeight() - 300;// 300 pixels from the top of the screen
+        maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
 
         // TILE LOGIC
         tileWidth = 230;
@@ -138,62 +180,100 @@ public class PlayScreen implements Screen {
         prepareInitialTiles(); // Preparing the first 15 tiles to be rendered
 
         // COLLISION RECTANGLES (for collision checks)
-        characterRectangle = new Rectangle(0, characterYPosition, characterWidth, characterHeight);
+        characterRectangle = new Rectangle(characterXPosition, characterYPosition, characterWidth, characterHeight);
         tileRectangle = new Rectangle(0, 100, tileWidth, tileHeight);
     }
 
     @Override
     public void render(float delta) {
+
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
-        animationTime += deltaTime; // Update animation time
-        // toggle pause state if "p" is pressed
+
+        // Toggle pause state if "p" is pressed
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             paused = !paused;
         }
-        // if game is paused show paus screen and stop game logic
+        // If game is paused show pause screen and stop game logic
         if (paused) {
-            drawPausedScreen();
+            drawPausedScreen(deltaTime);
             return;
         }
+
+        characterAnimationTime += deltaTime; // Update animation time
+        logoAnimationTime += deltaTime;
+
+        // Exits start mode when Enter is pressed
+        if (startMode && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            startMode = false;
+            zoomingOut = true;
+        }
+
+        if (!startMode && !isDead) {
+            // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
+            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping) {
+                // Reset animation time so that each jump starts at first animation frame
+                characterAnimationTime = 0;
+                isJumping = true;
+                verticalVelocity = 600;
+            }
+            applyGravity(deltaTime); // Enable gravity
+            checkCollision(); // Check for tile and floor collisions
+            generateBufferTiles(); // Prepares a buffer of tiles when needed
+            moveTiles(deltaTime); // Continuously moves all tiles towards the left
+        }
+
         // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
-        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping) {
+        if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !isJumping && !startMode) {
             isJumping = true;
             verticalVelocity = 600;
         }
-        applyGravity(deltaTime); // Enable gravity
-        checkCollision(); // Check for tile and floor collisions
-        generateBufferTiles(); // Prepares a buffer of tiles when needed
-        moveTiles(deltaTime); // Continuously moves all tiles towards the left
 
         camera.update();
-        game.spriteBatch.setProjectionMatrix(camera.combined); // Link spritBatch to camera
+        game.spriteBatch.setProjectionMatrix(camera.combined); // Link spriteBatch to camera
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
 
         game.spriteBatch.begin();
-        // IF CHARACTER IS ALIVE
-        if (!isDead) {
-            background.drawBackgroundSet(true, deltaTime);
-            background.drawGround(true, deltaTime);
+        if (startMode) {
+            camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
+            camera.zoom = 0.7f;
+            background.drawBackgroundSet(false, deltaTime);  // Draw first state of background
+            background.drawGround(false, deltaTime);  // Draw first state of ground
             drawTiles();
-            drawCoins();
-            drawRunOrJump();// Draw running or jumping animation depending on character state
+            drawLogoAnimation(logoAnimationTime, false);
+            drawIdleAnimation(); // Draw the character idle animation if in start mode
+        } else {
+            // Zoom out camera smoothly to the game mode zoom position in slow speed
+            smoothZoom(newZoomLevel, zoomSpeed, deltaTime);
+
+            // IF CHARACTER IS ALIVE
+            if (!isDead) {
+                background.drawBackgroundSet(true, deltaTime);
+                background.drawGround(true, deltaTime);
+                drawTiles();
+                drawCoins();
+
+                if (!logoAnimationFinished) {
+                    drawLogoAnimation(logoAnimationTime, true);
+                }
+                drawRunOrJump(); // Draw running or jumping animation depending on character state
 
             // IF CHARACTER IS DEAD
-        } else {
-            background.drawBackgroundSet(false, deltaTime);
-            background.drawGround(false, deltaTime);
-            drawTiles(); // Draw last state of the tiles
-            drawDeathAnimation();
+            } else {
+                smoothZoom(newZoomLevel, 0.5f, deltaTime);
+                background.drawBackgroundSet(false, deltaTime);  // Draw last state of background
+                background.drawGround(false, deltaTime);  // Draw last state of ground
+                drawTiles(); // Draw last state of the tiles
+                drawDeathAnimation();
 
-            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
-                resetGame();
+                if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
+                    resetGame();
+                }
             }
+
+            // Render score
+            BitmapFont font = new BitmapFont();
+            font.draw(game.spriteBatch, "Score: " + collectedCoins, 10, Gdx.graphics.getHeight() - 10);
         }
-
-        // Render score
-        BitmapFont font = new BitmapFont();
-        font.draw(game.spriteBatch, "Score: " + collectedCoins, 10, Gdx.graphics.getHeight() - 10);
-
         game.spriteBatch.end();
     }
 
@@ -221,20 +301,12 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
-        backgroundImage.dispose();
+        characterAtlas.dispose();
+        logoAtlas.dispose();
         tileAtlas.dispose();
-        disposeAnimationTextures(runAnimation);
-        disposeAnimationTextures(jumpAnimation);
-        disposeAnimationTextures(deathAnimation);
         coinTexture.dispose();
         font.dispose();
         gameOverSound.dispose();
-    }
-
-    private void disposeAnimationTextures(Texture[] textures){
-        for (Texture texture : textures) {
-            texture.dispose();
-        }
     }
 
     /** Prepares the initial tiles for rendering. */
@@ -265,7 +337,7 @@ public class PlayScreen implements Screen {
         if (verticalVelocity <= 0) {
 
             // Set position of rectangle representing the character
-            characterRectangle.setPosition(0, characterYPosition);
+            characterRectangle.setPosition(characterXPosition, characterYPosition);
 
             // Loop through all current tiles
             for (int i = 0; i < tileXPositions.size; i++) {
@@ -297,6 +369,7 @@ public class PlayScreen implements Screen {
         if (characterYPosition <= 0) {
             characterYPosition = 0;  // Set character position firmly to 0 to ensure it's not set beyond the floor
             isDead = true; // Change flag to initiate death animation
+            characterAnimationTime = 0; // Reset animation time so death animation starts at first animation frame
             verticalVelocity = 0; // Set velocity to 0 to stop character from falling
             isJumping = false; // Stop jumping animation instantly
 
@@ -386,6 +459,34 @@ public class PlayScreen implements Screen {
             game.spriteBatch.draw(tileRegion, tileXPositions.get(i), tileYPositions.get(i), tileWidth, tileHeight);
         }
     }
+    /** Draw idle animation for the start screen. */
+    private void drawIdleAnimation() {
+        TextureRegion atlasFrame;
+        atlasFrame = idleAnimation.getKeyFrame(characterAnimationTime, true); // Looping set to true
+
+        // Draw the current frame
+        game.spriteBatch.draw(atlasFrame, characterXPosition - characterWidth / 2f, characterYPosition, characterWidth, characterHeight);
+    }
+
+    /**
+     * Draws the main logo animation.
+     * @param logoAnimationTime State time of the animation.
+     * @param endAnimation Flag to control if logo animation should end.
+     */
+    public void drawLogoAnimation(float logoAnimationTime, boolean endAnimation) {
+        TextureRegion atlasFrame; // Will store the frame to be drawn
+
+        // When set to end, the animation is marked as finished when it has returned to the starting frame
+        if (endAnimation && logoAnimation.getKeyFrameIndex(logoAnimationTime) == 0) {
+            logoAnimationFinished = true;
+        }
+
+        // Get the current frame for the animation
+        atlasFrame = logoAnimation.getKeyFrame(logoAnimationTime, true);
+
+        // Draw the current frame
+        game.spriteBatch.draw(atlasFrame, Main.WORLD_WIDTH / 2f - 250, Main.WORLD_HEIGHT - 300, 500, 109);
+    }
 
     private void drawCoins(){
         for (Coin coin : coins) {
@@ -395,31 +496,98 @@ public class PlayScreen implements Screen {
 
     /** Draw run or jump animation depending on character state. */
     private void drawRunOrJump(){
-        Texture[] runOrJumpAnimation = isJumping ? jumpAnimation : runAnimation;
-        if (animationTime >= 0.1f) { // Update animation frame every 0.1 seconds
-            currentFrame = (currentFrame + 1) % runOrJumpAnimation.length;
-            animationTime = 0f; // Reset animation time
+        Animation<TextureRegion> runOrJumpAnimation = isJumping ? jumpingAnimation : runningAnimation;
+        TextureRegion runOrJumpFrame;
+
+        // Prepare jumping animation by entering normal animation mode and reset animationTime to 0
+        if (isJumping && runOrJumpAnimation.getPlayMode() != Animation.PlayMode.NORMAL) {
+            runOrJumpAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+            characterAnimationTime = 0;
+
+        // Prepare run animation by entering loop animation mode
+        } else if (!isJumping && runOrJumpAnimation.getPlayMode() != Animation.PlayMode.LOOP) {
+            runOrJumpAnimation.setPlayMode(Animation.PlayMode.LOOP);
         }
-        game.spriteBatch.draw(runOrJumpAnimation[currentFrame], 0, characterYPosition, characterWidth, characterHeight);
+
+        // Draw run or jump animation depending on character state
+        if (isJumping) {
+            runOrJumpFrame = runOrJumpAnimation.getKeyFrame(characterAnimationTime, false); // Looping off
+        }else {
+            runOrJumpFrame = runOrJumpAnimation.getKeyFrame(characterAnimationTime, true); // Looping on
+        }
+
+        // Draw the current frame
+        game.spriteBatch.draw(runOrJumpFrame, characterXPosition - characterWidth / 2f, characterYPosition, characterWidth, characterHeight);
     }
 
     /** Draw death animation of character. */
     private void drawDeathAnimation(){
-        // Draw death animation and end it at the last frame (frame 9)
-        if (animationTime >= 0.03f && currentDeathFrame < 9) { // Update animation frame every 0.03 seconds
-            currentDeathFrame++; // Set animation to next death frame
-            animationTime = 0f; // Reset animation time
-        }
-        game.spriteBatch.draw(deathAnimation[currentDeathFrame], 0, 0, characterWidth, characterHeight);
+        TextureRegion atlasFrame;
+        atlasFrame = deathAnimation.getKeyFrame(characterAnimationTime, false);
+        // Draw the current frame
+        game.spriteBatch.draw(atlasFrame, characterXPosition - characterWidth / 2f, characterYPosition, characterWidth, characterHeight);
     }
 
-    // Reset the game
+    /** Creates an animation from a TextureRegion array.
+     * @param textureRegions Array of TextureRegions that together will become the Animation object
+     * @param fileBaseName Base name of the Texture Regions
+     * @param frameDuration Adjusts how long each frame of the animation should be shown e.g. 1/30
+     */
+    private Animation<TextureRegion> createCharacterAnimation(TextureRegion[] textureRegions, String fileBaseName, float frameDuration){
+
+        int amountOfTextures = textureRegions.length;
+
+        // Save all TextureRegions in an array
+        for (int i = 0; i < amountOfTextures; i++) {
+            String frameName = String.format(fileBaseName + i);
+            textureRegions[i] = characterAtlas.findRegion(frameName);
+        }
+
+        // Create and return animation object
+        return new Animation<TextureRegion>(frameDuration, textureRegions);
+    }
+
+    /** Adjust the zoom of the camera to a given zoom position.
+     * @param newZoomLevel Target zoom level.
+     * @param zoomSpeed Speed of zoom. Set to a number between 0.01-1.0f.
+     */
+    private void smoothZoom(float newZoomLevel, float zoomSpeed, float deltaTime){
+
+        // Flags to determine zoom direction, both becomes to false when target zoom is reached
+        boolean zoomIn = newZoomLevel < camera.zoom;
+        boolean zoomOut = newZoomLevel > camera.zoom;
+
+        // ZOOM IN INCREMENTALLY TO GIVEN FINAL ZOOM POSITION
+        if (zoomIn) {
+            camera.zoom -= zoomSpeed * deltaTime; // Zoom in closer to target level
+
+            // Readjust zoom to target if it's set below target level
+            if (camera.zoom < newZoomLevel){
+                camera.zoom = newZoomLevel;
+            }
+
+            camera.update();
+        }
+
+        // ZOOM OUT INCREMENTALLY TO GIVEN FINAL ZOOM POSITION
+        if (zoomOut) {
+            camera.zoom += zoomSpeed * deltaTime; // Zoom out towards target level
+
+            // Readjust zoom to target if it's set above target level
+            if (camera.zoom > newZoomLevel){
+                camera.zoom = newZoomLevel;
+            }
+
+            camera.update();
+        }
+    }
+
+    /** Reset the game. */
     private void resetGame() {
         characterYPosition = 200f; // Reset characters y-position
         verticalVelocity = 0f; // Reset vertical speed
         isDead = false; // Set dead flag to false
         isJumping = false; // Set jumping flag to false
-        currentDeathFrame = 0; // Reset death animation frame
         tileXPositions.clear(); // Clear X-position of tiles
         tileYPositions.clear(); // Clear Y-position of tiles
         prepareInitialTiles(); // Create the starting tiles
@@ -427,15 +595,18 @@ public class PlayScreen implements Screen {
         coins.clear(); // Clear coin objects from array
         isGameOverSoundPlayed = false; // Reset sound play flag
     }
-    // draw pause on screen when p is pressed and return to normal once pressed again
-    private void drawPausedScreen() {
+
+    /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
+    private void drawPausedScreen(float deltaTime) {
         game.spriteBatch.begin();
-        // draw darkened background
+
+        // Draw darkened background
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
         game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // Set opacity to 70%
-        game.spriteBatch.draw(backgroundImage, 0, 0, Main.WORLD_WIDTH, Main.WORLD_HEIGHT); // Draw background with 70% opacity
+        background.drawBackgroundSet(false, deltaTime);
         game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
-        // Print paused on screen
+
+        // Print "Paused" on screen
         font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 50, Main.WORLD_HEIGHT / 2f);
         game.spriteBatch.end();
     }
