@@ -118,9 +118,9 @@ public class PlayScreen implements Screen {
         characterAtlas = new TextureAtlas(Gdx.files.internal("atlas/character.atlas"));
         coinAtlas = new TextureAtlas(Gdx.files.internal("atlas/coin.atlas"));
 
-        // Create coin animation
-        coinAnimation = createAnimation(coinAtlas, coinTextureRegions, "coin", 1/10f);
-        coinAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        // Create main logo animation
+        logoAnimation = createAnimation(logoAtlas, logoTextureRegions, "main_logo", 1/30f);
+        logoAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
 
         // Create idle animation
         idleAnimation = createAnimation(characterAtlas, idleTextureRegions, "Idle", 1/10f);
@@ -134,16 +134,9 @@ public class PlayScreen implements Screen {
         // Create death animation
         deathAnimation = createAnimation(characterAtlas, deadTextureRegions, "Dead", 1/25f);
 
-        // Create main logo animation
-        for (int i = 0; i < logoTextureRegions.length; i++) {
-            String frameName = String.format("main_logo" + i);
-            logoTextureRegions[i] = logoAtlas.findRegion(frameName);
-        }
-
-        // Create the animation game logo object
-        float frameDuration = 1/30f;
-        logoAnimation = new Animation<TextureRegion>(frameDuration, logoTextureRegions);
-        logoAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+        // Create coin animation
+        coinAnimation = createAnimation(coinAtlas, coinTextureRegions, "coin", 1/10f);
+        coinAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         // Creating bitmap font object
         font = new BitmapFont();
