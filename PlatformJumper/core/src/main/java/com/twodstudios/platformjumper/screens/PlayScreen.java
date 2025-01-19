@@ -583,7 +583,7 @@ public class PlayScreen implements Screen {
     }
 
     /** Creates an animation from a TextureRegion array.
-     * @param atlas Texture Atlas containing the assets needed for the animation.
+     * @param atlas TextureAtlas containing the assets needed for the animation.
      * @param textureRegions Empty array of TextureRegions that together will become the Animation object.
      * @param fileBaseName Base name of the TextureRegions.
      * @param frameDuration Adjusts how long each frame of the animation should be shown e.g. 1/30.
