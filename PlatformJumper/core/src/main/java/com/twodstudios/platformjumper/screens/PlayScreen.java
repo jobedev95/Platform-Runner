@@ -14,14 +14,12 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.twodstudios.platformjumper.Background;
-import com.twodstudios.platformjumper.Coin;
-import com.twodstudios.platformjumper.Main;
+import com.twodstudios.platformjumper.*;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
-public class PlayScreen implements Screen {
+public class PlayScreen implements Screen, HudListener {
 
     private Main game;
     private Hud hud;
