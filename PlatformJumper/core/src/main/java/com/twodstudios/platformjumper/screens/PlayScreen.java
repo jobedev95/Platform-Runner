@@ -642,6 +642,7 @@ public class PlayScreen implements Screen, HudListener {
         tileYPositions.clear(); // Clear Y-position of tiles
         prepareInitialTiles(); // Create the starting tiles
         collectedCoins = 0; // Reset score
+        hud.setScore(collectedCoins); // Reset score in HUD
         coins.clear(); // Clear coin objects from array
         isGameOverSoundPlayed = false; // Reset sound play flag
         startMode = true; // Set flag to show start mode again
