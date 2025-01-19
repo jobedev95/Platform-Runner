@@ -58,10 +58,11 @@ public class PlayScreen implements Screen {
     private Array<Float> tileXPositions;  // Dynamic array for x-coordinates of tiles
     private Array<Float> tileYPositions;  // Dynamic array for y-coordinates of tiles
     private float minTileDistance = 300; // Minimum horizontal distance between each tile
-    private float maxTileDistance = 630; // Maximum horizontal distance between each tile
+    private float maxTileDistance = 600; // Maximum horizontal distance between each tile
     private float minVerticalDistance = 130;  // Minimum vertical distance (height difference) between each tile
-    private float maxVerticalDistance = 200;   // Maximum vertical distance (height difference) between each tile
+    private float maxVerticalDistance = 170;   // Maximum vertical distance (height difference) between each tile
     private float maxTileHeight; // Maximum y-coordinate for any tile
+    private float minTileHeight = 64;
 
     // Collision variables
     private Rectangle characterRectangle;
@@ -137,6 +138,14 @@ public class PlayScreen implements Screen {
         // Creating bitmap font object
         font = new BitmapFont();
 
+        // Initialise character variables
+        characterWidth = 120;
+        characterHeight = 150;
+        characterXPosition = Main.WORLD_WIDTH / 2; // Initial x-position of the character
+        characterYPosition = 135f; // Initial y-position of the character
+        isDead = false;
+        isJumping = false;
+
         // Camera and Viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
@@ -161,14 +170,6 @@ public class PlayScreen implements Screen {
         logoAnimationTime = 0f;
         characterAnimationTime = 0f;
 
-        // Initialise character variables
-        characterWidth = 120;
-        characterHeight = 150;
-        characterXPosition = viewport.getWorldWidth() / 2;
-        characterYPosition = 135f; // Initial y-position of the character
-        isDead = false;
-        isJumping = false;
-
         // Set maximum height placement of tiles
         maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
 
@@ -180,7 +181,7 @@ public class PlayScreen implements Screen {
         prepareInitialTiles(); // Preparing the first 15 tiles to be rendered
 
         // COLLISION RECTANGLES (for collision checks)
-        characterRectangle = new Rectangle(characterXPosition, characterYPosition, characterWidth, characterHeight);
+        characterRectangle = new Rectangle(characterXPosition - characterWidth / 2f, characterYPosition, characterWidth * 0.8f, characterHeight);
         tileRectangle = new Rectangle(0, 100, tileWidth, tileHeight);
     }
 
@@ -333,11 +334,11 @@ public class PlayScreen implements Screen {
      * the jumping animation. It will also initiate the death animation if the bottom has been reached. */
     private void checkCollision() {
 
+        // Set position of rectangle representing the character
+        characterRectangle.setPosition(characterXPosition - characterWidth / 2f, characterYPosition);
+
         // If character is going down check for potential tile collision
         if (verticalVelocity <= 0) {
-
-            // Set position of rectangle representing the character
-            characterRectangle.setPosition(characterXPosition, characterYPosition);
 
             // Loop through all current tiles
             for (int i = 0; i < tileXPositions.size; i++) {
@@ -348,7 +349,7 @@ public class PlayScreen implements Screen {
                 tileRectangle.setPosition(tileX, tileY);
 
                 // Checks if the character overlaps with any tile that is under the character
-                if (characterRectangle.overlaps(tileRectangle) && characterRectangle.y >= tileRectangle.y) {
+                if (characterRectangle.overlaps(tileRectangle) && characterRectangle.y >= tileRectangle.y + (tileHeight * 0.6)) {
                     characterYPosition = tileY + tileHeight; // Put character on top of the tile
                     isJumping = false; // Flag to stop the jumping animation
                     verticalVelocity = 0; // Set velocity to 0 to stop character from falling
@@ -397,7 +398,7 @@ public class PlayScreen implements Screen {
             float newXPosition = lastTileXPosition + randomDistance;
 
             // Set new y-position within allowed vertical limits
-            float newYPosition = getNewTileHeight(maxTileHeight, lastTileYPosition);
+            float newYPosition = getNewTileHeight(minTileHeight, maxTileHeight, lastTileYPosition);
 
             // Add latest tile X- and Y-coordinates to their respective array
             tileXPositions.add(newXPosition);
@@ -408,7 +409,6 @@ public class PlayScreen implements Screen {
                 float coinX = newXPosition + tileWidth / 2f - 25;
                 float coinY = newYPosition + tileHeight + characterHeight / 2f;
                 coins.add(new Coin(coinX, coinY));
-                System.out.println("Coin spawned att: " + coinX + ", " + coinY);
             }
 
 
@@ -424,13 +424,17 @@ public class PlayScreen implements Screen {
     }
 
     /** Generates a new y-position that is within the given vertical limits for a tile.*/
-    private float getNewTileHeight(float maxTileHeight, float lastTileYPosition) {
+    private float getNewTileHeight(float minTileHeight, float maxTileHeight, float lastTileYPosition) {
 
         float randomY;
         float verticalDistance;
+        float heightRange = maxTileHeight - minTileHeight; // Total height range
         do {
-            randomY = random.nextFloat() * maxTileHeight; // Generate a random float between 0.0 and maxTileHeight
-            verticalDistance = abs(randomY - lastTileYPosition); // Get the absolute difference of distance from the last tile
+            // Generate a random float between minTileHeight and heightRange
+            randomY = minTileHeight + random.nextFloat() * heightRange;
+
+            // Calculate the absolute vertical distance between the randomY and the last tile positions
+            verticalDistance = abs(randomY - lastTileYPosition);
         }
         // Loop until the vertical distance is within the specified range
         while (verticalDistance < minVerticalDistance || verticalDistance > maxVerticalDistance);
@@ -594,6 +598,9 @@ public class PlayScreen implements Screen {
         collectedCoins = 0; // Reset score
         coins.clear(); // Clear coin objects from array
         isGameOverSoundPlayed = false; // Reset sound play flag
+        startMode = true; // Set flag to show start mode again
+        characterYPosition = 135f; // Reset character x position
+        logoAnimationTime = 0; // Reset logo animation
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
@@ -607,7 +614,7 @@ public class PlayScreen implements Screen {
         game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
 
         // Print "Paused" on screen
-        font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 50, Main.WORLD_HEIGHT / 2f);
+        font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 25, Main.WORLD_HEIGHT / 2f);
         game.spriteBatch.end();
     }
 }
