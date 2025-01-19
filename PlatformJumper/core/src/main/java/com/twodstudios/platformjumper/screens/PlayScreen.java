@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -18,76 +17,25 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.Background;
 import com.twodstudios.platformjumper.Coin;
 import com.twodstudios.platformjumper.Main;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
 public class PlayScreen implements Screen {
+
     private Main game;
 
-    // Textures
-    private TextureAtlas tileAtlas;
-    private TextureRegion tileRegion = new TextureRegion();
-
-    // Variables for Coins and coin tracker
-    private Texture coinTexture; // Coin Texture
-    private Array<Coin> coins; // Array to hold coin objects
-    private int collectedCoins; // CoinTracker
-    private BitmapFont font;
-
     // Character variables
-    private float characterXPosition;
-    private float characterYPosition;  // Y-position of the character
-    private float characterAnimationTime; // Time since start of animation
-    private float verticalVelocity = 0f; // Speed of which character moves up or down
     private int characterWidth;
     private int characterHeight;
+    private float characterXPosition;
+    private float characterYPosition;
+    private float characterAnimationTime; // Time since start of animation
+    private float verticalVelocity = 0f; // Speed of which character moves up or down
     private boolean isJumping; // Flag to check if the character is jumping
     private boolean isDead; // Flag to check if the character is dead
 
-    // Tile variables
-    private int tileWidth;
-    private int tileHeight;
-
-    // Background variables
-    private Background background;
-    private float backgroundSpeed = 300f; // Background movement speed
-    private Sound gameOverSound; // Sound effect for game over
-    private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
-
-    // Tile variables
-    private Array<Float> tileXPositions;  // Dynamic array for x-coordinates of tiles
-    private Array<Float> tileYPositions;  // Dynamic array for y-coordinates of tiles
-    private float minTileDistance = 300; // Minimum horizontal distance between each tile
-    private float maxTileDistance = 600; // Maximum horizontal distance between each tile
-    private float minVerticalDistance = 130;  // Minimum vertical distance (height difference) between each tile
-    private float maxVerticalDistance = 170;   // Maximum vertical distance (height difference) between each tile
-    private float maxTileHeight; // Maximum y-coordinate for any tile
-    private float minTileHeight = 64;
-
-    // Collision variables
-    private Rectangle characterRectangle;
-    private Rectangle tileRectangle;
-
-    // Camera and Viewport
-    private OrthographicCamera camera;
-    private Viewport viewport;
-
-    // Start Mode logic
-    private boolean startMode = true; // Flag to initiate the start screen
-    private boolean zoomingOut = false; // Flag
-    private float initialCameraZoom = 1.0f; // Initial zoom for camera in start mode
-    private float newZoomLevel = 1f; // Game Mode zoom level
-    private float zoomSpeed = 0.05f; // Camera zoom speed
-
-    // Logo Atlas & Texture Regions
-    private TextureAtlas logoAtlas;
-    private TextureRegion[] logoTextureRegions = new TextureRegion[66];
-    private Animation<TextureRegion> logoAnimation;
-    private float logoAnimationTime; // Time since start of logo animation
-    private boolean logoAnimationFinished;
-
-
-    // Character Atlas, Texture Regions & Animation Objects
+    // Character Texture Atlas, Texture Regions & Animation Objects
     private TextureAtlas characterAtlas; // Atlas with all character animation frames
     private TextureRegion[] idleTextureRegions = new TextureRegion[10];
     private TextureRegion[] runningTextureRegions = new TextureRegion[10];
@@ -98,42 +46,97 @@ public class PlayScreen implements Screen {
     private Animation<TextureRegion> jumpingAnimation;
     private Animation<TextureRegion> deathAnimation;
 
+    // Variables for Coins and coin tracker
+    private int coinWidth;
+    private int coinHeight;
+    private TextureAtlas coinAtlas;
+    private TextureRegion[] coinTextureRegions = new TextureRegion[10];
+    private Animation<TextureRegion> coinAnimation;
+    private Array<Coin> coins; // Array to hold coin objects
+    private int collectedCoins; // CoinTracker
+    private float coinAnimationTime;
+    private BitmapFont font;
+
+    // Main logo variables
+    private TextureAtlas logoAtlas;
+    private TextureRegion[] logoTextureRegions = new TextureRegion[66];
+    private Animation<TextureRegion> logoAnimation;
+    private float logoAnimationTime; // Time since start of logo animation
+    private boolean logoAnimationFinished;
+
+    // Background variables
+    private Background background;
+    private float backgroundSpeed = 300f; // Background movement speed
+    private Sound gameOverSound; // Sound effect for game over
+    private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
+
+    // Tile variables
+    private TextureAtlas tileAtlas;
+    private TextureRegion tileRegion = new TextureRegion();
+    private Array<Float> tileXPositions;  // Dynamic array for x-coordinates of tiles
+    private Array<Float> tileYPositions;  // Dynamic array for y-coordinates of tiles
+    private float minTileDistance = 300; // Minimum horizontal distance between each tile
+    private float maxTileDistance = 600; // Maximum horizontal distance between each tile
+    private float minVerticalDistance = 130;  // Minimum vertical distance (height difference) between each tile
+    private float maxVerticalDistance = 170;   // Maximum vertical distance (height difference) between each tile
+    private float maxTileHeight; // Maximum y-coordinate for any tile
+    private float minTileHeight = 64;
+    private int tileWidth;
+    private int tileHeight;
+
+    // Collision variables
+    private Rectangle characterRectangle;
+    private Rectangle tileRectangle;
+
+    // Camera and Viewport
+    private OrthographicCamera camera;
+    private Viewport viewport;
+
+    // Start Mode variables
+    private boolean startMode = true; // Flag to initiate the start screen
+    private float initialCameraZoom = 5.0f; // Initial zoom for camera in start mode
+    private float newZoomLevel = 1f; // Game Mode zoom level
+    private float zoomSpeed = 0.05f; // Camera zoom speed
+
+    // Pause state
+    private boolean paused = false;
+
+    // Particle effects
+    private ParticleEffect sparklesParticleEffect;
+    private ParticleEffect lavaExplosionParticleEffect;
+
     // Constructor
     public PlayScreen(Main game){
         this.game = game;
     }
-    // Pause state
-    private boolean paused = false;
 
     @Override
     public void show() {
 
-        // Texture Atlas
+        // Load all texture Atlases
         logoAtlas = new TextureAtlas(Gdx.files.internal("atlas/main_logo.atlas"));
         characterAtlas = new TextureAtlas(Gdx.files.internal("atlas/character.atlas"));
-
-        // Create idle animation
-        idleAnimation = createCharacterAnimation(idleTextureRegions, "Idle__00", 1/10f);
-
-        // Create running animation
-        runningAnimation = createCharacterAnimation(runningTextureRegions, "Run__00", 1/10f);
-
-        // Create jumping animation
-        jumpingAnimation = createCharacterAnimation(jumpingTextureRegions, "Jump__00", 1/10f);
-
-        // Create death animation
-        deathAnimation = createCharacterAnimation(deadTextureRegions, "Dead__00", 1/25f);
+        coinAtlas = new TextureAtlas(Gdx.files.internal("atlas/coin.atlas"));
 
         // Create main logo animation
-        for (int i = 0; i < logoTextureRegions.length; i++) {
-            String frameName = String.format("main_logo" + i);
-            logoTextureRegions[i] = logoAtlas.findRegion(frameName);
-        }
-
-        // Create the animation game logo object
-        float frameDuration = 1/30f;
-        logoAnimation = new Animation<TextureRegion>(frameDuration, logoTextureRegions);
+        logoAnimation = createAnimation(logoAtlas, logoTextureRegions, "main_logo", 1/30f);
         logoAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
+
+        // Create idle animation
+        idleAnimation = createAnimation(characterAtlas, idleTextureRegions, "Idle", 1/10f);
+
+        // Create running animation
+        runningAnimation = createAnimation(characterAtlas, runningTextureRegions, "Run", 1/10f);
+
+        // Create jumping animation
+        jumpingAnimation = createAnimation(characterAtlas, jumpingTextureRegions, "Jump", 1/10f);
+
+        // Create death animation
+        deathAnimation = createAnimation(characterAtlas, deadTextureRegions, "Dead", 1/25f);
+
+        // Create coin animation
+        coinAnimation = createAnimation(coinAtlas, coinTextureRegions, "coin", 1/10f);
+        coinAnimation.setPlayMode(Animation.PlayMode.LOOP);
 
         // Creating bitmap font object
         font = new BitmapFont();
@@ -159,9 +162,10 @@ public class PlayScreen implements Screen {
         tileRegion = tileAtlas.findRegion("tile_01");
 
         // Coin variables
-        coinTexture = new Texture("coin.png");
         coins = new Array<>();
         collectedCoins = 0;
+        coinWidth = 60;
+        coinHeight = 60;
 
         // Loading game over sound
         gameOverSound = Gdx.audio.newSound(Gdx.files.internal("losetrumpet.wav"));
@@ -169,6 +173,7 @@ public class PlayScreen implements Screen {
         // Initialise animation time for logo and character
         logoAnimationTime = 0f;
         characterAnimationTime = 0f;
+        coinAnimationTime = 0f;
 
         // Set maximum height placement of tiles
         maxTileHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
@@ -179,6 +184,24 @@ public class PlayScreen implements Screen {
         tileXPositions = new Array<>(); // Array to hold x-positions of all tiles to be drawn
         tileYPositions = new Array<>(); // Array to hold y-positions of all tiles to be drawn
         prepareInitialTiles(); // Preparing the first 15 tiles to be rendered
+
+        // PARTICLE EFFECTS
+        // Fire sparkles effect
+        sparklesParticleEffect = new ParticleEffect();
+        sparklesParticleEffect.load(Gdx.files.internal("effects/lava_sparkles.p"), Gdx.files.internal("effects"));
+        sparklesParticleEffect.setPosition(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() - 150);
+        ParticleEmitter sparklesEmitter =  sparklesParticleEffect.getEmitters().first();
+        sparklesEmitter.setPosition(Gdx.graphics.getWidth() / 2f,120);
+        sparklesEmitter.getVelocity().setHigh(100, 200);
+        sparklesEmitter.getWind().setHigh(-100, -400);
+        sparklesParticleEffect.scaleEffect(1.2f);
+
+        // Lava explosion effect
+        lavaExplosionParticleEffect = new ParticleEffect();
+        lavaExplosionParticleEffect.load(Gdx.files.internal("effects/lava_explosion.p"), Gdx.files.internal("effects"));
+        lavaExplosionParticleEffect.setPosition(0, 0);
+        ParticleEmitter lavaExplosionEmitter = lavaExplosionParticleEffect.getEmitters().first();
+        lavaExplosionParticleEffect.scaleEffect(2f);
 
         // COLLISION RECTANGLES (for collision checks)
         characterRectangle = new Rectangle(characterXPosition - characterWidth / 2f, characterYPosition, characterWidth * 0.8f, characterHeight);
@@ -200,13 +223,14 @@ public class PlayScreen implements Screen {
             return;
         }
 
-        characterAnimationTime += deltaTime; // Update animation time
+        // Update animation times
+        characterAnimationTime += deltaTime;
         logoAnimationTime += deltaTime;
+        coinAnimationTime += deltaTime;
 
         // Exits start mode when Enter is pressed
         if (startMode && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startMode = false;
-            zoomingOut = true;
         }
 
         if (!startMode && !isDead) {
@@ -242,6 +266,7 @@ public class PlayScreen implements Screen {
             drawTiles();
             drawLogoAnimation(logoAnimationTime, false);
             drawIdleAnimation(); // Draw the character idle animation if in start mode
+            sparklesParticleEffect.draw(game.spriteBatch, delta); // Draw continous particle effect
         } else {
             // Zoom out camera smoothly to the game mode zoom position in slow speed
             smoothZoom(newZoomLevel, zoomSpeed, deltaTime);
@@ -258,6 +283,8 @@ public class PlayScreen implements Screen {
                 }
                 drawRunOrJump(); // Draw running or jumping animation depending on character state
 
+                sparklesParticleEffect.draw(game.spriteBatch, delta); // Draw continous sparkles particle effect
+
             // IF CHARACTER IS DEAD
             } else {
                 smoothZoom(newZoomLevel, 0.5f, deltaTime);
@@ -265,6 +292,7 @@ public class PlayScreen implements Screen {
                 background.drawGround(false, deltaTime);  // Draw last state of ground
                 drawTiles(); // Draw last state of the tiles
                 drawDeathAnimation();
+                lavaExplosionParticleEffect.draw(game.spriteBatch, delta); // Draw lava explosion effect
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
                     resetGame();
@@ -305,7 +333,6 @@ public class PlayScreen implements Screen {
         characterAtlas.dispose();
         logoAtlas.dispose();
         tileAtlas.dispose();
-        coinTexture.dispose();
         font.dispose();
         gameOverSound.dispose();
     }
@@ -379,6 +406,10 @@ public class PlayScreen implements Screen {
                 gameOverSound.play(); // Play game over sound
                 isGameOverSoundPlayed = true; // Mark that sound has been played
             }
+
+            // Set position of lava explosion and start the effect
+            lavaExplosionParticleEffect.setPosition(characterXPosition - characterWidth / 5, background.getGroundHeight() / 2);
+            lavaExplosionParticleEffect.start();
         }
     }
 
@@ -406,8 +437,8 @@ public class PlayScreen implements Screen {
 
             // 30% chance of spawning coin on new tile
             if (random.nextFloat() < 0.3f) {
-                float coinX = newXPosition + tileWidth / 2f - 25;
-                float coinY = newYPosition + tileHeight + characterHeight / 2f;
+                float coinX = newXPosition + (tileWidth / 2f) - (coinWidth / 2f);
+                float coinY = newYPosition + characterHeight / 2f;
                 coins.add(new Coin(coinX, coinY));
             }
 
@@ -494,8 +525,20 @@ public class PlayScreen implements Screen {
 
     private void drawCoins(){
         for (Coin coin : coins) {
-            game.spriteBatch.draw(coinTexture, coin.getX(), coin.getY(), 50, 50);
+            drawCoinAnimation(coin);
         }
+    }
+
+    /**
+     * Draw coin animation.
+     * @param coin Coin object to be drawn.
+     */
+    private void drawCoinAnimation(Coin coin) {
+        TextureRegion atlasFrame;
+        atlasFrame = coinAnimation.getKeyFrame(coinAnimationTime, true); // Looping set to true
+
+        // Draw the current frame
+        game.spriteBatch.draw(atlasFrame, coin.getX(), coin.getY(), coinWidth, coinHeight);
     }
 
     /** Draw run or jump animation depending on character state. */
@@ -533,18 +576,19 @@ public class PlayScreen implements Screen {
     }
 
     /** Creates an animation from a TextureRegion array.
-     * @param textureRegions Array of TextureRegions that together will become the Animation object
-     * @param fileBaseName Base name of the Texture Regions
-     * @param frameDuration Adjusts how long each frame of the animation should be shown e.g. 1/30
+     * @param atlas TextureAtlas containing the assets needed for the animation.
+     * @param textureRegions Empty array of TextureRegions that together will become the Animation object.
+     * @param fileBaseName Base name of the TextureRegions.
+     * @param frameDuration Adjusts how long each frame of the animation should be shown e.g. 1/30.
      */
-    private Animation<TextureRegion> createCharacterAnimation(TextureRegion[] textureRegions, String fileBaseName, float frameDuration){
+    private Animation<TextureRegion> createAnimation(TextureAtlas atlas, TextureRegion[] textureRegions, String fileBaseName, float frameDuration){
 
         int amountOfTextures = textureRegions.length;
 
         // Save all TextureRegions in an array
         for (int i = 0; i < amountOfTextures; i++) {
-            String frameName = String.format(fileBaseName + i);
-            textureRegions[i] = characterAtlas.findRegion(frameName);
+            String frameName = fileBaseName + i;
+            textureRegions[i] = atlas.findRegion(frameName);
         }
 
         // Create and return animation object
@@ -601,6 +645,7 @@ public class PlayScreen implements Screen {
         startMode = true; // Set flag to show start mode again
         characterYPosition = 135f; // Reset character x position
         logoAnimationTime = 0; // Reset logo animation
+        lavaExplosionParticleEffect.reset(); // Reset particle effect
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
@@ -618,4 +663,3 @@ public class PlayScreen implements Screen {
         game.spriteBatch.end();
     }
 }
-
