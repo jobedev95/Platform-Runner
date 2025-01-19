@@ -583,24 +583,20 @@ public class PlayScreen implements Screen {
     }
 
     /** Creates an animation from a TextureRegion array.
-     * @param textureRegions Array of TextureRegions that together will become the Animation object
-     * @param fileBaseName Base name of the Texture Regions
-     * @param frameDuration Adjusts how long each frame of the animation should be shown e.g. 1/30
+     * @param atlas Texture Atlas containing the assets needed for the animation.
+     * @param textureRegions Empty array of TextureRegions that together will become the Animation object.
+     * @param fileBaseName Base name of the TextureRegions.
+     * @param frameDuration Adjusts how long each frame of the animation should be shown e.g. 1/30.
      */
     private Animation<TextureRegion> createAnimation(TextureAtlas atlas, TextureRegion[] textureRegions, String fileBaseName, float frameDuration){
 
         int amountOfTextures = textureRegions.length;
-        System.out.println("Amount of textures: " + amountOfTextures);
 
         // Save all TextureRegions in an array
         for (int i = 0; i < amountOfTextures; i++) {
-            System.out.println("i: " + i);
             String frameName = fileBaseName + i;
-            System.out.println(frameName);
             textureRegions[i] = atlas.findRegion(frameName);
         }
-
-        System.out.println(textureRegions[4]);
 
         // Create and return animation object
         return new Animation<TextureRegion>(frameDuration, textureRegions);
