@@ -15,14 +15,14 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.twodstudios.platformjumper.Background;
-import com.twodstudios.platformjumper.Coin;
-import com.twodstudios.platformjumper.Main;
+import com.twodstudios.platformjumper.*;
+
 import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
-public class PlayScreen implements Screen {
+public class PlayScreen implements Screen, HudListener {
     private Main game;
+    private Hud hud;
 
     // Textures
     private TextureAtlas tileAtlas;
@@ -100,7 +100,9 @@ public class PlayScreen implements Screen {
 
     // Constructor
     public PlayScreen(Main game){
+
         this.game = game;
+        this.hud = new Hud(this);
     }
     // Pause state
     private boolean paused = false;
@@ -271,16 +273,16 @@ public class PlayScreen implements Screen {
                 }
             }
 
-            // Render score
-            BitmapFont font = new BitmapFont();
-            font.draw(game.spriteBatch, "Score: " + collectedCoins, 10, Gdx.graphics.getHeight() - 10);
         }
         game.spriteBatch.end();
+
+        hud.render();
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true); // Adapt viewport after window size
+        hud.resize(width, height);
         camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
         camera.update();
     }
@@ -362,6 +364,7 @@ public class PlayScreen implements Screen {
                 if (characterRectangle.overlaps(coin.getRectangle())) {
                     coins.removeIndex(i);
                     collectedCoins++;
+                    hud.setScore(collectedCoins);
                     break;
                 }
             }
@@ -601,6 +604,10 @@ public class PlayScreen implements Screen {
         startMode = true; // Set flag to show start mode again
         characterYPosition = 135f; // Reset character x position
         logoAnimationTime = 0; // Reset logo animation
+    }
+
+    public void pauseGame(){
+        paused = true;
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
