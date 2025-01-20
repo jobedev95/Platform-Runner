@@ -303,7 +303,7 @@ public class PlayScreen implements Screen, HudListener {
         }
         game.spriteBatch.end();
 
-        hud.render();
+        hud.render(deltaTime);
     }
 
     @Override

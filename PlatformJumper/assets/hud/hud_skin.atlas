@@ -28,7 +28,7 @@ pause_button_up
   orig: 229, 227
   offset: 0, 0
   index: -1
-honk
+bagel
   rotate: false
   xy: 1, 459
   size: 512, 512

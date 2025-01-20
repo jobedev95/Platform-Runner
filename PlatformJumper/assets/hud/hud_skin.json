@@ -1,9 +1,9 @@
 {
 "com.badlogic.gdx.graphics.g2d.BitmapFont": {
-	"honk": {
-		"file": "honk.fnt",
-		"scaledSize": 30,
-		"markupEnabled": false,
+	"bagel": {
+		"file": "bagel.fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
 		"flip": false
 	}
 },
@@ -24,7 +24,7 @@
 },
 "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
 	"default": {
-		"font": "honk",
+		"font": "bagel",
 		"fontColor": "white"
 	}
 },
