@@ -78,6 +78,8 @@ public class PlayScreen implements Screen {
         camera.update();
 
         background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
+        // play background music
+        soundManager.backgroundMusic();
     }
 
     @Override
@@ -104,7 +106,6 @@ public class PlayScreen implements Screen {
         // Exits start mode when Enter is pressed
         if (startMode && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startMode = false;
-            soundManager.backgroundMusic();
         }
 
         if (!startMode && !player.isDead()) {
@@ -197,7 +198,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void hide() {
-
+        soundManager.stopBackgroundMusic();
     }
 
     @Override
