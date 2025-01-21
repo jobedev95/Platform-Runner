@@ -36,6 +36,8 @@ public class ScoreManager implements ScoreUpdater{
             System.out.println("Loaded high scores from file: " + highScoreObject.highScores);
         } else {
             System.out.println("File not found.");
+            highScoreObject = new HighScores();
+            highScoreObject.highScores = new Array<>(); // Initialize the array to avoid null references
         }
     }
 
@@ -52,7 +54,7 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     /**
-     * may be used in the future, to populate the score board 
+     * may be used in the future, to populate the score board
      * @param highScoreObject
      * @return
      */
@@ -84,7 +86,12 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     public boolean checkIfHighScore(int score){
-        return score > highScoreObject.highScores.peek().score;
+        if (!highScoreObject.highScores.isEmpty()){
+            return score > highScoreObject.highScores.peek().score;
+        } else {
+            return true;
+        }
+
     }
 
     public boolean validateName(String name){
