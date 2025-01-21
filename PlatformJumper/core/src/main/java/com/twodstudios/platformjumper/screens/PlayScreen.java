@@ -194,8 +194,9 @@ public class PlayScreen implements Screen, HudListener {
         if (startMode){
             stage.act();
             stage.draw();
+        }else {
+            hud.render(deltaTime);
         }
-        hud.render(deltaTime);
     }
 
     @Override
