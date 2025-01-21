@@ -24,7 +24,7 @@ public class SoundManager {
      */
     private void setupSoundManager(){
         // Loading gameover sound && Background/Menu music
-        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("sounds/losetrumpet.wav"));
+        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("sounds/gameOver.wav"));
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/backgroundMusic.ogg"));
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.ogg"));
         coinPickupSound = Gdx.audio.newSound(Gdx.files.internal("sounds/coinPickup.wav"));
