@@ -1,0 +1,141 @@
+
+buttons.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+Back_button
+  rotate: false
+  xy: 1, 313
+  size: 300, 80
+  split: 0, 0, 0, 0
+  pad: 6, 0, 6, 6
+  orig: 300, 80
+  offset: 0, 0
+  index: -1
+Back_buttondown
+  rotate: false
+  xy: 1, 23
+  size: 210, 56
+  split: 0, 0, 0, 0
+  pad: 5, 0, 5, 5
+  orig: 210, 56
+  offset: 0, 0
+  index: -1
+Back_buttonhover
+  rotate: false
+  xy: 380, 921
+  size: 328, 87
+  split: 0, 0, 0, 0
+  pad: 7, 0, 7, 7
+  orig: 328, 87
+  offset: 0, 0
+  index: -1
+Highscore_button
+  rotate: false
+  xy: 1, 559
+  size: 300, 80
+  split: 0, 0, 0, 0
+  pad: 6, 0, 6, 6
+  orig: 300, 80
+  offset: 0, 0
+  index: -1
+Highscore_buttonDown
+  rotate: false
+  xy: 1, 197
+  size: 210, 56
+  split: 0, 0, 0, 0
+  pad: 5, 0, 5, 5
+  orig: 210, 56
+  offset: 0, 0
+  index: -1
+Highscore_buttonHover
+  rotate: false
+  xy: 1, 730
+  size: 328, 87
+  split: 0, 0, 0, 0
+  pad: 7, 0, 7, 7
+  orig: 328, 87
+  offset: 0, 0
+  index: -1
+Play_button
+  rotate: false
+  xy: 710, 928
+  size: 300, 80
+  split: 0, 0, 0, 0
+  pad: 6, 0, 6, 6
+  orig: 300, 80
+  offset: 0, 0
+  index: -1
+Play_buttonDown
+  rotate: false
+  xy: 1, 255
+  size: 210, 56
+  split: 0, 0, 0, 0
+  pad: 4, 0, 4, 4
+  orig: 210, 56
+  offset: 0, 0
+  index: -1
+Play_buttonHover
+  rotate: false
+  xy: 1, 908
+  size: 377, 100
+  split: 0, 0, 0, 0
+  pad: 6, 0, 6, 6
+  orig: 377, 100
+  offset: 0, 0
+  index: -1
+Quit_button
+  rotate: false
+  xy: 1, 477
+  size: 300, 80
+  split: 0, 0, 0, 0
+  pad: 6, 0, 6, 6
+  orig: 300, 80
+  offset: 0, 0
+  index: -1
+Quit_buttonDown
+  rotate: false
+  xy: 1, 139
+  size: 210, 56
+  split: 0, 0, 0, 0
+  pad: 5, 0, 5, 5
+  orig: 210, 56
+  offset: 0, 0
+  index: -1
+Quit_buttonHover
+  rotate: false
+  xy: 1, 641
+  size: 328, 87
+  split: 0, 0, 0, 0
+  pad: 7, 0, 7, 7
+  orig: 328, 87
+  offset: 0, 0
+  index: -1
+resume_button
+  rotate: false
+  xy: 1, 395
+  size: 300, 80
+  split: 0, 0, 0, 0
+  pad: 6, 0, 6, 6
+  orig: 300, 80
+  offset: 0, 0
+  index: -1
+resume_buttondown
+  rotate: false
+  xy: 1, 81
+  size: 210, 56
+  split: 0, 0, 0, 0
+  pad: 5, 0, 5, 5
+  orig: 210, 56
+  offset: 0, 0
+  index: -1
+resume_buttonhover
+  rotate: false
+  xy: 1, 819
+  size: 328, 87
+  split: 0, 0, 0, 0
+  pad: 7, 0, 7, 7
+  orig: 328, 87
+  offset: 0, 0
+  index: -1
