@@ -1,13 +1,13 @@
 Sparks
 - Delay -
 active: false
-- Duration - 
+- Duration -
 lowMin: 1000.0
 lowMax: 10000.0
-- Count - 
+- Count -
 min: 0
 max: 50
-- Emission - 
+- Emission -
 lowMin: 0.0
 lowMax: 0.0
 highMin: 90.0
@@ -21,7 +21,7 @@ timelineCount: 3
 timeline0: 0.0
 timeline1: 0.4583329
 timeline2: 0.97916627
-- Life - 
+- Life -
 lowMin: 0.0
 lowMax: 0.0
 highMin: 500.0
@@ -36,10 +36,10 @@ timeline0: 0.0
 timeline1: 0.4861107
 timeline2: 1.0
 independent: false
-- Life Offset - 
+- Life Offset -
 active: false
 independent: false
-- X Offset - 
+- X Offset -
 active: true
 lowMin: -140.0
 lowMax: 220.0
@@ -50,7 +50,7 @@ scalingCount: 1
 scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
-- Y Offset - 
+- Y Offset -
 active: true
 lowMin: -60.0
 lowMax: -20.0
@@ -61,11 +61,11 @@ scalingCount: 1
 scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
-- Spawn Shape - 
+- Spawn Shape -
 shape: ellipse
 edges: true
 side: both
-- Spawn Width - 
+- Spawn Width -
 lowMin: 0.0
 lowMax: 0.0
 highMin: 310.0
@@ -77,7 +77,7 @@ scaling1: 1.0
 timelineCount: 2
 timeline0: 0.0
 timeline1: 0.67361027
-- Spawn Height - 
+- Spawn Height -
 lowMin: 0.0
 lowMax: 0.0
 highMin: 180.0
@@ -87,7 +87,7 @@ scalingCount: 1
 scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
-- X Scale - 
+- X Scale -
 lowMin: 0.0
 lowMax: 0.0
 highMin: 1.0
@@ -101,14 +101,14 @@ timelineCount: 3
 timeline0: 0.0
 timeline1: 0.64583206
 timeline2: 1.0
-- Y Scale - 
+- Y Scale -
 active: false
-- Velocity - 
+- Velocity -
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 0.0
-highMax: 100.0
+highMin: 100.0
+highMax: 200.0
 relative: false
 scalingCount: 2
 scaling0: 1.0
@@ -116,7 +116,7 @@ scaling1: 0.0
 timelineCount: 2
 timeline0: 0.0
 timeline1: 1.0
-- Angle - 
+- Angle -
 active: true
 lowMin: -2.0
 lowMax: -2.0
@@ -129,7 +129,7 @@ scaling1: 1.0
 timelineCount: 2
 timeline0: 0.0
 timeline1: 1.0
-- Rotation - 
+- Rotation -
 active: true
 lowMin: 0.0
 lowMax: 0.0
@@ -142,12 +142,12 @@ scaling1: 1.0
 timelineCount: 2
 timeline0: 0.0
 timeline1: 1.0
-- Wind - 
+- Wind -
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: -177.0
-highMax: -177.0
+highMin: -100.0
+highMax: -400.0
 relative: false
 scalingCount: 4
 scaling0: 0.91525525
@@ -159,7 +159,7 @@ timeline0: 0.0
 timeline1: 0.4861111
 timeline2: 0.944444
 timeline3: 1.0
-- Gravity - 
+- Gravity -
 active: true
 lowMin: 0.0
 lowMax: 0.0
@@ -172,7 +172,7 @@ scaling1: 0.0
 timelineCount: 2
 timeline0: 0.0
 timeline1: 1.0
-- Tint - 
+- Tint -
 colorsCount: 12
 colors0: 1.0
 colors1: 0.3932581
@@ -191,7 +191,7 @@ timeline0: 0.0
 timeline1: 0.5826271
 timeline2: 0.9599998
 timeline3: 1.0
-- Transparency - 
+- Transparency -
 lowMin: 0.0
 lowMax: 0.0
 highMin: 1.0
@@ -209,7 +209,7 @@ timeline1: 0.2
 timeline2: 0.4375
 timeline3: 0.8194444
 timeline4: 1.0
-- Options - 
+- Options -
 attached: false
 continuous: true
 aligned: false

@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 /**
- * class for creating and drawing different parallax backgrounds.
+ * Class for creating and drawing different parallax backgrounds.
  */
 public class Background {
 
@@ -148,4 +148,6 @@ public class Background {
             }
         }
     }
+
+
 }
