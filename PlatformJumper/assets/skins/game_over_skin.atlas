@@ -1,0 +1,71 @@
+
+game_over_skin.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+checkmark_down
+  rotate: false
+  xy: 515, 697
+  size: 128, 129
+  split: 0, 0, 0, 0
+  orig: 128, 129
+  offset: 0, 0
+  index: -1
+checkmark_over
+  rotate: false
+  xy: 645, 828
+  size: 128, 129
+  split: 0, 0, 0, 0
+  orig: 128, 129
+  offset: 0, 0
+  index: -1
+checkmark_up
+  rotate: false
+  xy: 515, 828
+  size: 128, 129
+  split: 0, 0, 0, 0
+  orig: 128, 129
+  offset: 0, 0
+  index: -1
+cursor
+  rotate: false
+  xy: 1, 1
+  size: 4, 20
+  split: 0, 0, 0, 0
+  orig: 4, 20
+  offset: 0, 0
+  index: -1
+selection.9
+  rotate: false
+  xy: 1, 283
+  size: 512, 160
+  split: 0, 0, 0, 0
+  orig: 512, 160
+  offset: 0, 0
+  index: -1
+textfield_background
+  rotate: false
+  xy: 1, 23
+  size: 512, 128
+  split: 0, 0, 0, 0
+  pad: 25, 32, 19, 25
+  orig: 512, 128
+  offset: 0, 0
+  index: -1
+textfield_focused
+  rotate: false
+  xy: 1, 153
+  size: 512, 128
+  split: 0, 0, 0, 0
+  pad: 29, 28, 20, 25
+  orig: 512, 128
+  offset: 0, 0
+  index: -1
+jersey10-75
+  rotate: false
+  xy: 1, 445
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1
