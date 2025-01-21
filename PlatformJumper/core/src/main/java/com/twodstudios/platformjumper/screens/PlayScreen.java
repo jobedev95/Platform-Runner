@@ -104,6 +104,7 @@ public class PlayScreen implements Screen {
         // Exits start mode when Enter is pressed
         if (startMode && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             startMode = false;
+            soundManager.backgroundMusic();
         }
 
         if (!startMode && !player.isDead()) {
