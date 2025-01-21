@@ -12,13 +12,14 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.Main;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.twodstudios.platformjumper.SoundManager;
 
 public class StartMenu implements Screen {
     private Main game;
     private Stage stage;
     private OrthographicCamera camera;
     private Viewport viewport;
-
+    private SoundManager soundManager;
     // Bakgrund
     private final Texture backgroundImage;
     private float bg1XPosition;
@@ -27,6 +28,7 @@ public class StartMenu implements Screen {
 
     // Flagga för att kontrollera om knapparna ska vara aktiva
     private boolean isMenuActive = true;
+
 
     public StartMenu(Main game) {
         this.game = game;
@@ -47,6 +49,8 @@ public class StartMenu implements Screen {
 
         // Skapa knappar
         createButtons();
+        // soundmanager
+        soundManager = new SoundManager();
     }
 
     private void createButtons() {
@@ -130,10 +134,14 @@ public class StartMenu implements Screen {
     }
 
     @Override
-    public void show() {}
+    public void show() {
+        soundManager.menuMusic();
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+        soundManager.stopMenuMusic();
+    }
 
     @Override
     public void pause() {}
@@ -145,5 +153,6 @@ public class StartMenu implements Screen {
     public void dispose() {
         stage.dispose();
         backgroundImage.dispose();
+        soundManager.dispose();
     }
 }
