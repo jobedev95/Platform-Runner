@@ -50,7 +50,7 @@ public class StartMenu implements Screen {
     }
 
     private void createButtons() {
-        Skin skin = new Skin(Gdx.files.internal("Buttons.json"));
+        Skin skin = new Skin(Gdx.files.internal("atlas/buttons.json"));
 
 
         // Start-knapp
