@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.Main;
@@ -17,9 +18,11 @@ import com.twodstudios.platformjumper.SoundManager;
 public class StartMenu implements Screen {
     private Main game;
     private Stage stage;
+    private Table table;
     private OrthographicCamera camera;
     private Viewport viewport;
     private SoundManager soundManager;
+
     // Bakgrund
     private final Texture backgroundImage;
     private float bg1XPosition;
@@ -28,6 +31,10 @@ public class StartMenu implements Screen {
 
     // Flagga för att kontrollera om knapparna ska vara aktiva
     private boolean isMenuActive = true;
+
+    // Button sizes
+    private int buttonWidth = 265;
+    private int buttonHeigth = 70;
 
 
     public StartMenu(Main game) {
@@ -43,24 +50,27 @@ public class StartMenu implements Screen {
         this.bg1XPosition = 0;
         this.bg2XPosition = backgroundImage.getWidth();
 
-        // Stage för knappar
+        // Stage och table för knappar
         this.stage = new Stage(viewport);
+        this.table = new Table();
+        table.setFillParent(true);
+        table.center();
+        table.setSize(200, 400);
         Gdx.input.setInputProcessor(stage);
 
         // Skapa knappar
         createButtons();
-        // soundmanager
+
+        // Soundmanager
         soundManager = new SoundManager();
     }
 
     private void createButtons() {
-        Skin skin = new Skin(Gdx.files.internal("atlas/buttons.json"));
+        Skin skin = new Skin(Gdx.files.internal("atlas/main_menu.json"));
 
 
         // Start-knapp
-        ImageButton startButton = new ImageButton(skin, "Playbutton");
-        startButton.setPosition(400, 300);
-
+        ImageButton startButton = new ImageButton(skin, "play_button");
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -70,11 +80,12 @@ public class StartMenu implements Screen {
                 }
             }
         });
-        stage.addActor(startButton);
+
+        table.add(startButton).size(buttonWidth, buttonHeigth).pad(10);;
+        table.row();
 
         // Highscore-knapp
-        ImageButton highscoreButton = new ImageButton(skin, "Highscorebutton");
-        highscoreButton.setPosition(400, 200);
+        ImageButton highscoreButton = new ImageButton(skin, "high_score_button");
         highscoreButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -85,18 +96,21 @@ public class StartMenu implements Screen {
 
             }
         });
-        stage.addActor(highscoreButton);
+
+        table.add(highscoreButton).size(buttonWidth, buttonHeigth).pad(10);;
+        table.row();
 
         // Exit-knapp
-        ImageButton quitButton = new ImageButton(skin, "Quitbutton");
-        quitButton.setPosition(400, 100);
+        ImageButton quitButton = new ImageButton(skin, "quit_button");
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 Gdx.app.exit(); // Stäng spelet
             }
         });
-        stage.addActor(quitButton);
+
+        table.add(quitButton).size(buttonWidth, buttonHeigth).pad(10);;
+        stage.addActor(table);
     }
 
     @Override
