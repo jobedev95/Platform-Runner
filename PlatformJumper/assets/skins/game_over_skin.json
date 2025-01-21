@@ -1,0 +1,60 @@
+{
+"com.badlogic.gdx.graphics.g2d.BitmapFont": {
+	"jersey10-75": {
+		"file": "jersey10-75.fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	}
+},
+"com.badlogic.gdx.graphics.Color": {
+	"gray": {
+		"r": 0.7372549,
+		"g": 0.7372549,
+		"b": 0.7372549,
+		"a": 1
+	},
+	"red": {
+		"r": 1,
+		"g": 0,
+		"b": 0,
+		"a": 1
+	},
+	"white": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 1
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"default": {
+		"up": "checkmark_up",
+		"down": "checkmark_down",
+		"over": "checkmark_over"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+	"default": {
+		"font": "jersey10-75",
+		"fontColor": "white"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
+	"default": {
+		"font": "jersey10-75",
+		"fontColor": "gray",
+		"focusedFontColor": "white",
+		"background": "textfield_background",
+		"focusedBackground": "textfield_focused",
+		"cursor": "cursor",
+		"selection": "selection.9",
+		"messageFontColor": "white"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+}
+}

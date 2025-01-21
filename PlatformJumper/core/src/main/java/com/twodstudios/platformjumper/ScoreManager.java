@@ -1,9 +1,17 @@
 package com.twodstudios.platformjumper;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Json;
+
 /** Handles player game scores. */
 public class ScoreManager implements ScoreUpdater{
 
     private int score;
+    private FileHandle file;
+    private Json json;
+    private HighScores highScoreObject;
 
     /** Create instance of ScoreManager. */
     public ScoreManager() {
@@ -15,6 +23,73 @@ public class ScoreManager implements ScoreUpdater{
      */
     private void setupScoreManager(){
         score = 0;
+        loadHighScores();
+    }
+
+
+    private void loadHighScores(){
+        json = new Json();
+        file = Gdx.files.local("high_scores.json");
+
+        if (file.exists()){
+            highScoreObject = json.fromJson(HighScores.class, file.readString()); // Return parsed file as HighScores object
+            System.out.println("Loaded high scores from file: " + highScoreObject.highScores);
+        } else {
+            System.out.println("File not found.");
+        }
+    }
+
+    public Array<Integer> getScores(HighScores highScoreObject){
+
+        Array<Integer> scores = new Array<>();
+
+        for (int i = 0; i < highScoreObject.highScores.size; i++){
+            scores.add(highScoreObject.highScores.get(i).score);
+            System.out.println(highScoreObject.highScores.get(i).score); // Get score from one specific user // 950
+        }
+
+        return scores;
+    }
+
+    /**
+     * may be used in the future, to populate the score board 
+     * @param highScoreObject
+     * @return
+     */
+    public Array<String> getNames(HighScores highScoreObject){
+
+        Array<String> names = new Array<>();
+
+        for (int i = 0; i < highScoreObject.highScores.size; i++){
+            names.add(highScoreObject.highScores.get(i).name);
+            System.out.println(highScoreObject.highScores.get(i).name); // Get name from one specific user // Bob
+        }
+        return names;
+    }
+
+    /** Saves the given high score to a JSON file. */
+    public void saveScore(String name, int score){
+        // Create new Score Object with new player name and score and add to the HighScores object
+        highScoreObject.highScores.add(new Score(name, score));
+        System.out.println("Adding new score: " + name + ", " + score);
+
+        // Sorts the highscores after highest score
+        highScoreObject.highScores.sort((playerScore1, playerScore2) -> playerScore2.getScore() - playerScore1.getScore());
+
+        // Limit amount of scores to 10
+        highScoreObject.highScores.truncate(10);
+
+        // Replace old content of json file with content of the highScoreObject
+        file.writeString(json.toJson(highScoreObject), false); // Overwrite the JSON file
+    }
+
+    public boolean checkIfHighScore(int score){
+        return score > highScoreObject.highScores.peek().score;
+    }
+
+    public boolean validateName(String name){
+        String regex = "^[A-Za-zÅÄÖåäö]+$";
+        return name.matches(regex);
     }
 
     /** Increase player score with 1. */

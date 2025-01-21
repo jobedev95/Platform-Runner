@@ -13,7 +13,7 @@ import com.twodstudios.platformjumper.*;
 
 
 
-public class PlayScreen implements Screen {
+public class PlayScreen implements Screen, ResetListener {
 
     private Main game;
 
@@ -27,6 +27,7 @@ public class PlayScreen implements Screen {
     private CoinManager coinManager;
     private SharedAssets sharedAssets;
     private EffectsManager effectsManager;
+    private GameOverState gameOverState;
 
     private BitmapFont font;
 
@@ -65,9 +66,9 @@ public class PlayScreen implements Screen {
         coinManager = new CoinManager(this.spriteBatch, tiles, backgroundSpeed);
         soundManager = new SoundManager();
         scoreManager = new ScoreManager();
+        gameOverState = new GameOverState(this, scoreManager);
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
-
 
         // Camera and Viewport
         camera = new OrthographicCamera();
@@ -166,7 +167,7 @@ public class PlayScreen implements Screen {
                 float deathYPosition = background.getGroundHeight() / 2f;
                 effectsManager.drawLavaExplosion(deltaTime, deathXPosition, deathYPosition); // Draw lava explosion effect
 
-                if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                     resetGame();
                 }
             }
@@ -176,12 +177,17 @@ public class PlayScreen implements Screen {
             font.draw(game.spriteBatch, "Score: " + scoreManager.getScore(), 10, Gdx.graphics.getHeight() - 10);
         }
         game.spriteBatch.end();
+
+        if (player.isDead()){
+            gameOverState.render();
+        }
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true); // Adapt viewport after window size
         camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
+        gameOverState.resize(width, height);
         camera.update();
     }
 
@@ -245,16 +251,18 @@ public class PlayScreen implements Screen {
     }
 
     /** Reset the game. */
-    private void resetGame() {
+    @Override
+    public void resetGame() {
         player.reset();
         tiles.reset(); // Reset tiles to prepare for new game
         scoreManager.reset(); // Reset score
         coinManager.reset(); // Reset all coins
         soundManager.setGameOverSoundPlayed(false);// Reset sound play flag
-        startMode = true; // Set flag to show start mode again
         sharedAssets.setLogoAnimationTime(0); // Reset logo animation
         effectsManager.resetLavaExplosion(); // Reset lava particle effect
         sharedAssets.reset();
+        gameOverState.reset();
+        startMode = true; // Set flag to show start mode again
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
