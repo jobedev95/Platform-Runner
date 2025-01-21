@@ -3,6 +3,7 @@ package com.twodstudios.platformjumper;
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.twodstudios.platformjumper.screens.PlayScreen;
+import com.twodstudios.platformjumper.screens.StartMenu;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Main extends Game {
@@ -14,8 +15,8 @@ public class Main extends Game {
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
+        setScreen(new StartMenu(this));
         sharedAssets = new SharedAssets(this.spriteBatch);
-        setScreen(new PlayScreen(this));
     }
 
     @Override
