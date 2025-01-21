@@ -117,6 +117,7 @@ public class PlayScreen implements Screen, HudListener {
 
             physicsManager.applyGravity(deltaTime); // Enable gravity
             physicsManager.checkCollision(); // Check for tile and floor collisions
+            hud.setScore(scoreManager.getScore()); // Update score in HUD
             tiles.generateBufferTiles(); // Prepares a buffer of tiles for rendering
             coinManager.generateCoins(deltaTime); // Prepares coins for rendering
             tiles.moveTiles(deltaTime);// Continuously moves all tiles towards the left
@@ -257,10 +258,6 @@ public class PlayScreen implements Screen, HudListener {
         sharedAssets.setLogoAnimationTime(0); // Reset logo animation
         effectsManager.resetLavaExplosion(); // Reset lava particle effect
         sharedAssets.reset();
-    }
-
-    public void pauseGame(){
-        paused = true;
     }
 
     public void pauseGame(){
