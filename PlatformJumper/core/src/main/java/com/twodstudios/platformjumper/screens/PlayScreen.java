@@ -10,6 +10,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.*;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.github.tommyettinger.textra.TypingLabel;
+import com.github.tommyettinger.textra.KnownFonts;
 
 
 
@@ -29,6 +32,8 @@ public class PlayScreen implements Screen, HudListener {
     private SharedAssets sharedAssets;
     private EffectsManager effectsManager;
 
+    // Fonts
+    private TypingLabel typingLabel;
     private BitmapFont font;
 
     // Background variables
@@ -48,6 +53,9 @@ public class PlayScreen implements Screen, HudListener {
     // Pause state
     private boolean paused = false;
 
+    // Stage for the "Press Enter to start" text
+    Stage stage;
+
     // Constructor
     public PlayScreen(Main game){
 
@@ -61,6 +69,12 @@ public class PlayScreen implements Screen, HudListener {
     public void show() {
         // Creating bitmap font object
         font = new BitmapFont();
+
+        // Variables for the "Press ENTER to start" text
+        stage = new Stage();
+        typingLabel = new TypingLabel("[@Oxanium][%130]Press {BLINK}{BLINK=ffffffff;000000ff;2.0;0.5}ENTER{ENDBLINK}{ENDBLINK} to Start[%][@]", KnownFonts.getOxanium());
+        typingLabel.setPosition((Main.WORLD_WIDTH / 2) - (typingLabel.getWidth() / 2), Main.WORLD_HEIGHT / 2);
+        stage.addActor(typingLabel);
 
         // Initialise all necessary objects for the game
         player = new Player(this.spriteBatch, 120, 150, Main.WORLD_WIDTH / 2, 135f);
@@ -177,6 +191,10 @@ public class PlayScreen implements Screen, HudListener {
         }
         game.spriteBatch.end();
 
+        if (startMode){
+            stage.act();
+            stage.draw();
+        }
         hud.render(deltaTime);
     }
 
