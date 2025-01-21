@@ -81,11 +81,12 @@ public class PhysicsManager {
             if (playerRectangle.overlaps(coin.getRectangle())) {
                 coins.removeIndex(i);
                 scoreUpdater.increaseScore();
+                soundManager.coinPickupSound();
                 break;
             }
         }
     }
-    
+
     /** Checks if player has collided with the ground. Sets player state to dead after collision is confirmed. */
     private void checkGroundCollision(){
         // Logic that checks if character touches the ground

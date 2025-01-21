@@ -3,7 +3,7 @@ package com.twodstudios.platformjumper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
-import com.badlogic.gdx.files.FileHandle;
+
 /**
  * Class to manage any audio files for the game.
  */
@@ -13,6 +13,7 @@ public class SoundManager {
     private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
     private Music backgroundMusic; // Background Music
     private Music menuMusic; // Menu Music
+    private Sound coinPickupSound; // Coin pickup sound
     /** Create instance of SoundManager. */
     public SoundManager() {
         setupSoundManager();
@@ -26,6 +27,7 @@ public class SoundManager {
         gameOverSound = Gdx.audio.newSound(Gdx.files.internal("sounds/losetrumpet.wav"));
         backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/backgroundMusic.ogg"));
         menuMusic = Gdx.audio.newMusic(Gdx.files.internal("sounds/menuMusic.ogg"));
+        coinPickupSound = Gdx.audio.newSound(Gdx.files.internal("sounds/coinPickup.wav"));
     }
 
     /** Plays game over sound when player dies. */
@@ -48,18 +50,25 @@ public class SoundManager {
     public void backgroundMusic(){
         backgroundMusic.setLooping(true);
         backgroundMusic.play();
+
+
     }
     /** Plays menuMusic while on start screen */
     public void menuMusic(){
         menuMusic.setLooping(true);
         menuMusic.play();
-    }
 
+    }
+    /** Plays coinPickup sound when coin collected */
+    public void coinPickupSound(){
+        coinPickupSound.play();
+    }
     /** Dispose of SoundManager assets. */
     public void dispose(){
         gameOverSound.dispose();
         backgroundMusic.dispose();
         menuMusic.dispose();
+        coinPickupSound.dispose();
     }
 
 
