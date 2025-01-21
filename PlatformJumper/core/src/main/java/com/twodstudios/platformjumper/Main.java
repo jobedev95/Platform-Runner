@@ -10,11 +10,13 @@ public class Main extends Game {
     public SpriteBatch spriteBatch;
     public static final float WORLD_WIDTH = 1171;
     public static final float WORLD_HEIGHT = 659;
+    public SharedAssets sharedAssets;
 
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
         setScreen(new StartMenu(this));
+        sharedAssets = new SharedAssets(this.spriteBatch);
     }
 
     @Override
