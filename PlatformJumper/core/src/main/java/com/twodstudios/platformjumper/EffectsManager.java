@@ -100,16 +100,24 @@ public class EffectsManager {
     /** Reset the lava explosion animation. */
     public void resetLavaExplosion(){
         explosionStarted = false;
-        lavaExplosionParticleEffect.reset();
-        lavaExplosionParticleEffect.scaleEffect(2f);
+        if (lavaExplosionParticleEffect != null){
+            lavaExplosionParticleEffect.reset();
+            lavaExplosionParticleEffect.scaleEffect(2f);
+        }
+
     }
 
     public void dispose(){
-        mainMenuParticleEffect.dispose();
-        sparklesParticleEffect.dispose();
-        lavaExplosionParticleEffect.dispose();
+        if(mainMenuParticleEffect != null){
+            mainMenuParticleEffect.dispose();
+        }
 
+        if(sparklesParticleEffect != null) {
+            sparklesParticleEffect.dispose();
+        }
+
+        if(lavaExplosionParticleEffect != null) {
+            lavaExplosionParticleEffect.dispose();
+        }
     }
-
-
 }
