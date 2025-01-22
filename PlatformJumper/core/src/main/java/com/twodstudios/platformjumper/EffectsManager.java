@@ -12,6 +12,7 @@ public class EffectsManager {
     // Particle effects
     private ParticleEffect sparklesParticleEffect;
     private ParticleEffect lavaExplosionParticleEffect;
+    private ParticleEffect mainMenuParticleEffect;
     private boolean explosionStarted; // Flag to ensure the lava explosion plays only once
 
     /**
@@ -20,42 +21,68 @@ public class EffectsManager {
      */
     public EffectsManager(SpriteBatch spriteBatch) {
         this.spriteBatch = spriteBatch;
-        setupEffectsManager();
     }
 
-    /**
-     * Method to initialise and populate necessary fields for the EffectsManager.
-     */
-    private void setupEffectsManager(){
-        // Fire sparkles effect
-        sparklesParticleEffect = new ParticleEffect();
-        sparklesParticleEffect.load(Gdx.files.internal("effects/lava_sparkles.p"), Gdx.files.internal("effects")); // Load asset
-        sparklesParticleEffect.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 150); // Position the effect
-        ParticleEmitter sparklesEmitter =  sparklesParticleEffect.getEmitters().first(); // Get and store the particle emitter
-        sparklesEmitter.setPosition(Gdx.graphics.getWidth() / 2f, 120);  // Position the emitter
-        // Adjust emitter settings
-        sparklesParticleEffect.scaleEffect(1.2f); // Scale effect by 20%
-
-        // Lava explosion effect
-        lavaExplosionParticleEffect = new ParticleEffect();
-        lavaExplosionParticleEffect.load(Gdx.files.internal("effects/lava_explosion.p"), Gdx.files.internal("effects")); // Load asset
-        lavaExplosionParticleEffect.setPosition(0, 0); // Position the effect
-        ParticleEmitter lavaExplosionEmitter = lavaExplosionParticleEffect.getEmitters().first(); // Get and store the particle emitter
-        lavaExplosionParticleEffect.scaleEffect(2f); // Scale effect by 100%
-        explosionStarted = false; // Flag to ensure the lava explosion plays only once
+    /** Initialize fire sparkles effect if it hasn't been created already. */
+    private ParticleEffect getFireSparklesEffect() {
+        // If the sparklesParticleEffect hasn't been created, it will be created
+        if (sparklesParticleEffect == null) {
+            sparklesParticleEffect = new ParticleEffect();
+            sparklesParticleEffect.load(Gdx.files.internal("effects/lava_sparkles.p"), Gdx.files.internal("effects")); // Load asset
+            sparklesParticleEffect.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 150); // Position the effect
+            ParticleEmitter sparklesEmitter =  sparklesParticleEffect.getEmitters().first(); // Get and store the particle emitter
+            sparklesEmitter.setPosition(Gdx.graphics.getWidth() / 2f, 120);  // Position the emitter
+            // Adjust emitter settings
+            sparklesParticleEffect.scaleEffect(1.2f); // Scale effect by 20%
+        }
+        return sparklesParticleEffect;
     }
 
-    /** Draw continous fire sparkles. */
+    /** Initialize lava explosion effect if it hasn't been created already. */
+    private ParticleEffect getLavaExplosionParticleEffect() {
+        // If the lavaExplosionParticleEffect hasn't been created, it will be created
+        if (lavaExplosionParticleEffect == null) {
+            lavaExplosionParticleEffect = new ParticleEffect();
+            lavaExplosionParticleEffect.load(Gdx.files.internal("effects/lava_explosion.p"), Gdx.files.internal("effects")); // Load asset
+            lavaExplosionParticleEffect.setPosition(0, 0); // Position the effect
+            ParticleEmitter lavaExplosionEmitter = lavaExplosionParticleEffect.getEmitters().first(); // Get and store the particle emitter
+            lavaExplosionParticleEffect.scaleEffect(2f); // Scale effect by 100%
+            explosionStarted = false; // Flag to ensure the lava explosion plays only once
+        }
+        return lavaExplosionParticleEffect;
+    }
+
+    /** Initialize main menu sparkles effect if it hasn't been created already. */
+    private ParticleEffect getMainMenuParticleEffect() {
+        // If the mainMenuParticleEffect hasn't been created, it will be created
+        if (mainMenuParticleEffect == null) {
+            mainMenuParticleEffect = new ParticleEffect();
+            mainMenuParticleEffect.load(Gdx.files.internal("effects/main_menu_sparkles.p"), Gdx.files.internal("effects")); // Load asset
+            mainMenuParticleEffect.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 150); // Position the effect
+            ParticleEmitter mainMenuSparklesEmitter =  mainMenuParticleEffect.getEmitters().first(); // Get and store the particle emitter
+            mainMenuSparklesEmitter.setPosition(Gdx.graphics.getWidth() / 2f, Main.WORLD_HEIGHT / 2);  // Position the emitter
+            // Adjust emitter settings
+            mainMenuParticleEffect.scaleEffect(1.5f); // Scale effect by 20%
+        }
+        return mainMenuParticleEffect;
+    }
+
+
+
+    /** Draw continuous fire sparkles. */
     public void drawSparkles(float deltaTime){
+        sparklesParticleEffect = getFireSparklesEffect(); // Initialize the effect
         sparklesParticleEffect.draw(spriteBatch, deltaTime); // Draw continuous particle effect
     }
 
     /** Draw a lava explosion. */
     public void drawLavaExplosion(float deltaTime, float xPosition, float yPosition){
+        lavaExplosionParticleEffect = getLavaExplosionParticleEffect(); // Initialize the effect
+
         // If explosion has not been started before it starts
         if (!explosionStarted) {
             explosionStarted = true;
-            
+
             // Set position of lava explosion and start the effect
             lavaExplosionParticleEffect.setPosition(xPosition, yPosition);
             lavaExplosionParticleEffect.start();
@@ -64,9 +91,25 @@ public class EffectsManager {
         lavaExplosionParticleEffect.draw(spriteBatch, deltaTime); // Draw lava explosion effect
     }
 
+    /** Draw continuous main menu sparkles. */
+    public void drawMainMenuParticles(float deltaTime){
+        mainMenuParticleEffect = getMainMenuParticleEffect();
+        mainMenuParticleEffect.draw(spriteBatch, deltaTime); // Draw continuous particle effect
+    }
+
     /** Reset the lava explosion animation. */
     public void resetLavaExplosion(){
         explosionStarted = false;
         lavaExplosionParticleEffect.reset();
+        lavaExplosionParticleEffect.scaleEffect(2f);
     }
+
+    public void dispose(){
+        mainMenuParticleEffect.dispose();
+        sparklesParticleEffect.dispose();
+        lavaExplosionParticleEffect.dispose();
+
+    }
+
+
 }

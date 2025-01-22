@@ -49,24 +49,29 @@ public class SoundManager {
     /** Plays backgroundMusic while playing */
     public void backgroundMusic(){
         backgroundMusic.setLooping(true);
+        backgroundMusic.setVolume(0.5f);
         backgroundMusic.play();
     }
+
     // stop background music
     public void stopBackgroundMusic(){
         backgroundMusic.stop();
     }
+
     /** Plays menuMusic while on start screen */
     public void menuMusic(){
         menuMusic.setLooping(true);
+        menuMusic.setVolume(0.5f);
         menuMusic.play();
     }
+
     // stop menuMusic
     public void stopMenuMusic(){
         menuMusic.stop();
     }
     /** Plays coinPickup sound when coin collected */
     public void coinPickupSound(){
-        coinPickupSound.play();
+        coinPickupSound.play(0.6f);
     }
     /** Dispose of SoundManager assets. */
     public void dispose(){

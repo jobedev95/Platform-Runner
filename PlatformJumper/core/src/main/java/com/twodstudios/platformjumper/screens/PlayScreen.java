@@ -134,7 +134,7 @@ public class PlayScreen implements Screen, ResetListener {
             background.drawBackgroundSet(false, deltaTime);  // Draw first state of background
             background.drawGround(false, deltaTime);  // Draw first state of dangerous ground
             tiles.drawTiles(); // Draw initial tiles
-            sharedAssets.drawLogoAnimation(false);
+            sharedAssets.drawLogoAnimation(500, 109, 300, false);
             player.drawIdleAnimation(); // Draw the character idle animation if in start mode
             effectsManager.drawSparkles(deltaTime);// Draw continous particle effect
         } else {
@@ -149,7 +149,7 @@ public class PlayScreen implements Screen, ResetListener {
                 coinManager.drawCoins();
 
                 if (!sharedAssets.isLogoAnimationFinished()) {
-                    sharedAssets.drawLogoAnimation(true);
+                    sharedAssets.drawLogoAnimation(500, 109, 300, true);
                 }
                 player.drawRunOrJump(); // Draw running or jumping animation depending on character state
 
@@ -214,6 +214,7 @@ public class PlayScreen implements Screen, ResetListener {
         tiles.dispose();
         font.dispose();
         soundManager.dispose();
+        effectsManager.dispose();
     }
 
     /** Adjust the zoom of the camera to a given zoom position.
@@ -264,6 +265,7 @@ public class PlayScreen implements Screen, ResetListener {
         sharedAssets.reset();
         gameOverState.reset();
         startMode = true; // Set flag to show start mode again
+        soundManager.backgroundMusic();
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
