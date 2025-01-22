@@ -1,24 +1,48 @@
 {
 "com.badlogic.gdx.graphics.g2d.BitmapFont": {
-	"jersey10-75": {
-		"file": "jersey10-75.fnt",
+	"Rationale-Regular": {
+		"file": "Rationale-Regular.fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"Rationale-Regular1": {
+		"file": "Rationale-Regular(1).fnt",
 		"scaledSize": -1,
 		"markupEnabled": true,
+		"flip": false
+	},
+	"Rationale-Regular3": {
+		"file": "Rationale-Regular(3).fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"Rationale-Regular4": {
+		"file": "Rationale-Regular(4).fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	},
+	"Rationale-Regular5": {
+		"file": "Rationale-Regular(5).fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
+		"flip": false
+	},
+	"Rationale-Regular6": {
+		"file": "Rationale-Regular(6).fnt",
+		"scaledSize": -1,
+		"markupEnabled": false,
 		"flip": false
 	}
 },
 "com.badlogic.gdx.graphics.Color": {
-	"gray": {
-		"r": 0.7372549,
-		"g": 0.7372549,
-		"b": 0.7372549,
-		"a": 1
-	},
-	"red": {
+	"transparent_white": {
 		"r": 1,
-		"g": 0,
-		"b": 0,
-		"a": 1
+		"g": 1,
+		"b": 1,
+		"a": 0.35955074
 	},
 	"white": {
 		"r": 1,
@@ -29,27 +53,44 @@
 },
 "com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
 	"default": {
-		"up": "checkmark_up",
-		"down": "checkmark_down",
-		"over": "checkmark_over"
+		"up": "submit_button_up",
+		"down": "submit_button_down",
+		"over": "submit_button_over"
+	},
+	"play_button": {
+		"up": "game_over_play_button_up",
+		"down": "game_over_play_button_down",
+		"over": "game_over_play_button_over"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
 	"default": {
-		"font": "jersey10-75",
+		"font": "Rationale-Regular4",
 		"fontColor": "white"
+	},
+	"smallest": {
+		"font": "Rationale-Regular"
+	},
+	"medium": {
+		"font": "Rationale-Regular1"
+	},
+	"biggest": {
+		"font": "Rationale-Regular3"
+	},
+	"best": {
+		"font": "Rationale-Regular4"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle": {
 	"default": {
-		"font": "jersey10-75",
-		"fontColor": "gray",
-		"focusedFontColor": "white",
-		"background": "textfield_background",
-		"focusedBackground": "textfield_focused",
+		"font": "Rationale-Regular4",
+		"fontColor": "white",
+		"background": "textfield_transparent",
+		"focusedBackground": "textfield_transparent",
 		"cursor": "cursor",
 		"selection": "selection.9",
-		"messageFontColor": "white"
+		"messageFont": "Rationale-Regular1",
+		"messageFontColor": "transparent_white"
 	}
 },
 "com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
