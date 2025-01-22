@@ -15,8 +15,9 @@ public class Main extends Game {
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
-        setScreen(new StartMenu(this));
         sharedAssets = new SharedAssets(this.spriteBatch);
+        setScreen(new StartMenu(this, sharedAssets));
+
     }
 
     @Override

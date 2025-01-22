@@ -96,8 +96,9 @@ public class PhysicsManager {
             player.setAnimationTime(0); // Reset animation time so death animation starts at first animation frame
             player.setVerticalVelocity(0f); // Set velocity to 0 to stop character from falling
             player.setJumping(false); // Stop jumping animation instantly
-
+            soundManager.stopBackgroundMusic(); // Stop background music
             soundManager.playGameOverSound(); // Play game over sound
+
 
         }
     }

@@ -1,0 +1,24 @@
+{
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"back_button": {
+		"up": "back_button_up",
+		"down": "back_button_down",
+		"over": "back_button_over"
+	},
+	"high_score_button": {
+		"up": "high_score_button_up",
+		"down": "highscore_button_down",
+		"over": "highscore_button_over"
+	},
+	"quit_button": {
+		"up": "quit_button_up",
+		"down": "quit_button_down",
+		"over": "quit_button_over"
+	},
+	"play_button": {
+		"up": "play_button_up",
+		"down": "play_button_down",
+		"over": "play_button_over"
+	}
+}
+}
