@@ -48,8 +48,6 @@ public class GameOverState {
         this.resetListener = resetListener;
         this.scoreManager = scoreManager;
 
-        // Load the background image
-        this.gameoverBackground = new Texture(Gdx.files.internal("gameover_background.png"));
 
         // Load the skin
         this.skin = new Skin(Gdx.files.internal("skins/game_over_skin.json"));
@@ -89,6 +87,9 @@ public class GameOverState {
      * @param height Height of background.
      * */
     private void createGameOverBackground(int width, int height) {
+
+        // Load the background image
+        this.gameoverBackground = new Texture(Gdx.files.internal("gameover_background.png"));
 
         // Create an Image object from the texture (so it can be added to a Stage)
         uiBackground = new Image(gameoverBackground);
