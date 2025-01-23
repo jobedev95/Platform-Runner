@@ -10,13 +10,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import static com.twodstudios.platformjumper.AnimationManager.*;
 
 /** Class to handle any assets that will be shared among multiple classes. */
-public class SharedAssets {
+public class SharedAssets implements Resettable <SharedAssets>{
 
-    private SpriteBatch spriteBatch;
+    private final SpriteBatch spriteBatch;
 
     // Main logo variables
     private TextureAtlas logoAtlas;
-    private TextureRegion[] logoTextureRegions = new TextureRegion[66];
+    private final TextureRegion[] logoTextureRegions = new TextureRegion[66];
     private Animation<TextureRegion> logoAnimation;
     private float logoAnimationTime; // Time since start of main logo animation
     private boolean isLogoAnimationFinished;
@@ -54,9 +54,12 @@ public class SharedAssets {
 
     /**
      * Draws the main logo animation.
+     * @param width Width of animation logo.
+     * @param height Height of animation logo.
+     * @param heightOffset Amount to offset the logo with from the top.
      * @param endAnimation Flag to control if logo animation should end.
      */
-    public void drawLogoAnimation(boolean endAnimation) {
+    public void drawLogoAnimation(int width, int height, int heightOffset, boolean endAnimation) {
         TextureRegion atlasFrame; // Will store the frame to be drawn
 
         // When set to end, the animation is marked as finished when it has returned to the starting frame
@@ -68,22 +71,19 @@ public class SharedAssets {
         atlasFrame = logoAnimation.getKeyFrame(logoAnimationTime, true);
 
         // Draw the current frame
-        spriteBatch.draw(atlasFrame, Main.WORLD_WIDTH / 2f - 250, Main.WORLD_HEIGHT - 300, 500, 109);
+        spriteBatch.draw(atlasFrame, Main.WORLD_WIDTH / 2f - width / 2f, Main.WORLD_HEIGHT - heightOffset, width, height);
     }
 
     /** Set status of main logo animation. */
     public boolean isLogoAnimationFinished() {
         return isLogoAnimationFinished;
     }
-    
-    /** Set logo animation time with given value. */
-    public void setLogoAnimationTime(float logoAnimationTime) {
-        this.logoAnimationTime = logoAnimationTime;
-    }
 
     /** Reset shared assets. */
+    @Override
     public void reset(){
         isLogoAnimationFinished = false;
+        this.logoAnimationTime = 0;
     }
 
     /** Dispose of shared assets. */

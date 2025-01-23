@@ -1,0 +1,66 @@
+{
+"com.badlogic.gdx.graphics.g2d.BitmapFont": {
+	"Jersey10-Regular1": {
+		"file": "Jersey10-Regular(1).fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	},
+	"Jersey10-Regular10": {
+		"file": "Jersey10-Regular(10).fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	},
+	"Jersey10-Regular5": {
+		"file": "Jersey10-Regular(5).fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	},
+	"Jersey10-Regular8": {
+		"file": "Jersey10-Regular(8).fnt",
+		"scaledSize": -1,
+		"markupEnabled": true,
+		"flip": false
+	}
+},
+"com.badlogic.gdx.graphics.Color": {
+	"white": {
+		"r": 1,
+		"g": 1,
+		"b": 1,
+		"a": 1
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.ImageButton$ImageButtonStyle": {
+	"default": {
+		"up": "back_button_up",
+		"down": "back_button_down",
+		"over": "back_button_over"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle": {
+	"default": {
+		"font": "Jersey10-Regular1",
+		"fontColor": "white"
+	},
+	"medium": {
+		"font": "Jersey10-Regular5",
+		"fontColor": "white"
+	},
+	"large": {
+		"font": "Jersey10-Regular8",
+		"fontColor": "white"
+	},
+	"extra_large": {
+		"font": "Jersey10-Regular10",
+		"fontColor": "white"
+	}
+},
+"com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle": {
+	"default": {
+		"label": "default"
+	}
+}
+}

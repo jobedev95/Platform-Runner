@@ -6,8 +6,15 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.*;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -16,9 +23,9 @@ import com.github.tommyettinger.textra.KnownFonts;
 
 
 
-public class PlayScreen implements Screen, HudListener {
+public class PlayScreen implements Screen, HudListener, GameOverListener {
 
-    private Main game;
+    private final Main game;
     private Hud hud;
 
     public SpriteBatch spriteBatch;
@@ -29,8 +36,10 @@ public class PlayScreen implements Screen, HudListener {
     private ScoreManager scoreManager;
     private PhysicsManager physicsManager;
     private CoinManager coinManager;
-    private SharedAssets sharedAssets;
+    private final SharedAssets sharedAssets;
     private EffectsManager effectsManager;
+    private GameOverState gameOverState;
+    private PauseState pauseState;
 
     // Fonts
     private TypingLabel typingLabel;
@@ -38,7 +47,7 @@ public class PlayScreen implements Screen, HudListener {
 
     // Background variables
     private Background background;
-    private float backgroundSpeed = 300f; // Background movement speed
+    private final float backgroundSpeed = 300f; // Background movement speed
 
     // Camera and Viewport
     private OrthographicCamera camera;
@@ -46,15 +55,10 @@ public class PlayScreen implements Screen, HudListener {
 
     // Start Mode variables
     private boolean startMode = true; // Flag to initiate the start screen
-    private float initialCameraZoom = 5.0f; // Initial zoom for camera in start mode
-    private float newZoomLevel = 1f; // Game Mode zoom level
-    private float zoomSpeed = 0.05f; // Camera zoom speed
+    private final float initialCameraZoom = 5.0f; // Initial zoom for camera in start mode
+    private final float newZoomLevel = 1f; // Game Mode zoom level
+    private final float zoomSpeed = 0.05f; // Camera zoom speed
 
-    // Pause state
-    private boolean paused = false;
-
-    // Stage for the "Press Enter to start" text
-    Stage stage;
 
     // Constructor
     public PlayScreen(Main game){
@@ -64,6 +68,10 @@ public class PlayScreen implements Screen, HudListener {
         this.sharedAssets = game.sharedAssets;
         this.hud = new Hud(this);
     }
+    // fields for stage and table
+    private Stage stage;
+    private Table table;
+
 
     @Override
     public void show() {
@@ -82,9 +90,10 @@ public class PlayScreen implements Screen, HudListener {
         coinManager = new CoinManager(this.spriteBatch, tiles, backgroundSpeed);
         soundManager = new SoundManager();
         scoreManager = new ScoreManager();
+        gameOverState = new GameOverState(this, scoreManager);
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
-
+        pauseState = new PauseState(game,sharedAssets);
 
         // Camera and Viewport
         camera = new OrthographicCamera();
@@ -95,6 +104,8 @@ public class PlayScreen implements Screen, HudListener {
         camera.update();
 
         background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
+        // play background music
+        soundManager.backgroundMusic();
     }
 
     @Override
@@ -102,17 +113,18 @@ public class PlayScreen implements Screen, HudListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
 
-        // Toggle pause state if "p" is pressed
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            paused = !paused;
+        // Kolla om "P" trycks för att toggla pausläget
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P) && !player.isDead()) {
+            pauseState.togglePause();
         }
 
-        // If game is paused show pause screen and stop game logic
-        if (paused) {
-            drawPausedScreen(deltaTime);
+        // Om spelet är pausat, rendera pausmenyn och returnera
+        if (pauseState.isPaused()) {
+            pauseOpacity(deltaTime);
+            pauseState.render();
             return;
         }
-
+        player.updateAnimationTime(deltaTime);
         // Update animation times
         player.updateAnimationTime(deltaTime);
         sharedAssets.updateMainLogoAnimationTime(deltaTime);
@@ -125,7 +137,7 @@ public class PlayScreen implements Screen, HudListener {
 
         if (!startMode && !player.isDead()) {
             // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
-            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !player.isJumping()) {
+            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !player.isJumping())){
                 player.startJump();
             }
 
@@ -149,7 +161,7 @@ public class PlayScreen implements Screen, HudListener {
             background.drawBackgroundSet(false, deltaTime);  // Draw first state of background
             background.drawGround(false, deltaTime);  // Draw first state of dangerous ground
             tiles.drawTiles(); // Draw initial tiles
-            sharedAssets.drawLogoAnimation(false);
+            sharedAssets.drawLogoAnimation(500, 109, 300, false);
             player.drawIdleAnimation(); // Draw the character idle animation if in start mode
             effectsManager.drawSparkles(deltaTime);// Draw continous particle effect
         } else {
@@ -164,7 +176,7 @@ public class PlayScreen implements Screen, HudListener {
                 coinManager.drawCoins();
 
                 if (!sharedAssets.isLogoAnimationFinished()) {
-                    sharedAssets.drawLogoAnimation(true);
+                    sharedAssets.drawLogoAnimation(500, 109, 300, true);
                 }
                 player.drawRunOrJump(); // Draw running or jumping animation depending on character state
 
@@ -183,7 +195,7 @@ public class PlayScreen implements Screen, HudListener {
                 float deathYPosition = background.getGroundHeight() / 2f;
                 effectsManager.drawLavaExplosion(deltaTime, deathXPosition, deathYPosition); // Draw lava explosion effect
 
-                if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) {
+                if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
                     resetGame();
                 }
             }
@@ -197,6 +209,11 @@ public class PlayScreen implements Screen, HudListener {
         }else {
             hud.render(deltaTime);
         }
+
+        if (player.isDead()){
+            Gdx.input.setInputProcessor(gameOverState.getStage());
+            gameOverState.render(deltaTime);
+        }
     }
 
     @Override
@@ -204,6 +221,7 @@ public class PlayScreen implements Screen, HudListener {
         viewport.update(width, height, true); // Adapt viewport after window size
         hud.resize(width, height);
         camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
+        gameOverState.resize(width, height);
         camera.update();
     }
 
@@ -219,7 +237,7 @@ public class PlayScreen implements Screen, HudListener {
 
     @Override
     public void hide() {
-
+        soundManager.stopBackgroundMusic();
     }
 
     @Override
@@ -229,6 +247,8 @@ public class PlayScreen implements Screen, HudListener {
         tiles.dispose();
         font.dispose();
         soundManager.dispose();
+        effectsManager.dispose();
+        stage.dispose();
     }
 
     /** Adjust the zoom of the camera to a given zoom position.
@@ -265,36 +285,35 @@ public class PlayScreen implements Screen, HudListener {
             camera.update();
         }
     }
-
-    /** Reset the game. */
-    private void resetGame() {
-        player.reset();
-        tiles.reset(); // Reset tiles to prepare for new game
-        scoreManager.reset(); // Reset score
-        coinManager.reset(); // Reset all coins
-        soundManager.setGameOverSoundPlayed(false);// Reset sound play flag
-        startMode = true; // Set flag to show start mode again
-        sharedAssets.setLogoAnimationTime(0); // Reset logo animation
-        effectsManager.resetLavaExplosion(); // Reset lava particle effect
-        sharedAssets.reset();
-    }
-
-    public void pauseGame(){
-        paused = true;
-    }
-
-    /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
-    private void drawPausedScreen(float deltaTime) {
+    private void pauseOpacity(float deltaTime) {
         game.spriteBatch.begin();
-
-        // Draw darkened background
-        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
-        game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // Set opacity to 70%
+        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0.0f); // clear screen with black color
+        game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // 70% opacity
         background.drawBackgroundSet(false, deltaTime);
-        game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
-
-        // Print "Paused" on screen
-        font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 25, Main.WORLD_HEIGHT / 2f);
+        game.spriteBatch.setColor(1f, 1f, 1f, 1f);
         game.spriteBatch.end();
     }
+
+    private <T extends Resettable<T>> void resetObject(T object) {
+        object.reset();
+    }
+
+    /** Reset the game. */
+    @Override
+    public void resetGame() {
+
+        resetObject(player);
+        resetObject(tiles); // Reset tiles to prepare for new game
+        resetObject(scoreManager); // Reset score
+        resetObject(coinManager); // Reset all coins
+        resetObject(soundManager); // Reset sound play flag
+        resetObject(effectsManager); // Reset lava particle effect
+        resetObject(sharedAssets);
+        resetObject(gameOverState);
+        startMode = true; // Set flag to show start mode again
+    }
+
+
+
+
 }

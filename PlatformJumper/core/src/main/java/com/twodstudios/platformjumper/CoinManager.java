@@ -9,16 +9,16 @@ import static com.badlogic.gdx.math.MathUtils.random;
 
 
 /** Class to generate, manage and handle Coin objects.*/
-public class CoinManager {
+public class CoinManager implements Resettable <CoinManager> {
 
-    private SpriteBatch spriteBatch;
-    private Tiles tiles;
+    private final SpriteBatch spriteBatch;
+    private final Tiles tiles;
 
     private float coinWidth;
     private float coinHeight;
     private float maxHeight; // Maximum y-coordinate for any coin
     private float minHeight; // Minimum y-coordinate for any coin
-    private float backgroundSpeed;
+    private final float backgroundSpeed;
     private float animationTime;
     private Array<Coin> coins; // Array to hold coin objects
     private Array<Float> tileXPositions;
@@ -91,7 +91,7 @@ public class CoinManager {
 
         // When cooldown time reaches 0, check to see if a new coin should be spawned
         if (cooldownTime == 0) {
-            
+
             // 50% chance of spawning coin on new tile
             if (random.nextFloat() < 0.5f) {
                 float screenRightEdge = Gdx.graphics.getWidth(); // Gets the x-position of the right edge of the screen
@@ -100,9 +100,9 @@ public class CoinManager {
 
                 float coinX = screenRightEdge;  // X-position of all coins will always be at the right edge of the screen
                 float coinY = getNewCoinHeight();  // Sets a randomly generated height for the coin (within reachable distance)
-                
+
                 // Add new Coin object to coins array with given positions
-                coins.add(new Coin(coinX, coinY, coinWidth, coinHeight)); 
+                coins.add(new Coin(coinX, coinY, coinWidth, coinHeight));
 
                 generateNewCooldownTime(); // Generate new cooldown time (Up to 5s)
             }
@@ -163,6 +163,7 @@ public class CoinManager {
     }
 
     /** Reset array of coins and the cooldown time for the coins spawn */
+    @Override
     public void reset(){
         coins.clear(); // Clear coin objects from array
         cooldownTime = 2f; // Reset cooldownTime to its default

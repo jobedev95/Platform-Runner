@@ -1,0 +1,58 @@
+
+high_score_skin.png
+size: 2048, 2048
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+Jersey10-Regular(1)
+  rotate: false
+  xy: 803, 1298
+  size: 505, 88
+  orig: 505, 88
+  offset: 0, 0
+  index: -1
+Jersey10-Regular(10)
+  rotate: false
+  xy: 1, 227
+  size: 505, 467
+  orig: 505, 467
+  offset: 0, 0
+  index: -1
+Jersey10-Regular(5)
+  rotate: false
+  xy: 1, 696
+  size: 505, 204
+  orig: 505, 204
+  offset: 0, 0
+  index: -1
+Jersey10-Regular(8)
+  rotate: false
+  xy: 1, 902
+  size: 506, 269
+  orig: 506, 269
+  offset: 0, 0
+  index: -1
+back_button_down
+  rotate: false
+  xy: 1, 1388
+  size: 800, 213
+  split: 0, 0, 0, 0
+  orig: 800, 213
+  offset: 0, 0
+  index: -1
+back_button_over
+  rotate: false
+  xy: 803, 1388
+  size: 800, 213
+  split: 0, 0, 0, 0
+  orig: 800, 213
+  offset: 0, 0
+  index: -1
+back_button_up
+  rotate: false
+  xy: 1, 1173
+  size: 800, 213
+  split: 0, 0, 0, 0
+  orig: 800, 213
+  offset: 0, 0
+  index: -1

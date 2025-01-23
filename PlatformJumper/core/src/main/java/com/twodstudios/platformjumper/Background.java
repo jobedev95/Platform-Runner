@@ -9,24 +9,24 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
  */
 public class Background {
 
-    private Main game;
+    private final Main game;
 
     // Textures
-    private TextureAtlas atlas; // Texture atlas object.
-    private TextureRegion[] backgroundImages; // Array of texture regions.
-    private TextureRegion ground;
+    private final TextureAtlas atlas; // Texture atlas object.
+    private final TextureRegion[] backgroundImages; // Array of texture regions.
+    private final TextureRegion ground;
 
     // Background variables
-    private float[][] bgXPositions;
+    private final float[][] bgXPositions;
     private float backgroundSpeed;
-    private float[] speeds; // Array that will store different speeds for the parallax background textures.
+    private final float[] speeds; // Array that will store different speeds for the parallax background textures.
 
     // Ground variables
     private float groundXPosition = 0;
-    private int groundWidth;
-    private int groundHeight;
-    private int numOfGrounds;
-    private int totalDuplicateGrounds;
+    private final int groundWidth;
+    private final int groundHeight;
+    private final int numOfGrounds;
+    private final int totalDuplicateGrounds;
 
     /**
      * Constructor for the Background class.

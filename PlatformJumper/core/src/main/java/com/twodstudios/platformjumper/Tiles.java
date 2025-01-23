@@ -11,10 +11,10 @@ import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
 /** Class to create and manage Tile objects. */
-public class Tiles {
+public class Tiles implements Resettable <Tiles> {
 
-    private SpriteBatch spriteBatch;
-    private float backgroundSpeed;
+    private final SpriteBatch spriteBatch;
+    private final float backgroundSpeed;
     private TextureAtlas atlas;
     private TextureRegion textureRegion = new TextureRegion();
     private Array<Float> xPositions;
@@ -23,12 +23,12 @@ public class Tiles {
     private int tileWidth;
     private int tileHeight;
 
-    private float minTileDistance = 300; // Minimum horizontal distance between each tile
-    private float maxTileDistance = 600; // Maximum horizontal distance between each tile
-    private float minVerticalDistance = 130; // Minimum vertical distance (height difference) between each tile
-    private float maxVerticalDistance = 170; // Maximum vertical distance (height difference) between each tile
+    private final float minTileDistance = 300; // Minimum horizontal distance between each tile
+    private final float maxTileDistance = 600; // Maximum horizontal distance between each tile
+    private final float minVerticalDistance = 130; // Minimum vertical distance (height difference) between each tile
+    private final float maxVerticalDistance = 170; // Maximum vertical distance (height difference) between each tile
     private float maxHeight; // Maximum Y-coordinate for any tile
-    private float minHeight = 64;
+    private final float minHeight = 64;
 
     /**
      * Create a new instance of Tiles to create and manage tiles.
@@ -113,7 +113,7 @@ public class Tiles {
         float randomHeight;
         float verticalDistance;
         float heightRange = maxTileHeight - minTileHeight; // Total height range
-        
+
         do {
             // Generate a random float between minTileHeight and heightRange
             randomHeight = minTileHeight + random.nextFloat() * heightRange;
@@ -147,8 +147,8 @@ public class Tiles {
         // Set position of rectangle representing the tile
         rectangle.setPosition(getXPosition(tileNumber), getYPosition(tileNumber));
     }
-    
- 
+
+
 
     /** Get X-position of one specific active tile. */
     public float getXPosition(int tileNumber) {
@@ -194,6 +194,7 @@ public class Tiles {
     }
 
     /** Reset all tile position arrays and prepare tiles for a new game. */
+    @Override
     public void reset(){
         xPositions.clear(); // Clear X-position of tiles
         yPositions.clear(); // Clear Y-position of tiles

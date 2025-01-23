@@ -6,17 +6,17 @@ import com.badlogic.gdx.utils.Array;
 /** Class to handle all physics and collision checks in the game. */
 public class PhysicsManager {
 
-    private Player player;
-    private Tiles tiles;
-    private Array<Coin> coins;
-    private SoundManager soundManager;
-    private ScoreUpdater scoreUpdater;
+    private final Player player;
+    private final Tiles tiles;
+    private final Array<Coin> coins;
+    private final SoundManager soundManager;
+    private final ScoreUpdater scoreUpdater;
     private Array<Float> tileXPositions;
     private Array<Float> tileYPositions;
     private Rectangle playerRectangle;
     private Rectangle tileRectangle;
     private int tileHeight;
-    private float gravity = 980f;
+    private final float gravity = 980f;
 
     /**
      * Create instance of PhysicsManager.
@@ -81,11 +81,12 @@ public class PhysicsManager {
             if (playerRectangle.overlaps(coin.getRectangle())) {
                 coins.removeIndex(i);
                 scoreUpdater.increaseScore();
+                soundManager.coinPickupSound();
                 break;
             }
         }
     }
-    
+
     /** Checks if player has collided with the ground. Sets player state to dead after collision is confirmed. */
     private void checkGroundCollision(){
         // Logic that checks if character touches the ground
@@ -95,8 +96,9 @@ public class PhysicsManager {
             player.setAnimationTime(0); // Reset animation time so death animation starts at first animation frame
             player.setVerticalVelocity(0f); // Set velocity to 0 to stop character from falling
             player.setJumping(false); // Stop jumping animation instantly
-
+            soundManager.stopBackgroundMusic(); // Stop background music
             soundManager.playGameOverSound(); // Play game over sound
+
 
         }
     }
