@@ -98,7 +98,7 @@ public class StartMenu implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 if (isMenuActive) {
-                    //game.setScreen(new HighscoreScreen()); // avkommentera när highscore är med
+                    game.setScreen(new HighscoreScreen(game)); // avkommentera när highscore är med
                     isMenuActive = false;
                 }
 
