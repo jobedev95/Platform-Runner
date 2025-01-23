@@ -6,7 +6,7 @@ Platform Runner är ett så kallat "Jump N Run" spel, det går ut på att när s
 Platform Runner ligger för nuvarnde fortfarande i utvecklingsfas men spelet har utvecklats tillräckligt mycket för att kunna erbjudas för spelare som en testvariant. Skulle tillräckligt med intresse skapas kan planer för vidare utveckling med nya banor, funktioner etc kunna komma att fullföljas.
 
 ## Installation
-Se till att ha Java-23 installerat. Om inte installera via deras hemsida
+Se till att ha Java-8 installerat. Om inte installera via deras hemsida
 * https://www.oracle.com/java/technologies/downloads/
   
 Se till att ha en IDE installerad. Om inte rekommenderas IntelliJ IDEA.
