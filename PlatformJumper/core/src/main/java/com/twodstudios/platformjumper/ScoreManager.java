@@ -44,11 +44,14 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
 
         Array<Integer> scores = new Array<>();
 
-        for (int i = 0; i < highScoreObject.highScores.size; i++){
-            scores.add(highScoreObject.highScores.get(i).score);
-            System.out.println(highScoreObject.highScores.get(i).score); // Get score from one specific user // 950
+        if (!highScoreObject.highScores.isEmpty()){
+            for (int i = 0; i < highScoreObject.highScores.size; i++){
+                scores.add(highScoreObject.highScores.get(i).score);
+                System.out.println(highScoreObject.highScores.get(i).score); // Get score from one specific user // 950
+            }
+        } else {
+            scores.addAll(0, 0, 0);
         }
-
         return scores;
     }
 
@@ -58,9 +61,14 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
     public Array<String> getNames(){
         Array<String> names = new Array<>();
 
-        for (int i = 0; i < highScoreObject.highScores.size; i++){
-            names.add(highScoreObject.highScores.get(i).name.toUpperCase());
+        if (!highScoreObject.highScores.isEmpty()){
+            for (int i = 0; i < highScoreObject.highScores.size; i++){
+                names.add(highScoreObject.highScores.get(i).name.toUpperCase());
+            }
+        } else {
+            names.addAll("---", "---", "---");
         }
+
         return names;
     }
 
