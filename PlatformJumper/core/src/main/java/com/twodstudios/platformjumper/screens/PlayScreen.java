@@ -53,8 +53,6 @@ public class PlayScreen implements Screen, ResetListener {
     private float newZoomLevel = 1f; // Game Mode zoom level
     private float zoomSpeed = 0.05f; // Camera zoom speed
 
-    // Pause state
-    private boolean paused = false;
 
     // Constructor
     public PlayScreen(Main game){
@@ -81,7 +79,7 @@ public class PlayScreen implements Screen, ResetListener {
         gameOverState = new GameOverState(this, scoreManager);
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
-        pauseState = new PauseState(game, sharedAssets);
+        pauseState = new PauseState(game,sharedAssets);
 
         // Camera and Viewport
         camera = new OrthographicCamera();
@@ -101,17 +99,17 @@ public class PlayScreen implements Screen, ResetListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
 
-        // Toggle pause state if "p" is pressed
+        // Kolla om "P" trycks för att toggla pausläget
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            paused = !paused;
+            pauseState.togglePause();
         }
 
-        // If game is paused show pause screen and stop game logic
-        if (paused) {
+        // Om spelet är pausat, rendera pausmenyn och returnera
+        if (pauseState.isPaused()) {
             pauseState.render();
             return;
         }
-
+        player.updateAnimationTime(deltaTime);
         // Update animation times
         player.updateAnimationTime(deltaTime);
         sharedAssets.updateMainLogoAnimationTime(deltaTime);

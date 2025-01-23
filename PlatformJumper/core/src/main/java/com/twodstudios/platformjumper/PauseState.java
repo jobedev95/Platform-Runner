@@ -35,9 +35,9 @@ public class PauseState {
 
         this.uiCreated = false; // Flag to check if UI has been created
         this.paused = false;
+
         // Load the skin
         this.skin = new Skin(Gdx.files.internal("atlas/main_menu.json"));
-
 
         // Create stage and table
         this.stage = new Stage(new ScreenViewport());
@@ -49,7 +49,7 @@ public class PauseState {
         this.uiCreated = false; // Flag to check if UI has been created
     }
 
-    private void createPauseUI(){
+    private void createPauseUI() {
         // Resume Button
         resumeButton = new ImageButton(skin, "play_button");
         resumeButton.addListener(new ClickListener() {
@@ -75,13 +75,24 @@ public class PauseState {
         this.uiCreated = true;
     }
 
-    public void render(){
-        // Create the game over UI if it hasn't been created already
-        if (!uiCreated){
+    public void render() {
+        // Create the pause UI if it hasn't been created already
+        if (!uiCreated) {
             createPauseUI();
         }
         Gdx.input.setInputProcessor(stage);
         stage.act();
         stage.draw();
     }
+
+    // Getter för pausstatus
+    public boolean isPaused() {
+        return paused;
+    }
+
+    // Toggle pausläget
+    public void togglePause() {
+        paused = !paused;
+    }
 }
+
