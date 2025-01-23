@@ -10,7 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 import static com.twodstudios.platformjumper.AnimationManager.*;
 
-public class Player {
+public class Player implements Resettable <Player> {
 
     private SpriteBatch spriteBatch;
 
@@ -234,16 +234,17 @@ public class Player {
         this.verticalVelocity += changeBy;
     }
 
+    /** Dispose of player assets. */
+    public void dispose(){
+        atlas.dispose();
+    }
+
     /** Reset all necessary variables in preparation for a new game */
-    public void reset(){
+    @Override
+    public void reset() {
         yPosition = 135f; // Reset player Y-position
         verticalVelocity = 0f; // Reset vertical speed of player
         isDead = false; // Set dead flag to false
         isJumping = false; // Set jumping flag to false
-    }
-
-    /** Dispose of player assets. */
-    public void dispose(){
-        atlas.dispose();
     }
 }

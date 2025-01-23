@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEmitter;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /** Manages all ParticleEffect objects.*/
-public class EffectsManager {
+public class EffectsManager implements Resettable <EffectsManager>{
     private SpriteBatch spriteBatch;
 
     // Particle effects
@@ -98,7 +98,7 @@ public class EffectsManager {
     }
 
     /** Reset the lava explosion animation. */
-    public void resetLavaExplosion(){
+    private void resetLavaExplosion(){
         explosionStarted = false;
         if (lavaExplosionParticleEffect != null){
             lavaExplosionParticleEffect.reset();
@@ -119,5 +119,10 @@ public class EffectsManager {
         if(lavaExplosionParticleEffect != null) {
             lavaExplosionParticleEffect.dispose();
         }
+    }
+
+    @Override
+    public void reset() {
+        resetLavaExplosion();
     }
 }

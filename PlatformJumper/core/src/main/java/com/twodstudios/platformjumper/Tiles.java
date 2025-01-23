@@ -11,7 +11,7 @@ import static com.badlogic.gdx.math.MathUtils.random;
 import static java.lang.Math.abs;
 
 /** Class to create and manage Tile objects. */
-public class Tiles {
+public class Tiles implements Resettable <Tiles> {
 
     private SpriteBatch spriteBatch;
     private float backgroundSpeed;
@@ -113,7 +113,7 @@ public class Tiles {
         float randomHeight;
         float verticalDistance;
         float heightRange = maxTileHeight - minTileHeight; // Total height range
-        
+
         do {
             // Generate a random float between minTileHeight and heightRange
             randomHeight = minTileHeight + random.nextFloat() * heightRange;
@@ -147,8 +147,8 @@ public class Tiles {
         // Set position of rectangle representing the tile
         rectangle.setPosition(getXPosition(tileNumber), getYPosition(tileNumber));
     }
-    
- 
+
+
 
     /** Get X-position of one specific active tile. */
     public float getXPosition(int tileNumber) {
@@ -194,6 +194,7 @@ public class Tiles {
     }
 
     /** Reset all tile position arrays and prepare tiles for a new game. */
+    @Override
     public void reset(){
         xPositions.clear(); // Clear X-position of tiles
         yPositions.clear(); // Clear Y-position of tiles

@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
 /** Handles player game scores. */
-public class ScoreManager implements ScoreUpdater{
+public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
 
     private int score;
     private FileHandle file;
@@ -33,7 +33,7 @@ public class ScoreManager implements ScoreUpdater{
 
         if (file.exists()){
             highScoreObject = json.fromJson(HighScores.class, file.readString()); // Return parsed file as HighScores object
-            System.out.println("Loaded high scores from file: " + highScoreObject.highScores);
+            //System.out.println("Loaded high scores from file: " + highScoreObject.highScores);
         } else {
             System.out.println("File not found.");
             highScoreObject = new HighScores();
@@ -54,9 +54,7 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     /**
-     * may be used in the future, to populate the score board
-     * @param highScoreObject
-     * @return
+     * Get scoreboard names
      */
     public Array<String> getNames(){
         Array<String> names = new Array<>();
@@ -112,6 +110,7 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     /** Reset player score. */
+    @Override
     public void reset(){
         score = 0; // Reset score
     }

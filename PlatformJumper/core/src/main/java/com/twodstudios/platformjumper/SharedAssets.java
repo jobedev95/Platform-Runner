@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import static com.twodstudios.platformjumper.AnimationManager.*;
 
 /** Class to handle any assets that will be shared among multiple classes. */
-public class SharedAssets {
+public class SharedAssets implements Resettable <SharedAssets>{
 
     private SpriteBatch spriteBatch;
 
@@ -79,14 +79,11 @@ public class SharedAssets {
         return isLogoAnimationFinished;
     }
 
-    /** Set logo animation time with given value. */
-    public void setLogoAnimationTime(float logoAnimationTime) {
-        this.logoAnimationTime = logoAnimationTime;
-    }
-
     /** Reset shared assets. */
+    @Override
     public void reset(){
         isLogoAnimationFinished = false;
+        this.logoAnimationTime = 0;
     }
 
     /** Dispose of shared assets. */

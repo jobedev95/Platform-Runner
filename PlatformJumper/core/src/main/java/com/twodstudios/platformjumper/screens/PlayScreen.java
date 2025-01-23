@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,7 +20,7 @@ import com.twodstudios.platformjumper.*;
 
 
 
-public class PlayScreen implements Screen, ResetListener {
+public class PlayScreen implements Screen, GameOverListener {
 
     private Main game;
 
@@ -274,20 +273,23 @@ public class PlayScreen implements Screen, ResetListener {
         }
     }
 
+    private <T extends Resettable<T>> void resetObject(T object) {
+        object.reset();
+    }
+
     /** Reset the game. */
     @Override
     public void resetGame() {
-        player.reset();
-        tiles.reset(); // Reset tiles to prepare for new game
-        scoreManager.reset(); // Reset score
-        coinManager.reset(); // Reset all coins
-        soundManager.setGameOverSoundPlayed(false);// Reset sound play flag
-        sharedAssets.setLogoAnimationTime(0); // Reset logo animation
-        effectsManager.resetLavaExplosion(); // Reset lava particle effect
-        sharedAssets.reset();
-        gameOverState.reset();
+
+        resetObject(player);
+        resetObject(tiles); // Reset tiles to prepare for new game
+        resetObject(scoreManager); // Reset score
+        resetObject(coinManager); // Reset all coins
+        resetObject(soundManager); // Reset sound play flag
+        resetObject(effectsManager); // Reset lava particle effect
+        resetObject(sharedAssets);
+        resetObject(gameOverState);
         startMode = true; // Set flag to show start mode again
-        soundManager.backgroundMusic();
     }
 
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */

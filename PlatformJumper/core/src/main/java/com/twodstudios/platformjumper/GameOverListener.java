@@ -1,5 +1,5 @@
 package com.twodstudios.platformjumper;
 
-public interface ResetListener {
+public interface GameOverListener {
     public void resetGame();
 }
