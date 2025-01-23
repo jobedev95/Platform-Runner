@@ -244,6 +244,10 @@ public class GameOverState implements Resettable <GameOverState>{
     });
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     /** Sets the text input field to show "Invalid" with a red background. */
     public void setNameInvalidMessage(){
         stage.unfocus(textField); // Removes the focus from the text field
@@ -262,7 +266,7 @@ public class GameOverState implements Resettable <GameOverState>{
         stage.getViewport().update(width, height, true);
     }
 
-    public void render(){
+    public void render(float deltaTime){
         updateScore();
 
         // Create the game over UI if it hasn't been created already
@@ -270,7 +274,8 @@ public class GameOverState implements Resettable <GameOverState>{
             createGameOverUI();
         }
 
-        stage.act();
+        Gdx.input.setInputProcessor(stage);
+        stage.act(deltaTime);
         stage.draw();
     }
 

@@ -42,7 +42,7 @@ public class SoundManager implements Resettable <SoundManager> {
     /** Plays backgroundMusic while playing */
     public void backgroundMusic(){
         backgroundMusic.setLooping(true);
-        backgroundMusic.setVolume(0.5f);
+        backgroundMusic.setVolume(0.2f);
         backgroundMusic.play();
     }
 
@@ -54,7 +54,7 @@ public class SoundManager implements Resettable <SoundManager> {
     /** Plays menuMusic while on start screen */
     public void menuMusic(){
         menuMusic.setLooping(true);
-        menuMusic.setVolume(0.5f);
+        menuMusic.setVolume(0.2f);
         menuMusic.play();
     }
 
@@ -64,7 +64,7 @@ public class SoundManager implements Resettable <SoundManager> {
     }
     /** Plays coinPickup sound when coin collected */
     public void coinPickupSound(){
-        coinPickupSound.play(0.6f);
+        coinPickupSound.play(0.2f);
     }
     /** Dispose of SoundManager assets. */
     public void dispose(){
