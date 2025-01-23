@@ -13,8 +13,8 @@ import static java.lang.Math.abs;
 /** Class to create and manage Tile objects. */
 public class Tiles implements Resettable <Tiles> {
 
-    private SpriteBatch spriteBatch;
-    private float backgroundSpeed;
+    private final SpriteBatch spriteBatch;
+    private final float backgroundSpeed;
     private TextureAtlas atlas;
     private TextureRegion textureRegion = new TextureRegion();
     private Array<Float> xPositions;
@@ -23,12 +23,12 @@ public class Tiles implements Resettable <Tiles> {
     private int tileWidth;
     private int tileHeight;
 
-    private float minTileDistance = 300; // Minimum horizontal distance between each tile
-    private float maxTileDistance = 600; // Maximum horizontal distance between each tile
-    private float minVerticalDistance = 130; // Minimum vertical distance (height difference) between each tile
-    private float maxVerticalDistance = 170; // Maximum vertical distance (height difference) between each tile
+    private final float minTileDistance = 300; // Minimum horizontal distance between each tile
+    private final float maxTileDistance = 600; // Maximum horizontal distance between each tile
+    private final float minVerticalDistance = 130; // Minimum vertical distance (height difference) between each tile
+    private final float maxVerticalDistance = 170; // Maximum vertical distance (height difference) between each tile
     private float maxHeight; // Maximum Y-coordinate for any tile
-    private float minHeight = 64;
+    private final float minHeight = 64;
 
     /**
      * Create a new instance of Tiles to create and manage tiles.

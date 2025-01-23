@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 /** Manages all ParticleEffect objects.*/
 public class EffectsManager implements Resettable <EffectsManager>{
-    private SpriteBatch spriteBatch;
+    private final SpriteBatch spriteBatch;
 
     // Particle effects
     private ParticleEffect sparklesParticleEffect;

@@ -19,28 +19,28 @@ import com.twodstudios.platformjumper.SharedAssets;
 import com.twodstudios.platformjumper.SoundManager;
 
 public class StartMenu implements Screen {
-    private Main game;
-    private SharedAssets sharedAssets;
-    private EffectsManager effectsManager;
-    private Stage stage;
-    private Table table;
-    private OrthographicCamera camera;
-    private Viewport viewport;
-    private SoundManager soundManager;
+    private final Main game;
+    private final SharedAssets sharedAssets;
+    private final EffectsManager effectsManager;
+    private final Stage stage;
+    private final Table table;
+    private final OrthographicCamera camera;
+    private final Viewport viewport;
+    private final SoundManager soundManager;
 
     // Bakgrund
     private final Texture backgroundImage;
     private float bg1XPosition;
     private float bg2XPosition;
-    private float backgroundSpeed = 15f;
-    private float backgroundWidth = Main.WORLD_WIDTH;
+    private final float backgroundSpeed = 15f;
+    private final float backgroundWidth = Main.WORLD_WIDTH;
 
     // Flagga för att kontrollera om knapparna ska vara aktiva
     private boolean isMenuActive = true;
 
     // Button sizes
-    private int buttonWidth = 265;
-    private int buttonHeigth = 70;
+    private final int buttonWidth = 265;
+    private final int buttonHeigth = 70;
 
 
     public StartMenu(Main game, SharedAssets sharedAssets) {
@@ -89,7 +89,7 @@ public class StartMenu implements Screen {
             }
         });
 
-        table.add(startButton).size(buttonWidth, buttonHeigth).pad(10);;
+        table.add(startButton).size(buttonWidth, buttonHeigth).pad(10);
         table.row();
 
         // Highscore-knapp
@@ -105,7 +105,7 @@ public class StartMenu implements Screen {
             }
         });
 
-        table.add(highscoreButton).size(buttonWidth, buttonHeigth).pad(10);;
+        table.add(highscoreButton).size(buttonWidth, buttonHeigth).pad(10);
         table.row();
 
         // Exit-knapp
@@ -117,7 +117,7 @@ public class StartMenu implements Screen {
             }
         });
 
-        table.add(quitButton).size(buttonWidth, buttonHeigth).pad(10);;
+        table.add(quitButton).size(buttonWidth, buttonHeigth).pad(10);
         stage.addActor(table);
     }
 
