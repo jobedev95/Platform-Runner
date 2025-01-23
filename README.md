@@ -35,6 +35,10 @@ När spelet startats upp kommer du till en huvudmeny med tre val.
 * SharedAssets.java hanterar assets för alla klasserna.
 * SoundManager.java hanterar ljud/musik för alla klasserna
 * Tiles.java hanterar skapandet av plattorna man springer på.
+* Screens hanterar de olika skärmarna.
+    * Highscorescreen: Poängskärmen.
+    * PlayScreen: Spelskärmen.
+    * StartMenu: Startskärmen.
 
 
 ## Förenklad filstruktur:
@@ -43,23 +47,66 @@ När spelet startats upp kommer du till en huvudmeny med tre val.
 │   └── bed.md
 ├── high_scores.json
 ├── PlatformJumper
-│   ├── assets # Innehåller alla assets för spelet
+│   ├── assets
 │   │   ├── assets.txt
-│   │   ├── atlas # Karaktär, mynt, lava, logo, meny
-│   │   ├── effects # Partikel effekter 
+│   │   ├── atlas
+│   │   │   ├── character.atlas
+│   │   │   ├── character.png
+│   │   │   ├── coin.atlas
+│   │   │   ├── coin.png
+│   │   │   ├── lava_theme.atlas
+│   │   │   ├── lava_theme.png
+│   │   │   ├── main_logo2.png
+│   │   │   ├── main_logo3.png
+│   │   │   ├── main_logo4.png
+│   │   │   ├── main_logo.atlas
+│   │   │   ├── main_logo.png
+│   │   │   ├── main_menu.atlas
+│   │   │   ├── main_menu.json
+│   │   │   └── main_menu.png
+│   │   ├── coin.png
+│   │   ├── effects
+│   │   │   ├── fire_ball.png
+│   │   │   ├── fire_line.png
+│   │   │   ├── gold_line.png
+│   │   │   ├── lava_explosion.p
+│   │   │   ├── lava_sparkles.p
+│   │   │   ├── main_menu_sparkles.p
+│   │   │   ├── particle.png
+│   │   │   ├── particle_star.png
+│   │   │   └── trace_06.png
+│   │   ├── fonts
+│   │   │   └── Jersey10-Regular.ttf
 │   │   ├── gameover_background.png
+│   │   ├── high_score_skin.atlas
+│   │   ├── high_score_skin.json
+│   │   ├── high_score_skin.png
+│   │   ├── Jersey10-Regular(10).fnt
+│   │   ├── Jersey10-Regular(1).fnt
+│   │   ├── Jersey10-Regular(5).fnt
+│   │   ├── Jersey10-Regular(8).fnt
 │   │   ├── menu_background.png
-│   │   ├── skins # Skins
-│   │   ├── sounds # Musik, ljudeffekt, Credits
+│   │   ├── skins
+│   │   │   ├── game_over_skin.atlas
+│   │   │   ├── game_over_skin.json
+│   │   │   ├── game_over_skin.png
+│   │   │   ├── jersey10-75.fnt
+│   │   │   ├── Rationale-Regular(1).fnt
+│   │   │   ├── Rationale-Regular(2).fnt
+│   │   │   ├── Rationale-Regular(3).fnt
+│   │   │   ├── Rationale-Regular(4).fnt
+│   │   │   ├── Rationale-Regular(5).fnt
+│   │   │   ├── Rationale-Regular(6).fnt
+│   │   │   └── Rationale-Regular.fnt
+│   │   ├── sounds
+│   │   │   ├── backgroundMusic.ogg
+│   │   │   ├── coinPickup.wav
+│   │   │   ├── Credits
+│   │   │   ├── gameOver.wav
+│   │   │   └── menuMusic.ogg
 │   │   └── tile.png
-│   ├── build.gradle
 │   ├── core
-│   │   ├── build
-│   │   │   ├── libs
-│   │   │   │   
-│   │   │   └── tmp
-│   │   ├── build.gradle
-│   │   └── src # De olika javaklasserna
+│   │   └── src
 │   │       └── main
 │   │           └── java
 │   │               └── com
@@ -70,30 +117,28 @@ När spelet startats upp kommer du till en huvudmeny med tre val.
 │   │                           ├── Coin.java
 │   │                           ├── CoinManager.java
 │   │                           ├── EffectsManager.java
+│   │                           ├── GameOverListener.java
 │   │                           ├── GameOverState.java
 │   │                           ├── HighScores.java
 │   │                           ├── Main.java
+│   │                           ├── PauseState.java
 │   │                           ├── PhysicsManager.java
 │   │                           ├── Player.java
-│   │                           ├── ResetListener.java
+│   │                           ├── Resettable.java
 │   │                           ├── Score.java
 │   │                           ├── ScoreManager.java
 │   │                           ├── ScoreUpdater.java
 │   │                           ├── screens
+│   │                           │   ├── HighscoreScreen.java
 │   │                           │   ├── PlayScreen.java
 │   │                           │   └── StartMenu.java
 │   │                           ├── SharedAssets.java
 │   │                           ├── SoundManager.java
 │   │                           └── Tiles.java
-│   ├── gradle
-│   ├── gradle.properties
-│   ├── gradlew
-│   ├── gradlew.bat
-│   ├── high_scores.json
-│   ├── lwjgl3
 │   ├── README.md
 │   └── settings.gradle
 └── README.md
+
 ```
 ## Byggt med:
 * Java: Programmeringsspråket för projektet.
