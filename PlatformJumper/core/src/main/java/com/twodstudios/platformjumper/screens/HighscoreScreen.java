@@ -27,19 +27,19 @@ import java.util.regex.Pattern;
 
 public class HighscoreScreen implements Screen {
 
-    private Main game;
-    private List<HighscoreEntry> highscores;
-    private EffectsManager effectsManager;
-    private SoundManager soundManager;
-    private Stage stage;
-    private Table table;
-    private Skin skin;
-    private Texture backgroundImage;
+    private final Main game;
+    private final List<HighscoreEntry> highscores;
+    private final EffectsManager effectsManager;
+    private final SoundManager soundManager;
+    private final Stage stage;
+    private final Table table;
+    private final Skin skin;
+    private final Texture backgroundImage;
 
     private float bg1XPosition;
     private float bg2XPosition;
-    private float backgroundSpeed = 15f;
-    private float backgroundWidth = Main.WORLD_WIDTH;
+    private final float backgroundSpeed = 15f;
+    private final float backgroundWidth = Main.WORLD_WIDTH;
     private final Viewport viewport;
 
     private boolean isMenuActive = true;

@@ -10,13 +10,14 @@ import static com.twodstudios.platformjumper.AnimationManager.*;
 * Class to create and handle Coin objects.
 */
 public class Coin {
-    private float x, y;
-    private float width;
-    private float height;
+    private float x;
+    private final float y;
+    private final float width;
+    private final float height;
     private TextureAtlas atlas;
-    private TextureRegion[] textureRegions = new TextureRegion[10];
+    private final TextureRegion[] textureRegions = new TextureRegion[10];
     private Animation<TextureRegion> animation;
-    private Rectangle rectangle;
+    private final Rectangle rectangle;
 
     /**
      * Create a Coin object.

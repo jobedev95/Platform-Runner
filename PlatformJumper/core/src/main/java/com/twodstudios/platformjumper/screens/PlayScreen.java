@@ -22,7 +22,7 @@ import com.twodstudios.platformjumper.*;
 
 public class PlayScreen implements Screen, GameOverListener {
 
-    private Main game;
+    private final Main game;
 
     public SpriteBatch spriteBatch;
 
@@ -32,7 +32,7 @@ public class PlayScreen implements Screen, GameOverListener {
     private ScoreManager scoreManager;
     private PhysicsManager physicsManager;
     private CoinManager coinManager;
-    private SharedAssets sharedAssets;
+    private final SharedAssets sharedAssets;
     private EffectsManager effectsManager;
     private GameOverState gameOverState;
     private PauseState pauseState;
@@ -41,7 +41,7 @@ public class PlayScreen implements Screen, GameOverListener {
 
     // Background variables
     private Background background;
-    private float backgroundSpeed = 300f; // Background movement speed
+    private final float backgroundSpeed = 300f; // Background movement speed
 
     // Camera and Viewport
     private OrthographicCamera camera;
@@ -49,9 +49,9 @@ public class PlayScreen implements Screen, GameOverListener {
 
     // Start Mode variables
     private boolean startMode = true; // Flag to initiate the start screen
-    private float initialCameraZoom = 5.0f; // Initial zoom for camera in start mode
-    private float newZoomLevel = 1f; // Game Mode zoom level
-    private float zoomSpeed = 0.05f; // Camera zoom speed
+    private final float initialCameraZoom = 5.0f; // Initial zoom for camera in start mode
+    private final float newZoomLevel = 1f; // Game Mode zoom level
+    private final float zoomSpeed = 0.05f; // Camera zoom speed
 
 
     // Constructor

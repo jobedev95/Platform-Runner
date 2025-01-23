@@ -6,17 +6,17 @@ import com.badlogic.gdx.utils.Array;
 /** Class to handle all physics and collision checks in the game. */
 public class PhysicsManager {
 
-    private Player player;
-    private Tiles tiles;
-    private Array<Coin> coins;
-    private SoundManager soundManager;
-    private ScoreUpdater scoreUpdater;
+    private final Player player;
+    private final Tiles tiles;
+    private final Array<Coin> coins;
+    private final SoundManager soundManager;
+    private final ScoreUpdater scoreUpdater;
     private Array<Float> tileXPositions;
     private Array<Float> tileYPositions;
     private Rectangle playerRectangle;
     private Rectangle tileRectangle;
     private int tileHeight;
-    private float gravity = 980f;
+    private final float gravity = 980f;
 
     /**
      * Create instance of PhysicsManager.

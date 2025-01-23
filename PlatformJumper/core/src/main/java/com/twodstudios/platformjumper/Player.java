@@ -12,12 +12,12 @@ import static com.twodstudios.platformjumper.AnimationManager.*;
 
 public class Player implements Resettable <Player> {
 
-    private SpriteBatch spriteBatch;
+    private final SpriteBatch spriteBatch;
 
     // Player variables
-    private int width;
-    private int height;
-    private float xPosition;
+    private final int width;
+    private final int height;
+    private final float xPosition;
     private float yPosition;
     private float animationTime; // Time since start of animation
     private float verticalVelocity = 0f; // Speed of which player moves up or down
@@ -26,10 +26,10 @@ public class Player implements Resettable <Player> {
 
     // Player Texture Atlas, Texture Regions & Animation Objects
     private TextureAtlas atlas; // Atlas with all player animation frames
-    private TextureRegion[] idleTextureRegions = new TextureRegion[10];
-    private TextureRegion[] runningTextureRegions = new TextureRegion[10];
-    private TextureRegion[] jumpingTextureRegions = new TextureRegion[10];
-    private TextureRegion[] deadTextureRegions = new TextureRegion[10];
+    private final TextureRegion[] idleTextureRegions = new TextureRegion[10];
+    private final TextureRegion[] runningTextureRegions = new TextureRegion[10];
+    private final TextureRegion[] jumpingTextureRegions = new TextureRegion[10];
+    private final TextureRegion[] deadTextureRegions = new TextureRegion[10];
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> runningAnimation;
     private Animation<TextureRegion> jumpingAnimation;

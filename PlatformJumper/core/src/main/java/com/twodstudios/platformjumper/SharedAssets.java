@@ -12,11 +12,11 @@ import static com.twodstudios.platformjumper.AnimationManager.*;
 /** Class to handle any assets that will be shared among multiple classes. */
 public class SharedAssets implements Resettable <SharedAssets>{
 
-    private SpriteBatch spriteBatch;
+    private final SpriteBatch spriteBatch;
 
     // Main logo variables
     private TextureAtlas logoAtlas;
-    private TextureRegion[] logoTextureRegions = new TextureRegion[66];
+    private final TextureRegion[] logoTextureRegions = new TextureRegion[66];
     private Animation<TextureRegion> logoAnimation;
     private float logoAnimationTime; // Time since start of main logo animation
     private boolean isLogoAnimationFinished;
