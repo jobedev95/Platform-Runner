@@ -6,8 +6,16 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.*;
 
@@ -54,7 +62,12 @@ public class PlayScreen implements Screen, ResetListener {
         this.spriteBatch = game.spriteBatch;
         this.sharedAssets = game.sharedAssets;
     }
-
+    // fields for stage and table
+    private Stage stage;
+    private Table table;
+    // buttons sizes
+    private int buttonWidth = 265;
+    private int buttonHeight = 70;
     @Override
     public void show() {
         // Creating bitmap font object
@@ -81,6 +94,14 @@ public class PlayScreen implements Screen, ResetListener {
         background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
         // play background music
         soundManager.backgroundMusic();
+        // stage and tables
+        stage = new Stage(new ScreenViewport());
+        Gdx.input.setInputProcessor(stage);
+        table = new Table();
+        table.setFillParent(true);
+        table.center().padTop(100);
+        table.setSize(200, 400);
+        createPauseMenuButtons();
     }
 
     @Override
@@ -215,6 +236,7 @@ public class PlayScreen implements Screen, ResetListener {
         font.dispose();
         soundManager.dispose();
         effectsManager.dispose();
+        stage.dispose();
     }
 
     /** Adjust the zoom of the camera to a given zoom position.
@@ -271,15 +293,32 @@ public class PlayScreen implements Screen, ResetListener {
     /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
     private void drawPausedScreen(float deltaTime) {
         game.spriteBatch.begin();
-
-        // Draw darkened background
-        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
-        game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // Set opacity to 70%
-        background.drawBackgroundSet(false, deltaTime);
-        game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
-
-        // Print "Paused" on screen
-        font.draw(game.spriteBatch, "Paused", Main.WORLD_WIDTH / 2f - 25, Main.WORLD_HEIGHT / 2f);
+        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/ 30f));
+        stage.draw();
         game.spriteBatch.end();
+    }
+    private void createPauseMenuButtons() {
+        Skin skin = new Skin(Gdx.files.internal("atlas/main_menu.json"));
+        // Resume Button
+        ImageButton resumeButton = new ImageButton(skin, "play_button");
+        resumeButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                paused = false; // resumes the game
+            }
+        });
+        // Main menu button
+        ImageButton mainMenuButton = new ImageButton(skin, "quit_button");
+        mainMenuButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new StartMenu(game, sharedAssets));
+            }
+        });
+        // Add buttons to table
+        table.add(resumeButton).size(buttonWidth, buttonHeight).pad(10);
+        table.row();
+        table.add(mainMenuButton).size(buttonWidth, buttonHeight).pad(10);
+        stage.addActor(table);
     }
 }
