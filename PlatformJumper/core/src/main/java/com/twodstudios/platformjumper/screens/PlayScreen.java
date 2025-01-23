@@ -106,6 +106,7 @@ public class PlayScreen implements Screen, GameOverListener {
 
         // Om spelet är pausat, rendera pausmenyn och returnera
         if (pauseState.isPaused()) {
+            pauseOpacity(deltaTime);
             pauseState.render();
             return;
         }
@@ -264,6 +265,14 @@ public class PlayScreen implements Screen, GameOverListener {
             camera.update();
         }
     }
+    private void pauseOpacity(float deltaTime) {
+        game.spriteBatch.begin();
+        ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0.0f); // clear screen with black color
+        game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // 70% opacity
+        background.drawBackgroundSet(false, deltaTime);
+        game.spriteBatch.setColor(1f, 1f, 1f, 1f);
+        game.spriteBatch.end();
+    }
 
     private <T extends Resettable<T>> void resetObject(T object) {
         object.reset();
@@ -283,6 +292,7 @@ public class PlayScreen implements Screen, GameOverListener {
         resetObject(gameOverState);
         startMode = true; // Set flag to show start mode again
     }
+
 
 
 
