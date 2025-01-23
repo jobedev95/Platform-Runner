@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -36,6 +35,7 @@ public class PlayScreen implements Screen, ResetListener {
     private SharedAssets sharedAssets;
     private EffectsManager effectsManager;
     private GameOverState gameOverState;
+    private PauseState pauseState;
 
     private BitmapFont font;
 
@@ -53,8 +53,6 @@ public class PlayScreen implements Screen, ResetListener {
     private float newZoomLevel = 1f; // Game Mode zoom level
     private float zoomSpeed = 0.05f; // Camera zoom speed
 
-    // Pause state
-    private boolean paused = false;
 
     // Constructor
     public PlayScreen(Main game){
@@ -65,9 +63,8 @@ public class PlayScreen implements Screen, ResetListener {
     // fields for stage and table
     private Stage stage;
     private Table table;
-    // buttons sizes
-    private int buttonWidth = 265;
-    private int buttonHeight = 70;
+
+
     @Override
     public void show() {
         // Creating bitmap font object
@@ -82,6 +79,7 @@ public class PlayScreen implements Screen, ResetListener {
         gameOverState = new GameOverState(this, scoreManager);
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
+        pauseState = new PauseState(game,sharedAssets);
 
         // Camera and Viewport
         camera = new OrthographicCamera();
@@ -94,14 +92,6 @@ public class PlayScreen implements Screen, ResetListener {
         background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
         // play background music
         soundManager.backgroundMusic();
-        // stage and tables
-        stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
-        table = new Table();
-        table.setFillParent(true);
-        table.center().padTop(100);
-        table.setSize(200, 400);
-        createPauseMenuButtons();
     }
 
     @Override
@@ -109,17 +99,17 @@ public class PlayScreen implements Screen, ResetListener {
 
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
 
-        // Toggle pause state if "p" is pressed
+        // Kolla om "P" trycks för att toggla pausläget
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            paused = !paused;
+            pauseState.togglePause();
         }
 
-        // If game is paused show pause screen and stop game logic
-        if (paused) {
-            drawPausedScreen(deltaTime);
+        // Om spelet är pausat, rendera pausmenyn och returnera
+        if (pauseState.isPaused()) {
+            pauseState.render();
             return;
         }
-
+        player.updateAnimationTime(deltaTime);
         // Update animation times
         player.updateAnimationTime(deltaTime);
         sharedAssets.updateMainLogoAnimationTime(deltaTime);
@@ -132,7 +122,7 @@ public class PlayScreen implements Screen, ResetListener {
 
         if (!startMode && !player.isDead()) {
             // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
-            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isTouched()) && !player.isJumping()) {
+            if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !player.isJumping())){
                 player.startJump();
             }
 
@@ -201,7 +191,8 @@ public class PlayScreen implements Screen, ResetListener {
         game.spriteBatch.end();
 
         if (player.isDead()){
-            gameOverState.render();
+            Gdx.input.setInputProcessor(gameOverState.getStage());
+            gameOverState.render(deltaTime);
         }
     }
 
@@ -290,35 +281,6 @@ public class PlayScreen implements Screen, ResetListener {
         soundManager.backgroundMusic();
     }
 
-    /** Draw "Paused" on screen when p is pressed and return to normal once pressed again. */
-    private void drawPausedScreen(float deltaTime) {
-        game.spriteBatch.begin();
-        stage.act(Math.min(Gdx.graphics.getDeltaTime(), 1/ 30f));
-        stage.draw();
-        game.spriteBatch.end();
-    }
-    private void createPauseMenuButtons() {
-        Skin skin = new Skin(Gdx.files.internal("atlas/main_menu.json"));
-        // Resume Button
-        ImageButton resumeButton = new ImageButton(skin, "play_button");
-        resumeButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                paused = false; // resumes the game
-            }
-        });
-        // Main menu button
-        ImageButton mainMenuButton = new ImageButton(skin, "quit_button");
-        mainMenuButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new StartMenu(game, sharedAssets));
-            }
-        });
-        // Add buttons to table
-        table.add(resumeButton).size(buttonWidth, buttonHeight).pad(10);
-        table.row();
-        table.add(mainMenuButton).size(buttonWidth, buttonHeight).pad(10);
-        stage.addActor(table);
-    }
+
+
 }
