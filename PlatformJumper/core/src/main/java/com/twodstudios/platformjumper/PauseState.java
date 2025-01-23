@@ -1,9 +1,13 @@
 package com.twodstudios.platformjumper;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -29,6 +33,13 @@ public class PauseState {
     private int buttonWidth = 265;
     private int buttonHeight = 70;
 
+    private FreeTypeFontGenerator generator;
+    private BitmapFont font;
+    private Label pauseLabel;
+    private Label.LabelStyle labelStyle;
+    private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
+
+
     public PauseState(Main game, SharedAssets sharedAssets) {
         this.game = game;
         this.sharedAssets = sharedAssets;
@@ -49,7 +60,19 @@ public class PauseState {
         this.uiCreated = false; // Flag to check if UI has been created
     }
 
+    /** Create pause menu UI*/
     private void createPauseUI() {
+
+        // Create freetype font generator to convert ttf font to bitmap font in run time
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Jersey10-Regular.ttf"));
+        // Change fonts settings
+        parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 150;
+        // Convert font
+        font = generator.generateFont(parameter);
+        labelStyle = new Label.LabelStyle(font, Color.WHITE);
+        pauseLabel = new Label("Paused", labelStyle);
+
         // Resume Button
         resumeButton = new ImageButton(skin, "play_button");
         resumeButton.addListener(new ClickListener() {
@@ -67,10 +90,14 @@ public class PauseState {
             }
         });
 
+        table.add(pauseLabel).padTop(25).center();
+        table.row();
+
         // Add buttons to table
         table.add(resumeButton).size(buttonWidth, buttonHeight).pad(10);
         table.row();
         table.add(mainMenuButton).size(buttonWidth, buttonHeight).pad(10);
+        table.padBottom(100);
         stage.addActor(table);
         this.uiCreated = true;
     }
