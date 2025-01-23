@@ -49,7 +49,7 @@ public class SoundManager {
     /** Plays backgroundMusic while playing */
     public void backgroundMusic(){
         backgroundMusic.setLooping(true);
-        backgroundMusic.setVolume(0.5f);
+        backgroundMusic.setVolume(0.0f);
         backgroundMusic.play();
     }
 
@@ -61,7 +61,7 @@ public class SoundManager {
     /** Plays menuMusic while on start screen */
     public void menuMusic(){
         menuMusic.setLooping(true);
-        menuMusic.setVolume(0.5f);
+        menuMusic.setVolume(0.0f);
         menuMusic.play();
     }
 
@@ -71,7 +71,7 @@ public class SoundManager {
     }
     /** Plays coinPickup sound when coin collected */
     public void coinPickupSound(){
-        coinPickupSound.play(0.6f);
+        coinPickupSound.play(0.0f);
     }
     /** Dispose of SoundManager assets. */
     public void dispose(){
