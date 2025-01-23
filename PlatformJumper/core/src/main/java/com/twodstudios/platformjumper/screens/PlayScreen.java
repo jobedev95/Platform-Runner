@@ -193,7 +193,8 @@ public class PlayScreen implements Screen, ResetListener {
         game.spriteBatch.end();
 
         if (player.isDead()){
-            gameOverState.render();
+            Gdx.input.setInputProcessor(gameOverState.getStage());
+            gameOverState.render(deltaTime);
         }
     }
 

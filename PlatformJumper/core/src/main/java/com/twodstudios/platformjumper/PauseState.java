@@ -33,9 +33,6 @@ public class PauseState {
         this.game = game;
         this.sharedAssets = sharedAssets;
 
-
-
-
         this.uiCreated = false; // Flag to check if UI has been created
         this.paused = false;
         // Load the skin
@@ -48,7 +45,6 @@ public class PauseState {
         table.setFillParent(true);
         table.center().padTop(100);
         table.setSize(200, 400);
-        Gdx.input.setInputProcessor(stage);
 
         this.uiCreated = false; // Flag to check if UI has been created
     }
@@ -84,7 +80,7 @@ public class PauseState {
         if (!uiCreated){
             createPauseUI();
         }
-
+        Gdx.input.setInputProcessor(stage);
         stage.act();
         stage.draw();
     }
