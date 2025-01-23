@@ -12,22 +12,22 @@ import com.twodstudios.platformjumper.screens.StartMenu;
 
 public class PauseState {
 
-    private Main game;
-    private SharedAssets sharedAssets;
+    private final Main game;
+    private final SharedAssets sharedAssets;
 
     private ImageButton resumeButton;
     private ImageButton mainMenuButton;
 
-    private Skin skin;
-    private Stage stage;
-    private Table table;
+    private final Skin skin;
+    private final Stage stage;
+    private final Table table;
 
     private boolean uiCreated;
     private boolean paused;
 
     // Buttons sizes
-    private int buttonWidth = 265;
-    private int buttonHeight = 70;
+    private final int buttonWidth = 265;
+    private final int buttonHeight = 70;
 
     public PauseState(Main game, SharedAssets sharedAssets) {
         this.game = game;

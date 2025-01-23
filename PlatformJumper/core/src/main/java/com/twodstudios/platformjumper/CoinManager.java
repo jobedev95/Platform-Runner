@@ -11,14 +11,14 @@ import static com.badlogic.gdx.math.MathUtils.random;
 /** Class to generate, manage and handle Coin objects.*/
 public class CoinManager implements Resettable <CoinManager> {
 
-    private SpriteBatch spriteBatch;
-    private Tiles tiles;
+    private final SpriteBatch spriteBatch;
+    private final Tiles tiles;
 
     private float coinWidth;
     private float coinHeight;
     private float maxHeight; // Maximum y-coordinate for any coin
     private float minHeight; // Minimum y-coordinate for any coin
-    private float backgroundSpeed;
+    private final float backgroundSpeed;
     private float animationTime;
     private Array<Coin> coins; // Array to hold coin objects
     private Array<Float> tileXPositions;

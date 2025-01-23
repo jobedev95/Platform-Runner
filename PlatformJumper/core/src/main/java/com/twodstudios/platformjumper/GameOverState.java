@@ -18,12 +18,12 @@ import com.github.tommyettinger.textra.TypingLabel;
 /** Creates and handles the game over UI. */
 public class GameOverState implements Resettable <GameOverState>{
 
-    private GameOverListener gameOverListener;
-    private ScoreManager scoreManager;
+    private final GameOverListener gameOverListener;
+    private final ScoreManager scoreManager;
 
-    private Skin skin;
-    private Stage stage;
-    private Table table;
+    private final Skin skin;
+    private final Stage stage;
+    private final Table table;
 
     // All stage and table elements
     private Texture gameoverBackground;
@@ -154,9 +154,9 @@ public class GameOverState implements Resettable <GameOverState>{
             Label dashLabel = new Label("  ---------------  ", skin, "medium");
             Label scoreLabel = new Label("" + currentHighScores.get(i), skin, "medium");
 
-            highScoreTable.add(nameLabel).left().expandX().fillX();;
-            highScoreTable.add(dashLabel).expandX().fillX();;
-            highScoreTable.add(scoreLabel).right().expandX().fillX();;
+            highScoreTable.add(nameLabel).left().expandX().fillX();
+            highScoreTable.add(dashLabel).expandX().fillX();
+            highScoreTable.add(scoreLabel).right().expandX().fillX();
             highScoreTable.row();
         }
         table.add(highScoreTable).colspan(3);
