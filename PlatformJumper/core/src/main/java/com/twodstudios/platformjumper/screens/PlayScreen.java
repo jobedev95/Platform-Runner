@@ -100,7 +100,7 @@ public class PlayScreen implements Screen, GameOverListener {
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
 
         // Kolla om "P" trycks för att toggla pausläget
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P) && !player.isDead()) {
             pauseState.togglePause();
         }
 

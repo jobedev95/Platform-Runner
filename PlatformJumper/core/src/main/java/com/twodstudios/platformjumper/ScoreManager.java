@@ -6,7 +6,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Json;
 
 /** Handles player game scores. */
-public class ScoreManager implements ScoreUpdater{
+public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
 
     private int score;
     private FileHandle file;
@@ -53,9 +53,7 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     /**
-     * may be used in the future, to populate the score board
-     * @param highScoreObject
-     * @return
+     * Get names for highscores
      */
     public Array<String> getNames(){
         Array<String> names = new Array<>();
@@ -111,6 +109,7 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     /** Reset player score. */
+    @Override
     public void reset(){
         score = 0; // Reset score
     }
