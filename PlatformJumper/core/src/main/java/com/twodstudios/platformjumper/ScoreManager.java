@@ -49,6 +49,9 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
                 scores.add(highScoreObject.highScores.get(i).score);
                 System.out.println(highScoreObject.highScores.get(i).score); // Get score from one specific user // 950
             }
+            while (scores.size < 3) {
+                scores.add(0);
+            }
         } else {
             scores.addAll(0, 0, 0);
         }
@@ -64,6 +67,10 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
         if (!highScoreObject.highScores.isEmpty()){
             for (int i = 0; i < highScoreObject.highScores.size; i++){
                 names.add(highScoreObject.highScores.get(i).name.toUpperCase());
+            }
+
+            while (names.size < 3) {
+                names.add("---");
             }
         } else {
             names.addAll("---", "---", "---");
