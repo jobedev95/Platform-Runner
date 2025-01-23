@@ -57,6 +57,10 @@ public class Hud {
 
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     private void createPauseButton(Table table){
 
         ImageButton pauseButton = new ImageButton(skin);

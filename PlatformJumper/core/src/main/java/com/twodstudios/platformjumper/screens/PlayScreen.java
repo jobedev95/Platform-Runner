@@ -6,18 +6,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.*;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.github.tommyettinger.textra.TypingLabel;
 import com.github.tommyettinger.textra.KnownFonts;
 
@@ -136,6 +130,10 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         }
 
         if (!startMode && !player.isDead()) {
+
+            // Set Hud as input processor
+            Gdx.input.setInputProcessor(hud.getStage());
+
             // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
             if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !player.isJumping())){
                 player.startJump();
@@ -314,6 +312,8 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
     }
 
 
-
-
+    @Override
+    public void pauseGame() {
+        pauseState.togglePause();
+    }
 }
