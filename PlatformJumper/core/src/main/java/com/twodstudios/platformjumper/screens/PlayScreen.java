@@ -7,10 +7,13 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.github.tommyettinger.textra.Font;
 import com.twodstudios.platformjumper.*;
 import com.github.tommyettinger.textra.TypingLabel;
 import com.github.tommyettinger.textra.KnownFonts;
@@ -36,7 +39,7 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
     private PauseState pauseState;
 
     // Fonts
-    private TypingLabel typingLabel;
+    private TypingLabel enterMessageLabel;
     private BitmapFont font;
 
     // Background variables
@@ -65,18 +68,11 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
     // fields for stage and table
     private Stage stage;
     private Table table;
+    private Skin skin;
 
 
     @Override
     public void show() {
-        // Creating bitmap font object
-        font = new BitmapFont();
-
-        // Variables for the "Press ENTER to start" text
-        stage = new Stage();
-        typingLabel = new TypingLabel("[@Oxanium][%130]Press {BLINK}{BLINK=ffffffff;000000ff;2.0;0.5}ENTER{ENDBLINK}{ENDBLINK} to Start[%][@]", KnownFonts.getOxanium());
-        typingLabel.setPosition((Main.WORLD_WIDTH / 2) - (typingLabel.getWidth() / 2), Main.WORLD_HEIGHT / 2);
-        stage.addActor(typingLabel);
 
         // Initialise all necessary objects for the game
         player = new Player(this.spriteBatch, 120, 150, Main.WORLD_WIDTH / 2, 135f);
@@ -88,6 +84,9 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
         pauseState = new PauseState(game,sharedAssets);
+
+        // Create "Enter to start" message
+        createEnterToStartMessage();
 
         // Camera and Viewport
         camera = new OrthographicCamera();
@@ -291,6 +290,33 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         game.spriteBatch.setColor(1f, 1f, 1f, 1f);
         game.spriteBatch.end();
     }
+
+    private void createEnterToStartMessage(){
+
+
+        // OLD
+        // Creating bitmap font object
+        font = new BitmapFont();
+
+        // Load skin which includes the font
+        skin = new Skin(Gdx.files.internal("skins/game_over_skin.json"));
+
+        // Create a font family (because TypingLabel does not support skins)
+        Font.FontFamily fontFamily = new Font.FontFamily(skin);
+
+        // Create "Press ENTER to start message
+        enterMessageLabel = new TypingLabel("{FADE}Press {GRADIENT=ffffffff;90ffa7ff;1.0;3.6}{WAVE=0.5;1.0;1.0}ENTER{ENDWAVE}{ENDGRADIENT} to start...{ENDFADE}", fontFamily.connected[0]);
+
+        // Create stage and table
+        stage = new Stage();
+        table = new Table();
+        table.setFillParent(true);
+
+        // Add message to table, and table to stage
+        table.add(enterMessageLabel).center().pad(10, 300, 10, 300);
+        stage.addActor(table);
+    }
+
 
     private <T extends Resettable<T>> void resetObject(T object) {
         object.reset();
