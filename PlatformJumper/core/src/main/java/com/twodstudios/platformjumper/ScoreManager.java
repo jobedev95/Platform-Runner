@@ -41,7 +41,7 @@ public class ScoreManager implements ScoreUpdater{
         }
     }
 
-    public Array<Integer> getScores(HighScores highScoreObject){
+    public Array<Integer> getScores(){
 
         Array<Integer> scores = new Array<>();
 
@@ -58,21 +58,19 @@ public class ScoreManager implements ScoreUpdater{
      * @param highScoreObject
      * @return
      */
-    public Array<String> getNames(HighScores highScoreObject){
-
+    public Array<String> getNames(){
         Array<String> names = new Array<>();
 
         for (int i = 0; i < highScoreObject.highScores.size; i++){
-            names.add(highScoreObject.highScores.get(i).name);
-            System.out.println(highScoreObject.highScores.get(i).name); // Get name from one specific user // Bob
+            names.add(highScoreObject.highScores.get(i).name.toUpperCase());
         }
         return names;
     }
 
     /** Saves the given high score to a JSON file. */
-    public void saveScore(String name, int score){
+    public void submitHighScore(String name, int score){
         // Create new Score Object with new player name and score and add to the HighScores object
-        highScoreObject.highScores.add(new Score(name, score));
+        highScoreObject.highScores.add(new Score(name.toUpperCase(), score));
         System.out.println("Adding new score: " + name + ", " + score);
 
         // Sorts the highscores after highest score
@@ -95,8 +93,11 @@ public class ScoreManager implements ScoreUpdater{
     }
 
     public boolean validateName(String name){
-        String regex = "^[A-Za-zÅÄÖåäö]+$";
-        return name.matches(regex);
+        name = name.trim(); // Trim any leading or trailing white space
+        String regex = "^[A-Za-zÅÄÖåäö]+$"; // Create the regex string
+
+        // Return true if it matches regex requirements and is less than 10 characters long
+        return name.matches(regex) && name.length() <= 10;
     }
 
     /** Increase player score with 1. */
