@@ -29,20 +29,19 @@ public class PlayScreen implements Screen, ResetListener {
     private CoinManager coinManager;
     private SharedAssets sharedAssets;
     private EffectsManager effectsManager;
+    private TransitionManager transitionManager;
     private GameOverState gameOverState;
-    private Texture transitionImage;
-    private Texture clearLevelImage;
-    private float transitionImageXPosition;
-    private float clearLevelImageXPosition;
     boolean isTransitionFinished;
     Array<Float> winterBGParallaxMultipliers;
 
     private BitmapFont font;
 
     // Background variables
-    private Background background;
+    private Background lava_level_background;
     private Background winter_level_background;
     private float backgroundSpeed = 300f; // Background movement speed
+    private int currentLevel = 1;
+
 
     // Camera and Viewport
     private OrthographicCamera camera;
@@ -79,6 +78,7 @@ public class PlayScreen implements Screen, ResetListener {
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
 
+
         // Camera and Viewport
         camera = new OrthographicCamera();
         viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
@@ -87,26 +87,7 @@ public class PlayScreen implements Screen, ResetListener {
         camera.zoom = initialCameraZoom; // Start with camera zoomed in
         camera.update();
 
-
-        transitionImage = new Texture(Gdx.files.internal("transition_image.png"));
-        transitionImageXPosition = Main.WORLD_WIDTH + 150;
-        isTransitionFinished = false;
-
-        clearLevelImage = new Texture(Gdx.files.internal("clear_level.png"));
-        clearLevelImageXPosition = Main.WORLD_WIDTH;
-
-
-        // Background speeds for all lava background textures
-        Array<Float> lavaBGParallaxMultipliers = new Array<>();
-        lavaBGParallaxMultipliers.addAll(0.1f, 0.15f, 0.20f, 0.45f, 0.45f, 0.8f);
-        background = new Background("atlas/lava_theme.atlas", backgroundSpeed, lavaBGParallaxMultipliers, 6, 0, game);
-
-
-        // Background speeds for all lava background textures
-        winterBGParallaxMultipliers = new Array<>();
-        winterBGParallaxMultipliers.addAll(0.1f, 0.15f, 0.25f, 0.40f, 0.60f, 0.65f, 0.80f, 0.85f, 0.50f, 0.7f);
-        winter_level_background = new Background("atlas/winter_level.atlas", backgroundSpeed, winterBGParallaxMultipliers, 10, Main.WORLD_WIDTH + 300, game);
-
+        transitionManager = new TransitionManager(this, scoreManager, effectsManager, backgroundSpeed);
 
         // Play background music
         soundManager.backgroundMusic();
@@ -162,15 +143,8 @@ public class PlayScreen implements Screen, ResetListener {
             camera.zoom = 0.7f;
 
 
-
-
-
             // DRAW BACKGROUND AND GROUND
-            background.drawBackgroundSet(false, deltaTime);  // Draw first state of background
-            background.drawGround(false, deltaTime);  // Draw first state of dangerous ground
-
-            winter_level_background.drawBackgroundSet(false, deltaTime);
-            winter_level_background.drawGround(false, deltaTime);
+            transitionManager.drawCurrentLevel(deltaTime);
 
 
 
@@ -185,52 +159,43 @@ public class PlayScreen implements Screen, ResetListener {
             // IF CHARACTER IS ALIVE
             if (!player.isDead()) {
 
-                if (scoreManager.getScore() == 0){
-                     // DRAW BACKGROUND AND GROUND
-                    background.drawBackgroundSet(true, deltaTime);
-                    background.drawGround(true, deltaTime);
-
-                } else if (scoreManager.getScore() >= 1 && !isTransitionFinished){
-                    // DRAW BACKGROUND AND GROUND
-                    background.drawBackgroundSet(true, deltaTime);
-                    background.drawGround(true, deltaTime);
-                    clearLastLevel(deltaTime);
 
 
-                    if (transitionImageXPosition <= -Main.WORLD_WIDTH * 0.6f){
-                        // Reset speeds to parallax multipliers
-                        System.out.println("RESET SPEED TO PARALLAX SPEEDS");
-                        winterBGParallaxMultipliers.clear();
-                        winterBGParallaxMultipliers.addAll(0.1f, 0.15f, 0.25f, 0.40f, 0.60f, 0.65f, 0.80f, 0.85f, 0.50f, 0.7f);
-                        winter_level_background.changeSpeedMultipliers(winterBGParallaxMultipliers);
-                    } else {
-                        winterBGParallaxMultipliers.clear();
-                        winterBGParallaxMultipliers.addAll(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f);
-                        System.out.println("CHANGED SPEED to 1x");
-                        winter_level_background.changeSpeedMultipliers(winterBGParallaxMultipliers);
-                    }
+                // Check if we need to start a transition
+                checkForLevelTransition();
 
-                    winter_level_background.drawBackgroundSet(true, deltaTime);
-                    winter_level_background.drawGround(true, deltaTime);
-                    drawMovingTransitionImage(deltaTime);
+                // Update the transition if it's in progress
+                transitionManager.progressTheTransition(deltaTime);
 
-
-                    // If transition is finished....
-                    if (transitionImageXPosition <= -Main.WORLD_WIDTH * 2){
-
-                        // Flag to end transition
-                        isTransitionFinished = true;
-
-                        System.out.println("TRANSITION FINISHED!");
-                        System.out.println("CHANGED SPEED AGAIN to different shit");
-                    }
+                // If the transition is not in progress, update the game normally
+                if (!transitionManager.isTransitionInProgress()) {
+                    // Normal game rendering
+                    transitionManager.drawCurrentLevel(deltaTime);
                 }
 
-                if (scoreManager.getScore() >= 1 && isTransitionFinished) {
-                    winter_level_background.drawBackgroundSet(true, deltaTime);
-                    winter_level_background.drawGround(true, deltaTime);
-                    drawMovingTransitionImage(deltaTime);
-                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -263,8 +228,8 @@ public class PlayScreen implements Screen, ResetListener {
 
 
                 // DRAW BACKGROUND AND GROUND
-                background.drawBackgroundSet(false, deltaTime);  // Draw last state of background
-                background.drawGround(false, deltaTime);  // Draw last state of ground
+                lava_level_background.drawBackgroundSet(false, deltaTime);  // Draw last state of background
+                lava_level_background.drawGround(false, deltaTime);  // Draw last state of ground
 
 
 
@@ -276,7 +241,7 @@ public class PlayScreen implements Screen, ResetListener {
                 player.drawDeathAnimation();
 
                 float deathXPosition = player.getXPosition() - player.getWidth() / 5f;
-                float deathYPosition = background.getGroundHeight() / 2f;
+                float deathYPosition = lava_level_background.getGroundHeight() / 2f;
                 effectsManager.drawLavaExplosion(deltaTime, deathXPosition, deathYPosition); // Draw lava explosion effect
 
                 if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
@@ -364,22 +329,15 @@ public class PlayScreen implements Screen, ResetListener {
     }
 
 
-
-
-
-    private void clearLastLevel(float deltaTime){
-        clearLevelImageXPosition -= backgroundSpeed * deltaTime;
-
-        game.spriteBatch.draw(clearLevelImage, clearLevelImageXPosition, 0, Main.WORLD_WIDTH * 7, Main.WORLD_HEIGHT);
+    private void checkForLevelTransition() {
+        int currentScore = scoreManager.getScore();
+        if ((currentScore >= 3 && currentLevel == 1) || (currentScore >= 20 && currentLevel == 2)) {
+            //Background currentBackground = transitionManager.getCurrentLevelBackground();
+            //Background nextBackground = transitionManager.getNextLevelBackground();
+            transitionManager.startTransition();
+            currentLevel++;
+        }
     }
-
-    private void drawMovingTransitionImage(float deltaTime){
-        transitionImageXPosition -= backgroundSpeed * deltaTime;
-
-        game.spriteBatch.draw(transitionImage, transitionImageXPosition, 0, transitionImage.getWidth(), Main.WORLD_HEIGHT);
-        effectsManager.drawTransitionEffect(deltaTime, transitionImageXPosition * 1.05f, (Main.WORLD_HEIGHT / 2) * 1.2f);
-    }
-
 
 
     /** Reset the game. */
@@ -414,7 +372,7 @@ public class PlayScreen implements Screen, ResetListener {
 
 
         // DRAW BACKGROUND
-        background.drawBackgroundSet(false, deltaTime);
+        lava_level_background.drawBackgroundSet(false, deltaTime);
 
 
 

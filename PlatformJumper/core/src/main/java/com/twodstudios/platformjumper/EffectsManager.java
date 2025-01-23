@@ -50,7 +50,8 @@ public class EffectsManager {
                 ParticleEmitter transitionParticleEmitter =  transitionParticleEffect.getEmitters().first(); // Get and store the particle emitter
                 transitionParticleEmitter.setPosition(Gdx.graphics.getWidth() / 2f, 120);  // Position the emitter
                 // Adjust emitter settings
-                transitionParticleEffect.scaleEffect(1.8f); // Scale effect by 80%
+                transitionParticleEffect.scaleEffect(2f); // Scale effect by 80%
+                //transitionParticleEffect.scaleEffect(2, 1, 1);
                 transitionStarted = false; // Flag to ensure the lava explosion plays only once
             }
             return transitionParticleEffect;
@@ -117,11 +118,13 @@ public class EffectsManager {
         if (!transitionStarted) {
             transitionStarted = true;
 
-            // Set position of transition effect and start the effect
-            transitionParticleEffect.setPosition(xPosition, yPosition);
+
             transitionParticleEffect.start();
         }
 
+        // Set position of transition effect and start the effect
+        transitionParticleEffect.setPosition(xPosition, yPosition);
+        transitionParticleEffect.update(deltaTime);
         transitionParticleEffect.draw(spriteBatch, deltaTime); // Draw transition effect
     }
 

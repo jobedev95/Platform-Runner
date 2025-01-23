@@ -2,42 +2,36 @@ Sparks
 - Delay -
 active: false
 - Duration - 
-lowMin: 2500.0
-lowMax: 2500.0
+lowMin: 16000.0
+lowMax: 16000.0
 - Count - 
 min: 1000
-max: 2000
+max: 1000
 - Emission - 
-lowMin: 20.0
-lowMax: 20.0
-highMin: 90.0
-highMax: 90.0
+lowMin: 100.0
+lowMax: 100.0
+highMin: 100.0
+highMax: 100.0
 relative: false
-scalingCount: 4
+scalingCount: 2
 scaling0: 0.0
 scaling1: 1.0
-scaling2: 1.0
-scaling3: 1.0
-timelineCount: 4
+timelineCount: 2
 timeline0: 0.0
-timeline1: 0.0
-timeline2: 0.36805472
-timeline3: 0.97916627
+timeline1: 1.0
 - Life - 
-lowMin: 0.0
-lowMax: 0.0
-highMin: 1000.0
-highMax: 20000.0
-relative: false
-scalingCount: 3
+lowMin: 8000.0
+lowMax: 8000.0
+highMin: 8000.0
+highMax: 8000.0
+relative: true
+scalingCount: 2
 scaling0: 1.0
 scaling1: 1.0
-scaling2: 1.0
-timelineCount: 3
+timelineCount: 2
 timeline0: 0.0
-timeline1: 0.4861107
-timeline2: 1.0
-independent: false
+timeline1: 1.0
+independent: true
 - Life Offset - 
 active: false
 independent: false
@@ -53,18 +47,11 @@ scaling0: 1.0
 timelineCount: 1
 timeline0: 0.0
 - Y Offset - 
-active: true
-lowMin: -60.0
-lowMax: -20.0
-highMin: 0.0
-highMax: 0.0
-relative: false
-scalingCount: 1
-scaling0: 1.0
-timelineCount: 1
-timeline0: 0.0
+active: false
 - Spawn Shape - 
-shape: square
+shape: ellipse
+edges: true
+side: both
 - Spawn Width - 
 lowMin: 0.0
 lowMax: 0.0
@@ -76,12 +63,12 @@ scaling0: 1.0
 scaling1: 1.0
 timelineCount: 2
 timeline0: 0.0
-timeline1: 0.67361027
+timeline1: 1.0
 - Spawn Height - 
 lowMin: 0.0
 lowMax: 0.0
-highMin: 300.0
-highMax: 300.0
+highMin: 287.0
+highMax: 287.0
 relative: false
 scalingCount: 1
 scaling0: 1.0
@@ -91,7 +78,7 @@ timeline0: 0.0
 lowMin: 0.0
 lowMax: 0.0
 highMin: 200.0
-highMax: 13.0
+highMax: 200.0
 relative: false
 scalingCount: 4
 scaling0: 0.0
@@ -109,8 +96,8 @@ active: false
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 0.0
-highMax: 99.0
+highMin: -50.0
+highMax: -50.0
 relative: false
 scalingCount: 2
 scaling0: 1.0
@@ -122,8 +109,8 @@ timeline1: 1.0
 active: true
 lowMin: -2.0
 lowMax: -2.0
-highMin: 230.0
-highMax: 540.0
+highMin: 200.0
+highMax: 200.0
 relative: true
 scalingCount: 2
 scaling0: 0.0
@@ -140,7 +127,7 @@ highMax: 200.0
 relative: false
 scalingCount: 2
 scaling0: 0.0
-scaling1: 1.0
+scaling1: 0.22033899
 timelineCount: 2
 timeline0: 0.0
 timeline1: 1.0
@@ -148,8 +135,8 @@ timeline1: 1.0
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: -127.0
-highMax: -127.0
+highMin: -12.0
+highMax: -12.0
 relative: false
 scalingCount: 3
 scaling0: 1.0
@@ -163,8 +150,8 @@ timeline2: 1.0
 active: true
 lowMin: 0.0
 lowMax: 0.0
-highMin: 312.0
-highMax: 312.0
+highMin: 40.0
+highMax: 40.0
 relative: true
 scalingCount: 2
 scaling0: 0.0
@@ -174,8 +161,8 @@ timeline0: 0.0
 timeline1: 1.0
 - Tint - 
 colorsCount: 9
-colors0: 1.0
-colors1: 1.0
+colors0: 0.11372549
+colors1: 0.8039216
 colors2: 1.0
 colors3: 0.2509804
 colors4: 0.8352941

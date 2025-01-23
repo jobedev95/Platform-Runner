@@ -1,6 +1,7 @@
 package com.twodstudios.platformjumper;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
@@ -10,7 +11,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public class Background {
 
-    private Main game;
+    private SpriteBatch spriteBatch;
 
     // Textures
     private TextureAtlas atlas; // Texture atlas object.
@@ -37,11 +38,11 @@ public class Background {
      * @param backgroundSpeed Base speed of parallax background.
      * @param parallaxMultipliers Float array of background speed multipliers. Used to calculate the speed of every background texture.
      * @param numOfAssets Number of backgrounds.
-     * @param game to be decided.
+     * @param spriteBatch Spritebatch for drawing the backgrounds.
      */
-    public Background(String atlasFileName, float backgroundSpeed, Array<Float> parallaxMultipliers, int numOfAssets, float initialXPosition, Main game) {
+    public Background(String atlasFileName, float backgroundSpeed, Array<Float> parallaxMultipliers, int numOfAssets, float initialXPosition, SpriteBatch spriteBatch) {
 
-        this.game = game;
+        this.spriteBatch = spriteBatch;
         this.parallaxMultipliers = parallaxMultipliers;
         this.initialXPosition = initialXPosition;
 
@@ -96,6 +97,12 @@ public class Background {
         }
     }
 
+    public void setToFullSpeed() {
+        parallaxMultipliers.clear();
+        parallaxMultipliers.addAll(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f);
+        changeSpeedMultipliers(parallaxMultipliers);
+    }
+
 
     public void changeSpeedMultipliers(Array<Float> speedMultipliers){
 
@@ -135,6 +142,14 @@ public class Background {
      */
     public int getGroundHeight(){return this.groundHeight;}
 
+    public float getFirstBackgroundX(){
+        //float backgroundWidth = backgroundImages[0].getRegionWidth();
+
+        System.out.println("Bgx Pos: " + bgXPositions[0][0]);
+        return bgXPositions[0][0];
+
+    }
+
     /**
      * Draws a texture region at a giving speed. Enable or disable moving background using the shouldMove parameter.
      * @param background Texture region to be drawn.
@@ -164,9 +179,9 @@ public class Background {
             }
         }
         // Draw background images.
-        game.spriteBatch.draw(background, bgXPositions[0], 0, background.getRegionWidth(), Main.WORLD_HEIGHT);
-        game.spriteBatch.draw(background, bgXPositions[1], 0, background.getRegionWidth(), Main.WORLD_HEIGHT);
-        game.spriteBatch.draw(background, bgXPositions[2], 0, background.getRegionWidth(), Main.WORLD_HEIGHT);
+        spriteBatch.draw(background, bgXPositions[0], 0, background.getRegionWidth(), Main.WORLD_HEIGHT);
+        spriteBatch.draw(background, bgXPositions[1], 0, background.getRegionWidth(), Main.WORLD_HEIGHT);
+        spriteBatch.draw(background, bgXPositions[2], 0, background.getRegionWidth(), Main.WORLD_HEIGHT);
     }
 
     /**
@@ -189,7 +204,7 @@ public class Background {
             float currentGroundX = groundXPosition + (groundWidth * i); // Stores x position of texture about to be drawn.
             // Draws texture if it is within view.
             if (currentGroundX > -groundWidth && currentGroundX < Main.WORLD_WIDTH) {
-                game.spriteBatch.draw(this.ground, groundXPosition + (groundWidth * i), 0);
+                spriteBatch.draw(this.ground, groundXPosition + (groundWidth * i), 0);
             }
         }
     }
