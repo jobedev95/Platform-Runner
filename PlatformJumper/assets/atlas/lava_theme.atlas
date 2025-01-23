@@ -13,7 +13,7 @@ bg_4
 bounds:2,544,960,540
 bg_5
 bounds:964,544,960,540
-lava
+ground
 bounds:1926,544,64,64
 tile_01
 bounds:2888,544,300,74

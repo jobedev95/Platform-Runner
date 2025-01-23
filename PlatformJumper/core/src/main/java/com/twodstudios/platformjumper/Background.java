@@ -3,6 +3,7 @@ package com.twodstudios.platformjumper;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.utils.Array;
 
 /**
  * Class for creating and drawing different parallax backgrounds.
@@ -19,7 +20,9 @@ public class Background {
     // Background variables
     private float[][] bgXPositions;
     private float backgroundSpeed;
-    private float[] speeds; // Array that will store different speeds for the parallax background textures.
+    private Array<Float> speeds; // Array that will store different speeds for the parallax background textures.
+    private Array<Float> parallaxMultipliers;
+    private float initialXPosition;
 
     // Ground variables
     private float groundXPosition = 0;
@@ -30,14 +33,17 @@ public class Background {
 
     /**
      * Constructor for the Background class.
-     * @param backgroundSpeed Base speed of parallax background.
      * @param atlasFileName File path to .atlas file
+     * @param backgroundSpeed Base speed of parallax background.
+     * @param parallaxMultipliers Float array of background speed multipliers. Used to calculate the speed of every background texture.
      * @param numOfAssets Number of backgrounds.
      * @param game to be decided.
      */
-    public Background(String atlasFileName, float backgroundSpeed, int numOfAssets, Main game) {
+    public Background(String atlasFileName, float backgroundSpeed, Array<Float> parallaxMultipliers, int numOfAssets, float initialXPosition, Main game) {
 
         this.game = game;
+        this.parallaxMultipliers = parallaxMultipliers;
+        this.initialXPosition = initialXPosition;
 
         // Creating atlas object
         this.atlas = new TextureAtlas(Gdx.files.internal(atlasFileName));
@@ -46,36 +52,75 @@ public class Background {
         this.backgroundSpeed = backgroundSpeed;
         this.backgroundImages = new TextureRegion[numOfAssets]; // Array with all texture regions of the backgrounds
         this.bgXPositions = new float[this.backgroundImages.length][3]; // Preparing array for x positions of background images
-        this.speeds = new float[]{this.backgroundSpeed * 0.10f, this.backgroundSpeed * 0.15f, this.backgroundSpeed * 0.20f, this.backgroundSpeed * 0.45f,
-        this.backgroundSpeed * 0.45f, this.backgroundSpeed * 0.8f};// Array of speeds for each background.
+        setSpeeds(); // Create array of speeds for each background.
+
+
 
         // Initialising ground variables.
-        this.ground = this.atlas.findRegion("lava");
+        this.ground = this.atlas.findRegion("ground");
         this.groundWidth = ground.getRegionWidth();
         this.groundHeight = ground.getRegionHeight();
         this.numOfGrounds = (int) Main.WORLD_WIDTH / groundWidth;
         this.totalDuplicateGrounds = (int) (numOfGrounds * 2.1);
 
+
+
         // For loop to load all background texture regions and assign initial x position of all backgrounds.
         for(int i = 0; i < backgroundImages.length; i++){
+
             // Loading all texture regions
             String imageName = String.format("bg_" + i);
             backgroundImages[i] = atlas.findRegion(imageName);
+
+            backgroundImages[i] = atlas.findRegion(imageName);
+                if (backgroundImages[i] == null) {
+                    Gdx.app.log("Background Load Error", "No region found for: " + imageName);
+                }
             // Assign initial x positions
             float bgWidth = backgroundImages[i].getRegionWidth();// Get width of all texture region.
-            this.bgXPositions[i][0] = 0;
-            this.bgXPositions[i][1] = bgWidth;
+            this.bgXPositions[i][0] = initialXPosition;
+            this.bgXPositions[i][1] = initialXPosition + bgWidth;
             this.bgXPositions[i][2] = this.bgXPositions[i][1] + bgWidth;
         }
     }
+
+    /** Calculates and sets the speeds for the different backgrounds based on the given multipliers. */
+    private void setSpeeds(){
+
+        int amountOfSpeeds = this.parallaxMultipliers.size; // Store amount of speeds
+        this.speeds = new Array<>(); // Create a new array with the same amount of floats
+
+        // Loop through each multiplier to calculate the background speeds for each background
+        for (int i = 0; i < amountOfSpeeds; i++){
+            this.speeds.add(this.backgroundSpeed * parallaxMultipliers.get(i));
+        }
+    }
+
+
+    public void changeSpeedMultipliers(Array<Float> speedMultipliers){
+
+        parallaxMultipliers = speedMultipliers;
+
+
+        int amountOfSpeeds = this.parallaxMultipliers.size; // Store amount of speeds
+
+
+        // Loop through each multiplier to calculate the background speeds for each background
+        for (int i = 0; i < amountOfSpeeds; i++){
+            this.speeds.set(i, this.backgroundSpeed * parallaxMultipliers.get(i));
+        }
+    }
+
 
     /**
      * Draws a set of texture regions with different speeds to create a parallax effect.
      * @param shouldMove If true the background will move, or else it will stay static.
      */
     public void drawBackgroundSet(boolean shouldMove, float deltaTime){
+
+
         for(int i = 0; i < this.backgroundImages.length; i++){
-            drawBackground(this.backgroundImages[i], shouldMove, deltaTime, speeds[i], bgXPositions[i]);
+            drawBackground(this.backgroundImages[i], shouldMove, deltaTime, speeds.get(i), bgXPositions[i]);
         }
     }
 

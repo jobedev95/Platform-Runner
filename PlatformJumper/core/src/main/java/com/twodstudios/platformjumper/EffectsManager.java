@@ -13,7 +13,9 @@ public class EffectsManager {
     private ParticleEffect sparklesParticleEffect;
     private ParticleEffect lavaExplosionParticleEffect;
     private ParticleEffect mainMenuParticleEffect;
+    private ParticleEffect transitionParticleEffect;
     private boolean explosionStarted; // Flag to ensure the lava explosion plays only once
+    private boolean transitionStarted; // Flag to ensure the lava explosion plays only once
 
     /**
      * Create a new instance of EffectsManager to manage ParticleEffect objects.
@@ -37,6 +39,22 @@ public class EffectsManager {
         }
         return sparklesParticleEffect;
     }
+
+    /** Initialize transition particle effect if it hasn't been created already. */
+        private ParticleEffect getTransitionParticleEffect() {
+            // If the transitionParticleEffect hasn't been created, it will be created
+            if (transitionParticleEffect == null) {
+                transitionParticleEffect = new ParticleEffect();
+                transitionParticleEffect.load(Gdx.files.internal("effects/transition_particles.p"), Gdx.files.internal("effects")); // Load asset
+                transitionParticleEffect.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight() - 150); // Position the effect
+                ParticleEmitter transitionParticleEmitter =  transitionParticleEffect.getEmitters().first(); // Get and store the particle emitter
+                transitionParticleEmitter.setPosition(Gdx.graphics.getWidth() / 2f, 120);  // Position the emitter
+                // Adjust emitter settings
+                transitionParticleEffect.scaleEffect(1.8f); // Scale effect by 80%
+                transitionStarted = false; // Flag to ensure the lava explosion plays only once
+            }
+            return transitionParticleEffect;
+        }
 
     /** Initialize lava explosion effect if it hasn't been created already. */
     private ParticleEffect getLavaExplosionParticleEffect() {
@@ -90,6 +108,25 @@ public class EffectsManager {
 
         lavaExplosionParticleEffect.draw(spriteBatch, deltaTime); // Draw lava explosion effect
     }
+
+    /** Draw a transition particle effect. */
+    public void drawTransitionEffect(float deltaTime, float xPosition, float yPosition){
+        transitionParticleEffect = getTransitionParticleEffect(); // Initialize the effect
+
+        // If transition has not been started before it starts
+        if (!transitionStarted) {
+            transitionStarted = true;
+
+            // Set position of transition effect and start the effect
+            transitionParticleEffect.setPosition(xPosition, yPosition);
+            transitionParticleEffect.start();
+        }
+
+        transitionParticleEffect.draw(spriteBatch, deltaTime); // Draw transition effect
+    }
+
+
+
 
     /** Draw continuous main menu sparkles. */
     public void drawMainMenuParticles(float deltaTime){

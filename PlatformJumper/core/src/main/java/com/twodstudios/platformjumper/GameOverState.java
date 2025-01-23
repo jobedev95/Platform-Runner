@@ -275,7 +275,9 @@ public class GameOverState {
     }
 
     public void reset(){
-        gameoverBackground.dispose();
+        if (gameoverBackground != null){
+            gameoverBackground.dispose();
+        }
         stage.clear();
         table.clear();
         this.uiCreated = false;

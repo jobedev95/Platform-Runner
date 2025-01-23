@@ -33,7 +33,6 @@ public class ScoreManager implements ScoreUpdater{
 
         if (file.exists()){
             highScoreObject = json.fromJson(HighScores.class, file.readString()); // Return parsed file as HighScores object
-            System.out.println("Loaded high scores from file: " + highScoreObject.highScores);
         } else {
             System.out.println("File not found.");
             highScoreObject = new HighScores();
@@ -47,7 +46,6 @@ public class ScoreManager implements ScoreUpdater{
 
         for (int i = 0; i < highScoreObject.highScores.size; i++){
             scores.add(highScoreObject.highScores.get(i).score);
-            System.out.println(highScoreObject.highScores.get(i).score); // Get score from one specific user // 950
         }
 
         return scores;

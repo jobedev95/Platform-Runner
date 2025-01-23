@@ -4,8 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -28,11 +30,18 @@ public class PlayScreen implements Screen, ResetListener {
     private SharedAssets sharedAssets;
     private EffectsManager effectsManager;
     private GameOverState gameOverState;
+    private Texture transitionImage;
+    private Texture clearLevelImage;
+    private float transitionImageXPosition;
+    private float clearLevelImageXPosition;
+    boolean isTransitionFinished;
+    Array<Float> winterBGParallaxMultipliers;
 
     private BitmapFont font;
 
     // Background variables
     private Background background;
+    private Background winter_level_background;
     private float backgroundSpeed = 300f; // Background movement speed
 
     // Camera and Viewport
@@ -78,8 +87,28 @@ public class PlayScreen implements Screen, ResetListener {
         camera.zoom = initialCameraZoom; // Start with camera zoomed in
         camera.update();
 
-        background = new Background( "atlas/lava_theme.atlas", backgroundSpeed, 6, game);
-        // play background music
+
+        transitionImage = new Texture(Gdx.files.internal("transition_image.png"));
+        transitionImageXPosition = Main.WORLD_WIDTH + 150;
+        isTransitionFinished = false;
+
+        clearLevelImage = new Texture(Gdx.files.internal("clear_level.png"));
+        clearLevelImageXPosition = Main.WORLD_WIDTH;
+
+
+        // Background speeds for all lava background textures
+        Array<Float> lavaBGParallaxMultipliers = new Array<>();
+        lavaBGParallaxMultipliers.addAll(0.1f, 0.15f, 0.20f, 0.45f, 0.45f, 0.8f);
+        background = new Background("atlas/lava_theme.atlas", backgroundSpeed, lavaBGParallaxMultipliers, 6, 0, game);
+
+
+        // Background speeds for all lava background textures
+        winterBGParallaxMultipliers = new Array<>();
+        winterBGParallaxMultipliers.addAll(0.1f, 0.15f, 0.25f, 0.40f, 0.60f, 0.65f, 0.80f, 0.85f, 0.50f, 0.7f);
+        winter_level_background = new Background("atlas/winter_level.atlas", backgroundSpeed, winterBGParallaxMultipliers, 10, Main.WORLD_WIDTH + 300, game);
+
+
+        // Play background music
         soundManager.backgroundMusic();
     }
 
@@ -131,8 +160,20 @@ public class PlayScreen implements Screen, ResetListener {
         if (startMode) {
             camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
             camera.zoom = 0.7f;
+
+
+
+
+
+            // DRAW BACKGROUND AND GROUND
             background.drawBackgroundSet(false, deltaTime);  // Draw first state of background
             background.drawGround(false, deltaTime);  // Draw first state of dangerous ground
+
+            winter_level_background.drawBackgroundSet(false, deltaTime);
+            winter_level_background.drawGround(false, deltaTime);
+
+
+
             tiles.drawTiles(); // Draw initial tiles
             sharedAssets.drawLogoAnimation(500, 109, 300, false);
             player.drawIdleAnimation(); // Draw the character idle animation if in start mode
@@ -143,14 +184,71 @@ public class PlayScreen implements Screen, ResetListener {
 
             // IF CHARACTER IS ALIVE
             if (!player.isDead()) {
-                background.drawBackgroundSet(true, deltaTime);
-                background.drawGround(true, deltaTime);
+
+                if (scoreManager.getScore() == 0){
+                     // DRAW BACKGROUND AND GROUND
+                    background.drawBackgroundSet(true, deltaTime);
+                    background.drawGround(true, deltaTime);
+
+                } else if (scoreManager.getScore() >= 1 && !isTransitionFinished){
+                    // DRAW BACKGROUND AND GROUND
+                    background.drawBackgroundSet(true, deltaTime);
+                    background.drawGround(true, deltaTime);
+                    clearLastLevel(deltaTime);
+
+
+                    if (transitionImageXPosition <= -Main.WORLD_WIDTH * 0.6f){
+                        // Reset speeds to parallax multipliers
+                        System.out.println("RESET SPEED TO PARALLAX SPEEDS");
+                        winterBGParallaxMultipliers.clear();
+                        winterBGParallaxMultipliers.addAll(0.1f, 0.15f, 0.25f, 0.40f, 0.60f, 0.65f, 0.80f, 0.85f, 0.50f, 0.7f);
+                        winter_level_background.changeSpeedMultipliers(winterBGParallaxMultipliers);
+                    } else {
+                        winterBGParallaxMultipliers.clear();
+                        winterBGParallaxMultipliers.addAll(1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f, 1f);
+                        System.out.println("CHANGED SPEED to 1x");
+                        winter_level_background.changeSpeedMultipliers(winterBGParallaxMultipliers);
+                    }
+
+                    winter_level_background.drawBackgroundSet(true, deltaTime);
+                    winter_level_background.drawGround(true, deltaTime);
+                    drawMovingTransitionImage(deltaTime);
+
+
+                    // If transition is finished....
+                    if (transitionImageXPosition <= -Main.WORLD_WIDTH * 2){
+
+                        // Flag to end transition
+                        isTransitionFinished = true;
+
+                        System.out.println("TRANSITION FINISHED!");
+                        System.out.println("CHANGED SPEED AGAIN to different shit");
+                    }
+                }
+
+                if (scoreManager.getScore() >= 1 && isTransitionFinished) {
+                    winter_level_background.drawBackgroundSet(true, deltaTime);
+                    winter_level_background.drawGround(true, deltaTime);
+                    drawMovingTransitionImage(deltaTime);
+                }
+
+
+
+
+
+
+
+
+
+
+
+
                 tiles.drawTiles();
                 coinManager.drawCoins();
 
                 if (!sharedAssets.isLogoAnimationFinished()) {
                     sharedAssets.drawLogoAnimation(500, 109, 300, true);
-                }
+                }//
                 player.drawRunOrJump(); // Draw running or jumping animation depending on character state
 
                 effectsManager.drawSparkles(deltaTime); // Draw continous particle effect
@@ -158,8 +256,21 @@ public class PlayScreen implements Screen, ResetListener {
             // IF CHARACTER IS DEAD
             } else {
                 smoothZoom(newZoomLevel, 0.5f, deltaTime);
+
+
+
+
+
+
+                // DRAW BACKGROUND AND GROUND
                 background.drawBackgroundSet(false, deltaTime);  // Draw last state of background
                 background.drawGround(false, deltaTime);  // Draw last state of ground
+
+
+
+
+
+
                 tiles.drawTiles(); // Draw last state of the tiles
                 coinManager.drawCoins(); // Draw last state of the coins
                 player.drawDeathAnimation();
@@ -252,6 +363,25 @@ public class PlayScreen implements Screen, ResetListener {
         }
     }
 
+
+
+
+
+    private void clearLastLevel(float deltaTime){
+        clearLevelImageXPosition -= backgroundSpeed * deltaTime;
+
+        game.spriteBatch.draw(clearLevelImage, clearLevelImageXPosition, 0, Main.WORLD_WIDTH * 7, Main.WORLD_HEIGHT);
+    }
+
+    private void drawMovingTransitionImage(float deltaTime){
+        transitionImageXPosition -= backgroundSpeed * deltaTime;
+
+        game.spriteBatch.draw(transitionImage, transitionImageXPosition, 0, transitionImage.getWidth(), Main.WORLD_HEIGHT);
+        effectsManager.drawTransitionEffect(deltaTime, transitionImageXPosition * 1.05f, (Main.WORLD_HEIGHT / 2) * 1.2f);
+    }
+
+
+
     /** Reset the game. */
     @Override
     public void resetGame() {
@@ -275,7 +405,23 @@ public class PlayScreen implements Screen, ResetListener {
         // Draw darkened background
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
         game.spriteBatch.setColor(1f, 1f, 1f, 0.7f); // Set opacity to 70%
+
+
+
+
+
+
+
+
+        // DRAW BACKGROUND
         background.drawBackgroundSet(false, deltaTime);
+
+
+
+
+
+
+
         game.spriteBatch.setColor(1f, 1f, 1f, 1f); // Reset opacity to 100%
 
         // Print "Paused" on screen
