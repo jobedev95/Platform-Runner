@@ -7,7 +7,7 @@ import com.badlogic.gdx.audio.Sound;
 /**
  * Class to manage any audio files for the game.
  */
-public class SoundManager {
+public class SoundManager implements Resettable <SoundManager> {
 
     private Sound gameOverSound; // Sound effect for game over
     private boolean isGameOverSoundPlayed = false; // Flag to check if game over sound has been played
@@ -37,13 +37,6 @@ public class SoundManager {
             gameOverSound.play(); // Play game over sound
             isGameOverSoundPlayed = true; // Mark that sound has been played
         }
-    }
-
-    /** Set status of gameOverSoundPlayed.
-    * @param gameOverSoundPlayed Set played-status with true or false.
-    */
-    public void setGameOverSoundPlayed(boolean gameOverSoundPlayed) {
-        isGameOverSoundPlayed = gameOverSoundPlayed;
     }
 
     /** Plays backgroundMusic while playing */
@@ -82,5 +75,9 @@ public class SoundManager {
     }
 
 
-
+    @Override
+    public void reset() {
+        isGameOverSoundPlayed = false;
+        backgroundMusic();
+    }
 }

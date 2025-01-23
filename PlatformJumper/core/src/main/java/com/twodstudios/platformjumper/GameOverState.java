@@ -16,9 +16,9 @@ import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TypingLabel;
 
 /** Creates and handles the game over UI. */
-public class GameOverState {
+public class GameOverState implements Resettable <GameOverState>{
 
-    private ResetListener resetListener;
+    private GameOverListener gameOverListener;
     private ScoreManager scoreManager;
 
     private Skin skin;
@@ -41,11 +41,11 @@ public class GameOverState {
 
     /**
      * Creates a GameOverState handler.
-     * @param resetListener A class which can reset the game when score has been submitted.
+     * @param gameOverListener A class which can reset the game when score has been submitted.
      * @param scoreManager For handling retrieval of score and validation of name submission.
      */
-    public GameOverState(ResetListener resetListener, ScoreManager scoreManager) {
-        this.resetListener = resetListener;
+    public GameOverState(GameOverListener gameOverListener, ScoreManager scoreManager) {
+        this.gameOverListener = gameOverListener;
         this.scoreManager = scoreManager;
 
 
@@ -186,7 +186,7 @@ public class GameOverState {
         playButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                resetListener.resetGame();
+                gameOverListener.resetGame();
             }
         });
 
@@ -203,7 +203,7 @@ public class GameOverState {
         // If name is valid save the score
         if (isNameValid){
             scoreManager.submitHighScore(name, score); // Submit highscore
-            resetListener.resetGame(); // Call main game to reset after the score has been submitted
+            gameOverListener.resetGame(); // Call main game to reset after the score has been submitted
         } else {
             setNameInvalidMessage(); // Inform user of faulty input if that's the case
         }
@@ -279,8 +279,11 @@ public class GameOverState {
         stage.draw();
     }
 
+    @Override
     public void reset(){
-        gameoverBackground.dispose();
+        if (gameoverBackground != null){
+            gameoverBackground.dispose();
+        }
         stage.clear();
         table.clear();
         this.uiCreated = false;

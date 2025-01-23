@@ -20,7 +20,7 @@ import com.twodstudios.platformjumper.*;
 
 
 
-public class PlayScreen implements Screen, ResetListener {
+public class PlayScreen implements Screen, GameOverListener {
 
     private Main game;
 
@@ -100,7 +100,7 @@ public class PlayScreen implements Screen, ResetListener {
         float deltaTime = Gdx.graphics.getDeltaTime(); // Gets time lapsed since last frame
 
         // Kolla om "P" trycks för att toggla pausläget
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P) && !player.isDead()) {
             pauseState.togglePause();
         }
 
@@ -274,20 +274,23 @@ public class PlayScreen implements Screen, ResetListener {
         game.spriteBatch.end();
     }
 
+    private <T extends Resettable<T>> void resetObject(T object) {
+        object.reset();
+    }
+
     /** Reset the game. */
     @Override
     public void resetGame() {
-        player.reset();
-        tiles.reset(); // Reset tiles to prepare for new game
-        scoreManager.reset(); // Reset score
-        coinManager.reset(); // Reset all coins
-        soundManager.setGameOverSoundPlayed(false);// Reset sound play flag
-        sharedAssets.setLogoAnimationTime(0); // Reset logo animation
-        effectsManager.resetLavaExplosion(); // Reset lava particle effect
-        sharedAssets.reset();
-        gameOverState.reset();
+
+        resetObject(player);
+        resetObject(tiles); // Reset tiles to prepare for new game
+        resetObject(scoreManager); // Reset score
+        resetObject(coinManager); // Reset all coins
+        resetObject(soundManager); // Reset sound play flag
+        resetObject(effectsManager); // Reset lava particle effect
+        resetObject(sharedAssets);
+        resetObject(gameOverState);
         startMode = true; // Set flag to show start mode again
-        soundManager.backgroundMusic();
     }
 
 
