@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import static com.twodstudios.platformjumper.AnimationManager.*;
 
@@ -27,7 +28,7 @@ public class Hud {
 
     public Hud(HudListener hudListener) {
 
-        this.stage = new Stage(new ScreenViewport());
+        this.stage = new Stage(new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT));
         Gdx.input.setInputProcessor(stage);
         this.hudListener = hudListener;
 

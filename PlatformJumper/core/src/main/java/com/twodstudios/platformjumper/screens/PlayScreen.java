@@ -220,6 +220,7 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
         gameOverState.resize(width, height);
         camera.update();
+        pauseState.togglePause();
     }
 
     @Override
