@@ -1,0 +1,37 @@
+
+hud_skin.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pause_button_down
+  rotate: false
+  xy: 515, 744
+  size: 229, 227
+  split: 0, 0, 0, 0
+  orig: 229, 227
+  offset: 0, 0
+  index: -1
+pause_button_over
+  rotate: false
+  xy: 1, 1
+  size: 229, 227
+  split: 0, 0, 0, 0
+  orig: 229, 227
+  offset: 0, 0
+  index: -1
+pause_button_up
+  rotate: false
+  xy: 1, 230
+  size: 229, 227
+  split: 0, 0, 0, 0
+  orig: 229, 227
+  offset: 0, 0
+  index: -1
+bagel
+  rotate: false
+  xy: 1, 459
+  size: 512, 512
+  orig: 512, 512
+  offset: 0, 0
+  index: -1

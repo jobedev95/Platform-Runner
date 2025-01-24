@@ -14,15 +14,16 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.github.tommyettinger.textra.Font;
-import com.github.tommyettinger.textra.TypingLabel;
 import com.twodstudios.platformjumper.*;
-import com.github.tommyettinger.*;
+import com.github.tommyettinger.textra.TypingLabel;
+import com.github.tommyettinger.textra.KnownFonts;
 
 
 
-public class PlayScreen implements Screen, GameOverListener {
+public class PlayScreen implements Screen, HudListener, GameOverListener {
 
     private final Main game;
+    private Hud hud;
 
     public SpriteBatch spriteBatch;
 
@@ -36,8 +37,9 @@ public class PlayScreen implements Screen, GameOverListener {
     private EffectsManager effectsManager;
     private GameOverState gameOverState;
     private PauseState pauseState;
-    private TypingLabel enterMessage;
 
+    // Fonts
+    private TypingLabel enterMessageLabel;
     private BitmapFont font;
 
     // Background variables
@@ -55,12 +57,13 @@ public class PlayScreen implements Screen, GameOverListener {
     private final float zoomSpeed = 0.05f; // Camera zoom speed
 
 
-
     // Constructor
     public PlayScreen(Main game){
+
         this.game = game;
         this.spriteBatch = game.spriteBatch;
         this.sharedAssets = game.sharedAssets;
+        this.hud = new Hud(this);
     }
     // fields for stage and table
     private Stage stage;
@@ -70,8 +73,6 @@ public class PlayScreen implements Screen, GameOverListener {
 
     @Override
     public void show() {
-        // Creating bitmap font object
-        font = new BitmapFont();
 
         // Initialise all necessary objects for the game
         player = new Player(this.spriteBatch, 120, 150, Main.WORLD_WIDTH / 2, 135f);
@@ -84,6 +85,7 @@ public class PlayScreen implements Screen, GameOverListener {
         effectsManager = new EffectsManager(this.spriteBatch);
         pauseState = new PauseState(game,sharedAssets);
 
+        // Create "Enter to start" message
         createEnterToStartMessage();
 
         // Camera and Viewport
@@ -127,6 +129,10 @@ public class PlayScreen implements Screen, GameOverListener {
         }
 
         if (!startMode && !player.isDead()) {
+
+            // Set Hud as input processor
+            Gdx.input.setInputProcessor(hud.getStage());
+
             // If space-bar is pressed or mouse is clicked and the character is not already in a jumping state increase velocity
             if ((Gdx.input.isKeyJustPressed(Input.Keys.SPACE) && !player.isJumping())){
                 player.startJump();
@@ -134,6 +140,7 @@ public class PlayScreen implements Screen, GameOverListener {
 
             physicsManager.applyGravity(deltaTime); // Enable gravity
             physicsManager.checkCollision(); // Check for tile and floor collisions
+            hud.setScore(scoreManager.getScore()); // Update score in HUD
             tiles.generateBufferTiles(); // Prepares a buffer of tiles for rendering
             coinManager.generateCoins(deltaTime); // Prepares coins for rendering
             tiles.moveTiles(deltaTime);// Continuously moves all tiles towards the left
@@ -152,8 +159,6 @@ public class PlayScreen implements Screen, GameOverListener {
             background.drawGround(false, deltaTime);  // Draw first state of dangerous ground
             tiles.drawTiles(); // Draw initial tiles
             sharedAssets.drawLogoAnimation(500, 109, 300, false);
-
-
             player.drawIdleAnimation(); // Draw the character idle animation if in start mode
             effectsManager.drawSparkles(deltaTime);// Draw continous particle effect
         } else {
@@ -192,31 +197,26 @@ public class PlayScreen implements Screen, GameOverListener {
                 }
             }
 
-            // Render score
-            BitmapFont font = new BitmapFont();
-            font.draw(game.spriteBatch, "Score: " + scoreManager.getScore(),
-                camera.position.x - camera.viewportWidth / 2 + 10,
-                camera.position.y + camera.viewportHeight / 2 - 10);
         }
         game.spriteBatch.end();
 
-        // If in start mode, draw "Press enter to start" message
-        if(startMode){
-            stage.act(deltaTime);
+        if (startMode){
+            stage.act();
             stage.draw();
+        }else {
+            hud.render(deltaTime);
         }
-
 
         if (player.isDead()){
             Gdx.input.setInputProcessor(gameOverState.getStage());
             gameOverState.render(deltaTime);
         }
-
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height, true); // Adapt viewport after window size
+        hud.resize(width, height);
         camera.position.set(Main.WORLD_WIDTH / 2, Main.WORLD_HEIGHT / 2, 0);
         gameOverState.resize(width, height);
         camera.update();
@@ -282,27 +282,6 @@ public class PlayScreen implements Screen, GameOverListener {
             camera.update();
         }
     }
-
-    private void createEnterToStartMessage(){
-        // Load skin which includes the font
-        skin = new Skin(Gdx.files.internal("skins/game_over_skin.json"));
-
-        // Create a font family (because TypingLabel does not support skins)
-        Font.FontFamily fontFamily = new Font.FontFamily(skin);
-
-        // Create "Press ENTER to start message
-        enterMessage = new TypingLabel("{FADE}Press {GRADIENT=ffffffff;90ffa7ff;1.0;3.6}{WAVE=0.5;1.0;1.0}ENTER{ENDWAVE}{ENDGRADIENT} to start...{ENDFADE}", fontFamily.connected[0]);
-
-        // Create stage and table
-        stage = new Stage(new ScreenViewport());
-        table = new Table();
-        table.setFillParent(true);
-
-        // Add message to table, and table to stage
-        table.add(enterMessage).center().pad(10, 300, 10, 300);
-        stage.addActor(table);
-    }
-
     private void pauseOpacity(float deltaTime) {
         game.spriteBatch.begin();
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0.0f); // clear screen with black color
@@ -311,6 +290,33 @@ public class PlayScreen implements Screen, GameOverListener {
         game.spriteBatch.setColor(1f, 1f, 1f, 1f);
         game.spriteBatch.end();
     }
+
+    private void createEnterToStartMessage(){
+
+
+        // OLD
+        // Creating bitmap font object
+        font = new BitmapFont();
+
+        // Load skin which includes the font
+        skin = new Skin(Gdx.files.internal("skins/game_over_skin.json"));
+
+        // Create a font family (because TypingLabel does not support skins)
+        Font.FontFamily fontFamily = new Font.FontFamily(skin);
+
+        // Create "Press ENTER to start message
+        enterMessageLabel = new TypingLabel("{FADE}Press {GRADIENT=ffffffff;90ffa7ff;1.0;3.6}{WAVE=0.5;1.0;1.0}ENTER{ENDWAVE}{ENDGRADIENT} to start...{ENDFADE}", fontFamily.connected[0]);
+
+        // Create stage and table
+        stage = new Stage();
+        table = new Table();
+        table.setFillParent(true);
+
+        // Add message to table, and table to stage
+        table.add(enterMessageLabel).center().pad(10, 300, 10, 300);
+        stage.addActor(table);
+    }
+
 
     private <T extends Resettable<T>> void resetObject(T object) {
         object.reset();
@@ -332,6 +338,8 @@ public class PlayScreen implements Screen, GameOverListener {
     }
 
 
-
-
+    @Override
+    public void pauseGame() {
+        pauseState.togglePause();
+    }
 }

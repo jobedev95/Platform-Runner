@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TypingLabel;
@@ -53,7 +54,7 @@ public class GameOverState implements Resettable <GameOverState>{
         this.skin = new Skin(Gdx.files.internal("skins/game_over_skin.json"));
 
         // Create stage and table
-        this.stage = new Stage(new ScreenViewport());
+        this.stage = new Stage(new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT));
         this.table = new Table();
         table.setFillParent(true);
         table.center().pad(10, 300, 10, 300);
