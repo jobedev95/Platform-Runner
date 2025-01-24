@@ -112,6 +112,10 @@ public class PauseState {
         stage.draw();
     }
 
+    public Stage getStage() {
+        return stage;
+    }
+
     // Getter för pausstatus
     public boolean isPaused() {
         return paused;

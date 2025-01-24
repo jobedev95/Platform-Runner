@@ -109,6 +109,11 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         // Kolla om "P" trycks för att toggla pausläget
         if (Gdx.input.isKeyJustPressed(Input.Keys.P) && !player.isDead()) {
             pauseState.togglePause();
+
+            // Set input processor to pause stage when paused
+            if (pauseState.isPaused()) {
+                Gdx.input.setInputProcessor(pauseState.getStage());
+            }
         }
 
         // Om spelet är pausat, rendera pausmenyn och returnera
