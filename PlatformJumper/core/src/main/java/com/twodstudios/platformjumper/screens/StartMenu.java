@@ -28,15 +28,12 @@ public class StartMenu implements Screen {
     private final Viewport viewport;
     private final SoundManager soundManager;
 
-    // Bakgrund
+    // Background variables
     private final Texture backgroundImage;
     private float bg1XPosition;
     private float bg2XPosition;
     private final float backgroundSpeed = 15f;
     private final float backgroundWidth = Main.WORLD_WIDTH;
-
-    // Flagga för att kontrollera om knapparna ska vara aktiva
-    private boolean isMenuActive = true;
 
     // Button sizes
     private final int buttonWidth = 265;
@@ -47,18 +44,19 @@ public class StartMenu implements Screen {
         this.game = game;
         this.sharedAssets = sharedAssets;
         this.effectsManager = new EffectsManager(game.spriteBatch);
+        soundManager = new SoundManager();
 
-        // Kamera och vyport
+        // Camera and ViewPort
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
         this.camera.setToOrtho(false, Main.WORLD_WIDTH, Main.WORLD_HEIGHT);
 
-        // Bakgrund
+        // Background
         this.backgroundImage = new Texture("menu_background.png");
         this.bg1XPosition = 0;
         this.bg2XPosition = backgroundWidth;
 
-        // Stage och table för knappar
+        // Stage and Table for the main menu
         this.stage = new Stage(viewport);
         this.table = new Table();
         table.setFillParent(true);
@@ -66,59 +64,8 @@ public class StartMenu implements Screen {
         table.setSize(200, 400);
         Gdx.input.setInputProcessor(stage);
 
-        // Skapa knappar
-        createButtons();
-
-        // Soundmanager
-        soundManager = new SoundManager();
-    }
-
-    private void createButtons() {
-        Skin skin = new Skin(Gdx.files.internal("atlas/main_menu.json"));
-
-
-        // Start-knapp
-        ImageButton startButton = new ImageButton(skin, "play_button");
-        startButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (isMenuActive) {
-                    game.setScreen(new PlayScreen(game)); // Växla till spelet
-                    isMenuActive = false;
-                }
-            }
-        });
-
-        table.add(startButton).size(buttonWidth, buttonHeigth).pad(10);
-        table.row();
-
-        // Highscore-knapp
-        ImageButton highscoreButton = new ImageButton(skin, "high_score_button");
-        highscoreButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                if (isMenuActive) {
-                    game.setScreen(new HighscoreScreen(game)); // avkommentera när highscore är med
-                    isMenuActive = false;
-                }
-
-            }
-        });
-
-        table.add(highscoreButton).size(buttonWidth, buttonHeigth).pad(10);
-        table.row();
-
-        // Exit-knapp
-        ImageButton quitButton = new ImageButton(skin, "quit_button");
-        quitButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit(); // Stäng spelet
-            }
-        });
-
-        table.add(quitButton).size(buttonWidth, buttonHeigth).pad(10);
-        stage.addActor(table);
+        // Set up the main menu
+        createMainMenu();
     }
 
     @Override
@@ -136,15 +83,15 @@ public class StartMenu implements Screen {
 
         // Draw menu particle effects sparkles
         effectsManager.drawMainMenuParticles(delta);
+        
         game.spriteBatch.end();
 
-        // Rita knappar om menyn är aktiv
-        if (isMenuActive) {
-            stage.act(delta);
-            stage.draw();
-        }
+        // Draw the stage
+        stage.act(delta);
+        stage.draw();
     }
 
+    //** Draw a moving background. */
     private void drawBackground(float deltaTime) {
         bg1XPosition -= backgroundSpeed * deltaTime;
         bg2XPosition -= backgroundSpeed * deltaTime;
@@ -187,5 +134,55 @@ public class StartMenu implements Screen {
         backgroundImage.dispose();
         soundManager.dispose();
         effectsManager.dispose();
+        sharedAssets.dispose();
+    }
+
+
+    //** Setup all the buttons for the main menu. */
+    private void createMainMenu() {
+
+        // Load the skin
+        Skin skin = new Skin(Gdx.files.internal("atlas/main_menu.json"));
+
+        // Create Start button
+        ImageButton startButton = new ImageButton(skin, "play_button");
+        startButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new PlayScreen(game)); // Växla till spelet
+            }
+        });
+
+        // Add Start Button to table
+        table.add(startButton).size(buttonWidth, buttonHeigth).pad(10);
+        table.row();
+
+        // Create High Score button
+        ImageButton highscoreButton = new ImageButton(skin, "high_score_button");
+        highscoreButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new HighscoreScreen(game)); // avkommentera när highscore är med
+            }
+        });
+
+        // Add High Score button to table
+        table.add(highscoreButton).size(buttonWidth, buttonHeigth).pad(10);
+        table.row();
+
+        // Create Exit button
+        ImageButton quitButton = new ImageButton(skin, "quit_button");
+        quitButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit(); // Stäng spelet
+            }
+        });
+
+        // Add Exit button to table
+        table.add(quitButton).size(buttonWidth, buttonHeigth).pad(10);
+
+        // Add table to the stage
+        stage.addActor(table);
     }
 }
