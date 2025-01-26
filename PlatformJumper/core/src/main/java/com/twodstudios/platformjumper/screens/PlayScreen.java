@@ -11,12 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.github.tommyettinger.textra.Font;
 import com.twodstudios.platformjumper.*;
 import com.github.tommyettinger.textra.TypingLabel;
-import com.github.tommyettinger.textra.KnownFonts;
 
 
 
@@ -37,6 +35,7 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
     private EffectsManager effectsManager;
     private GameOverState gameOverState;
     private PauseState pauseState;
+    private StartMenuScreen startMenuScreen;
 
     // Fonts
     private TypingLabel enterMessageLabel;
@@ -58,9 +57,10 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
 
 
     // Constructor
-    public PlayScreen(Main game){
+    public PlayScreen(Main game, StartMenuScreen startMenuScreen){
 
         this.game = game;
+        this.startMenuScreen = startMenuScreen;
         this.spriteBatch = game.spriteBatch;
         this.sharedAssets = game.sharedAssets;
         this.hud = new Hud(this);
@@ -83,7 +83,7 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         gameOverState = new GameOverState(this, scoreManager);
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
-        pauseState = new PauseState(game,sharedAssets);
+        pauseState = new PauseState(game, startMenuScreen);
 
         // Create "Enter to start" message
         createEnterToStartMessage();

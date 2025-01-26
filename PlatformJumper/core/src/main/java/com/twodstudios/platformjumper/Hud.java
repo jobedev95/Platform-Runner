@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import static com.twodstudios.platformjumper.AnimationManager.*;
@@ -39,10 +40,11 @@ public class Hud {
 
         table.row();
 
-        this.skin = new Skin(Gdx.files.internal("hud/hud_skin.json"));
+        this.skin = new Skin(Gdx.files.internal("hud/new/hud_skin.json"));
 
-        rotatingCoinAtlas = new TextureAtlas(Gdx.files.internal("atlas/rotating_star.atlas"));
-        rotatingCoinAnimation = createAnimation(rotatingCoinAtlas, rotatingCoinTextureRegions, "rotating_star_", 1/10f);
+        // Create rotating coin animation
+        rotatingCoinAtlas = new TextureAtlas(Gdx.files.internal("hud/star_coin.atlas"));
+        rotatingCoinAnimation = createAnimation(rotatingCoinAtlas, rotatingCoinTextureRegions, "rotating_star_coin", 1/10f);
         rotatingCoinAnimation.setPlayMode(Animation.PlayMode.LOOP);
         rotatingCoin = new Image(rotatingCoinAnimation.getKeyFrame(0));
         table.add(rotatingCoin).size(50, 50).padRight(20);
@@ -66,7 +68,7 @@ public class Hud {
 
         ImageButton pauseButton = new ImageButton(skin);
         table.add(pauseButton)
-            .size(50, 50) // set size of pause button
+            .size(40, 35)// set size of pause button
             .expandX()
             .right();
 

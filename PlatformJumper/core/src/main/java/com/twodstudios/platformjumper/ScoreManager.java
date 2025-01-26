@@ -40,28 +40,31 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
         }
     }
 
-    public Array<Integer> getScores(){
+    public Array<Integer> getScores(int numOfScores){
 
         Array<Integer> scores = new Array<>();
 
         if (!highScoreObject.highScores.isEmpty()){
             for (int i = 0; i < highScoreObject.highScores.size; i++){
                 scores.add(highScoreObject.highScores.get(i).score);
-                System.out.println(highScoreObject.highScores.get(i).score); // Get score from one specific user // 950
             }
-            while (scores.size < 3) {
+            while (scores.size < numOfScores) {
                 scores.add(0);
             }
         } else {
             scores.addAll(0, 0, 0);
+
+            for (int i = 0; i < numOfScores; i++) {
+                scores.add(0);
+            }
         }
         return scores;
     }
 
     /**
-     * Get names for highscores
+     * Get names for highscores.
      */
-    public Array<String> getNames(){
+    public Array<String> getNames(int numOfNames){
         Array<String> names = new Array<>();
 
         if (!highScoreObject.highScores.isEmpty()){
@@ -69,11 +72,13 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
                 names.add(highScoreObject.highScores.get(i).name.toUpperCase());
             }
 
-            while (names.size < 3) {
+            while (names.size < numOfNames) {
                 names.add("---");
             }
         } else {
-            names.addAll("---", "---", "---");
+            for (int i = 0; i < numOfNames; i++) {
+                names.add("---");
+            }
         }
 
         return names;
@@ -94,6 +99,7 @@ public class ScoreManager implements ScoreUpdater, Resettable <ScoreManager>{
         // Replace old content of json file with content of the highScoreObject
         file.writeString(json.toJson(highScoreObject), false); // Overwrite the JSON file
     }
+
 
     public boolean checkIfHighScore(int score){
         if (!highScoreObject.highScores.isEmpty()){

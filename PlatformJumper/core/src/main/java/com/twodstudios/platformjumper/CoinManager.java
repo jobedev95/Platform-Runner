@@ -1,6 +1,5 @@
 package com.twodstudios.platformjumper;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
@@ -47,7 +46,7 @@ public class CoinManager implements Resettable <CoinManager> {
         coins = new Array<Coin>(); // Array to hold all Coin objects
 
         // Set maximum height placement of tiles
-        maxHeight = Gdx.graphics.getHeight() - 150; // 150 pixels from the top of the screen
+        maxHeight = Main.WORLD_HEIGHT - 150; // 150 pixels from the top of the screen
         animationTime = 0f;
         coinWidth = 60;
         coinHeight = 60;
@@ -94,7 +93,7 @@ public class CoinManager implements Resettable <CoinManager> {
 
             // 50% chance of spawning coin on new tile
             if (random.nextFloat() < 0.5f) {
-                float screenRightEdge = Gdx.graphics.getWidth(); // Gets the x-position of the right edge of the screen
+                float screenRightEdge = Main.WORLD_WIDTH; // Gets the x-position of the right edge of the screen
                 tileXPositions = tiles.getXPositions();  // Get x-positions of all active tiles (including buffer tiles)
                 tileYPositions = tiles.getYPositions();  // Get y-positions of all active tiles (including buffer tiles)
 

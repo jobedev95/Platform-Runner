@@ -1,6 +1,7 @@
 package com.twodstudios.platformjumper;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -12,12 +13,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.twodstudios.platformjumper.screens.StartMenu;
+import com.twodstudios.platformjumper.screens.StartMenuScreen;
 
 public class PauseState {
 
     private final Main game;
-    private final SharedAssets sharedAssets;
+    private StartMenuScreen startMenuScreen;
 
     private ImageButton resumeButton;
     private ImageButton mainMenuButton;
@@ -40,9 +41,9 @@ public class PauseState {
     private FreeTypeFontGenerator.FreeTypeFontParameter parameter;
 
 
-    public PauseState(Main game, SharedAssets sharedAssets) {
+    public PauseState(Main game, StartMenuScreen startMenuScreen) {
         this.game = game;
-        this.sharedAssets = sharedAssets;
+        this.startMenuScreen = startMenuScreen;
 
         this.uiCreated = false; // Flag to check if UI has been created
         this.paused = false;
@@ -86,7 +87,7 @@ public class PauseState {
         mainMenuButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new StartMenu(game, sharedAssets));
+                game.setScreen(startMenuScreen);
             }
         });
 

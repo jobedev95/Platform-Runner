@@ -68,12 +68,14 @@ public class GameOverState implements Resettable <GameOverState>{
 
         // If player has reached a high score the high core UI will be created
         if (scoreManager.checkIfHighScore(score)){
+
             gameOverHighScoreUI();
         } else { // If no high score was reached, simply create a "Game over" label
             // Add Game Over Label
             this.gameOverLabel = new Label("GAME OVER", skin, "biggest");
             table.add(this.gameOverLabel).colspan(3).center();
             table.row();
+            createPlayButton(table, true);
         }
 
         // Add the completed table to the stage
@@ -90,7 +92,7 @@ public class GameOverState implements Resettable <GameOverState>{
     private void createGameOverBackground(int width, int height) {
 
         // Load the background image
-        this.gameoverBackground = new Texture(Gdx.files.internal("gameover_background.png"));
+        this.gameoverBackground = new Texture(Gdx.files.internal("ui_background.png"));
 
         // Create an Image object from the texture (so it can be added to a Stage)
         uiBackground = new Image(gameoverBackground);
@@ -116,8 +118,8 @@ public class GameOverState implements Resettable <GameOverState>{
         table.add(this.gameOverLabel).colspan(3).center();
         table.row();
 
-        // Create the "HIGHSCORES" title
-        this.highscoreTitle = new Label("HIGHSCORES", skin);
+        // Create the "HIGH SCORES" title
+        this.highscoreTitle = new Label("HIGH SCORES", skin);
         table.add(this.highscoreTitle)
             .colspan(3)
             .center()
@@ -141,14 +143,15 @@ public class GameOverState implements Resettable <GameOverState>{
         createTextField(table);
         table.row();
 
-        // Create the submit button
+        // Create the submit and play buttons
         createSubmitButton(table);
+        createPlayButton(table, false);
     }
 
     /** Create the high score table which includes the top 3 high scores.*/
     private void createHighScoreTable(){
-        Array<String> highScoreNames = scoreManager.getNames();
-        Array<Integer> currentHighScores = scoreManager.getScores();
+        Array<String> highScoreNames = scoreManager.getNames(3);
+        Array<Integer> currentHighScores = scoreManager.getScores(3);
         highScoreTable = new Table();
         for (int i = 0; i < 3; i++) {
             Label nameLabel = new Label((i + 1) + ". " + highScoreNames.get(i), skin, "medium");
@@ -169,6 +172,7 @@ public class GameOverState implements Resettable <GameOverState>{
      * */
     private void createSubmitButton(Table table){
 
+        // Create Submit button
         submitButton = new ImageButton(skin);
         table.add(submitButton)
             .size(150, 50);
@@ -179,10 +183,20 @@ public class GameOverState implements Resettable <GameOverState>{
                 submitHighScore();
             }
         });
+    }
 
+    private void createPlayButton(Table table, boolean shouldCenter){
+        // Create Play button
         playButton = new ImageButton(skin, "play_button");
-        table.add(playButton)
-            .size(150, 50);
+
+        // Add Play button to table (conditionally center it depending on given state)
+        if (shouldCenter){
+            table.add(playButton)
+                .size(150, 50).colspan(3).center();
+        } else{
+            table.add(playButton)
+                .size(150, 50).center();
+        }
 
         playButton.addListener(new ClickListener() {
             @Override
@@ -190,8 +204,6 @@ public class GameOverState implements Resettable <GameOverState>{
                 gameOverListener.resetGame();
             }
         });
-
-
     }
 
     /** Sends name for validation and submits the high score after validation. */
@@ -203,8 +215,9 @@ public class GameOverState implements Resettable <GameOverState>{
 
         // If name is valid save the score
         if (isNameValid){
-            scoreManager.submitHighScore(name, score); // Submit highscore
+            scoreManager.submitHighScore(name, score); // Submit high score
             gameOverListener.resetGame(); // Call main game to reset after the score has been submitted
+            Gdx.input.setInputProcessor(null);
         } else {
             setNameInvalidMessage(); // Inform user of faulty input if that's the case
         }
@@ -235,7 +248,7 @@ public class GameOverState implements Resettable <GameOverState>{
         // Listener for Enter key
         textField.addListener(new InputListener() {
         @Override
-        public boolean keyDown(InputEvent event, int keycode) {
+        public boolean keyUp(InputEvent event, int keycode) {
             if (keycode == Input.Keys.ENTER) {
                 submitHighScore();
                 return true; // Event handled
