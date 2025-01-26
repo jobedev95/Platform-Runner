@@ -41,8 +41,8 @@ public class Hud {
 
         this.skin = new Skin(Gdx.files.internal("hud/hud_skin.json"));
 
-        rotatingCoinAtlas = new TextureAtlas(Gdx.files.internal("atlas/rotating_star.atlas"));
-        rotatingCoinAnimation = createAnimation(rotatingCoinAtlas, rotatingCoinTextureRegions, "rotating_star_", 1/10f);
+        rotatingCoinAtlas = new TextureAtlas(Gdx.files.internal("hud/star_coin.atlas"));
+        rotatingCoinAnimation = createAnimation(rotatingCoinAtlas, rotatingCoinTextureRegions, "rotating_star_coin", 1/10f);
         rotatingCoinAnimation.setPlayMode(Animation.PlayMode.LOOP);
         rotatingCoin = new Image(rotatingCoinAnimation.getKeyFrame(0));
         table.add(rotatingCoin).size(50, 50).padRight(20);

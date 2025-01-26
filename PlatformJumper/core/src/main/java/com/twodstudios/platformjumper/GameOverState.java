@@ -90,7 +90,7 @@ public class GameOverState implements Resettable <GameOverState>{
     private void createGameOverBackground(int width, int height) {
 
         // Load the background image
-        this.gameoverBackground = new Texture(Gdx.files.internal("gameover_background.png"));
+        this.gameoverBackground = new Texture(Gdx.files.internal("ui_background.png"));
 
         // Create an Image object from the texture (so it can be added to a Stage)
         uiBackground = new Image(gameoverBackground);

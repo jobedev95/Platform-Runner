@@ -122,8 +122,6 @@ public class HighscoreScreen implements Screen {
         effectsManager.dispose();
     }
 
-
-
     //** Draw a moving background. */
     private void drawMovingBackground(float deltaTime) {
 
@@ -167,7 +165,6 @@ public class HighscoreScreen implements Screen {
         stage.addActor(uiBackground);
     }
 
-
     //** Create the labels for the high score menu.
     private void createHighscoreMenu() {
 
@@ -202,7 +199,6 @@ public class HighscoreScreen implements Screen {
             table.row();
         }
     }
-
 
     //** Create a back button. */
     private void createBackButton() {
