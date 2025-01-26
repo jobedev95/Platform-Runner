@@ -54,7 +54,7 @@ public class Tiles implements Resettable <Tiles> {
         textureRegion = atlas.findRegion("tile_01");
 
         // Set maximum height placement of tiles
-        maxHeight = Gdx.graphics.getHeight() - 300; // 300 pixels from the top of the screen
+        maxHeight = Main.WORLD_HEIGHT - 300; // 300 pixels from the top of the screen
 
         // Collision rectangle representing each tile (for collision checks)
         rectangle = new Rectangle(0, 100, tileWidth, tileHeight);
@@ -72,7 +72,7 @@ public class Tiles implements Resettable <Tiles> {
 
     /** Prepares a buffer of tiles for rendering and removes tiles that have moved off-screen. */
     public void generateBufferTiles() {
-        float screenRightEdge = Gdx.graphics.getWidth(); // Gets the X-position of the right edge of the screen
+        float screenRightEdge = Main.WORLD_WIDTH; // Gets the X-position of the right edge of the screen
         float lastTileXPosition = xPositions.peek(); // Gets the X-position of latest tile
         float lastTileYPosition = yPositions.peek(); // Gets the Y-position of latest tile
 
