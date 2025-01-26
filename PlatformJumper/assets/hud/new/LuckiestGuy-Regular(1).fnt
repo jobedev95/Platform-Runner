@@ -1,0 +1,17 @@
+info face="LuckiestGuy-Regular(1)" size=12 bold=0 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=2 padding=1,1,1,1 spacing=0,0
+common lineHeight=64 base=44 scaleW=353 scaleH=51 pages=1 packed=0 alphaChnl=0 redChnl=0 greenChnl=0 blueChnl=0
+page id=0 file="LuckiestGuy-Regular(1).png"
+chars count=12
+char id=0     x=0    y=0    width=0    height=0    xoffset=-1   yoffset=44   xadvance=13   page=0    chnl=0
+char id=32    x=0    y=0    width=0    height=0    xoffset=-1   yoffset=-1   xadvance=13   page=0    chnl=0
+char id=48    x=217  y=2    width=39   height=45   xoffset=0    yoffset=-1   xadvance=41   page=0    chnl=0
+char id=49    x=327  y=2    width=26   height=44   xoffset=-3   yoffset=-1   xadvance=25   page=0    chnl=0
+char id=50    x=113  y=2    width=31   height=46   xoffset=0    yoffset=-3   xadvance=33   page=0    chnl=0
+char id=51    x=4    y=2    width=33   height=48   xoffset=-1   yoffset=-4   xadvance=34   page=0    chnl=0
+char id=52    x=39   y=2    width=34   height=47   xoffset=-2   yoffset=-2   xadvance=34   page=0    chnl=0
+char id=53    x=182  y=2    width=33   height=46   xoffset=-1   yoffset=-2   xadvance=33   page=0    chnl=0
+char id=54    x=75   y=2    width=36   height=47   xoffset=-1   yoffset=-2   xadvance=37   page=0    chnl=0
+char id=55    x=294  y=2    width=31   height=44   xoffset=0    yoffset=-1   xadvance=33   page=0    chnl=0
+char id=56    x=146  y=2    width=34   height=46   xoffset=0    yoffset=-2   xadvance=36   page=0    chnl=0
+char id=57    x=258  y=2    width=34   height=45   xoffset=0    yoffset=-2   xadvance=36   page=0    chnl=0
+kernings count=0

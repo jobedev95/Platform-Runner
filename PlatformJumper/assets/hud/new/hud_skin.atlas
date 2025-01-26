@@ -1,0 +1,37 @@
+
+hud_skin.png
+size: 1024, 1024
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+pause_button_over
+  rotate: false
+  xy: 374, 428
+  size: 371, 378
+  split: 0, 0, 0, 0
+  orig: 371, 378
+  offset: 0, 0
+  index: -1
+pause_button_up
+  rotate: false
+  xy: 1, 428
+  size: 371, 378
+  split: 0, 0, 0, 0
+  orig: 371, 378
+  offset: 0, 0
+  index: -1
+pause_button_down
+  rotate: false
+  xy: 1, 48
+  size: 371, 378
+  split: 0, 0, 0, 0
+  orig: 371, 378
+  offset: 0, 0
+  index: -1
+LuckiestGuy-Regular(3)
+  rotate: false
+  xy: 1, 1
+  size: 307, 45
+  orig: 307, 45
+  offset: 0, 0
+  index: -1

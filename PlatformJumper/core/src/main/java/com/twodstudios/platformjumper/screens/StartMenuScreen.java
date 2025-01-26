@@ -25,7 +25,7 @@ public class StartMenuScreen implements Screen {
     private final Stage stage;
     private final Table table;
     private final OrthographicCamera camera;
-    private final Viewport viewport;
+    private Viewport viewport;
     private final SoundManager soundManager;
 
     // Background variables
@@ -71,6 +71,8 @@ public class StartMenuScreen implements Screen {
     public void render(float delta) {
         sharedAssets.updateMainLogoAnimationTime(delta);
 
+        camera.update();
+        game.spriteBatch.setProjectionMatrix(camera.combined); // Link spriteBatch to camera
         ScreenUtils.clear(0.0f, 0.0f, 0.0f, 0f); // Clear screen with black color
         game.spriteBatch.begin();
 
