@@ -1,5 +1,14 @@
 # Platform Runner
 
+## Download Game Here (Desktop Only):
+[![Download Here](https://img.shields.io/badge/Download-Here-brightgreen?style=for-the-badge&logo=github)](https://github.com/jobedev95/Platform-Runner/releases/latest)
+
+>You can run the game by simply **double clicking the *.jar* file**. Alternatively you can run it via the terminal:
+```bash
+java -jar path/to/file.jar
+```
+
+
 ## Beskrivning:
 Platform Runner är ett så kallat "Jump N Run" spel, det går ut på att när spelet startar börjar karaktären springa framåt och ska hoppa framåt mellan platformar för att undvika att landa i "lavan" som löper under plattformarna. Under spelets gång kommer det att genereras mynt som skall samlas in för att öka sin poäng. Landar spelaren i "lavan" kommer spelet vara över och spelaren får skriva in sitt namn som sparas i en highscore-lista.
 ## Spelutvecklingens fas
