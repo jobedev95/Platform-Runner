@@ -21,7 +21,6 @@ public class HighscoreScreen implements Screen {
     private final EffectsManager effectsManager;
     private final ScoreManager scoreManager;
 
-
     // Stage, table and ViewPort
     private final Stage stage;
     private final Table table;
@@ -50,8 +49,8 @@ public class HighscoreScreen implements Screen {
         highscoreNames = scoreManager.getNames(10);
         highscorePoints = scoreManager.getScores(10);
 
-        // Skin för Labels och knappar
-        this.skin = new Skin(Gdx.files.internal("high_score_skin.json")); // Ange rätt sökväg till din skin-fil
+        // Skin for the high score menu
+        this.skin = new Skin(Gdx.files.internal("skins/high_score_skin.json"));
 
         // Camera and ViewPort
         OrthographicCamera camera = new OrthographicCamera();
@@ -71,101 +70,11 @@ public class HighscoreScreen implements Screen {
 
         // Create high score table and menu buttons
         createUIBackground(600, 510);
-        createHighscoreTable();
-        createButtons();
+        createHighscoreMenu();
+        createBackButton();
 
         // Add table to stage
         stage.addActor(table);
-    }
-
-    private void createHighscoreTable() {
-
-        // Create labels
-        Label titleLabel = new Label("HIGH SCORES", skin, "extra_large");
-        Label nameHeader = new Label("Name", skin, "medium");
-        Label scoreHeader = new Label("Score", skin, "medium");
-
-        // Add labels to table
-        table.add(titleLabel).colspan(2).padBottom(5).center();
-        table.row();
-        table.add(nameHeader).padRight(50).left();
-        table.add(scoreHeader).padLeft(50).right();
-        table.row();
-
-        // Add the high scores
-        for (int i = 0; i < 10; i++) {
-            String nameText;
-            String scoreText;
-
-            // Get name and highscore
-            nameText = (i + 1) + ": " + highscoreNames.get(i); // Add rank before the name
-            scoreText = highscorePoints.get(i).toString();
-
-            // Labels for name and score
-            Label nameLabel = new Label(nameText, skin, "medium");
-            Label scoreLabel = new Label(scoreText, skin, "medium");
-
-            // Add labels to the table
-            table.add(nameLabel).padRight(50).left();
-            table.add(scoreLabel).padLeft(50).right();
-            table.row();
-        }
-    }
-
-
-    //** Create the high score menu buttons. */
-    private void createButtons() {
-        Skin buttonSkin = new Skin(Gdx.files.internal("atlas/main_menu.json")); // Ange rätt sökväg
-
-        // Create Back button
-        ImageButton backButton = new ImageButton(buttonSkin, "back_button");
-        backButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(startMenuScreen); // Go back to main menu
-            }
-        });
-
-        // Add Back button to table
-        table.row().padTop(10);
-        table.add(backButton).colspan(2).size(265, 70).center();
-    }
-
-    //** Draw moving background. */
-    private void drawBackground(float deltaTime) {
-        bg1XPosition -= backgroundSpeed * deltaTime;
-        bg2XPosition -= backgroundSpeed * deltaTime;
-
-        if (bg1XPosition + backgroundImage.getWidth() <= 0) {
-            bg1XPosition = bg2XPosition + backgroundWidth;
-        }
-        if (bg2XPosition + backgroundImage.getWidth() <= 0) {
-            bg2XPosition = bg1XPosition + backgroundWidth;
-        }
-
-        game.spriteBatch.draw(backgroundImage, bg1XPosition, 0, backgroundWidth, Gdx.graphics.getHeight());
-        game.spriteBatch.draw(backgroundImage, bg2XPosition, 0, backgroundWidth, Gdx.graphics.getHeight());
-    }
-
-    /** Create the game over background.
-     * @param width Width of background.
-     * @param height Height of background.
-     * */
-    private void createUIBackground(int width, int height) {
-
-        // Load the UI background image
-        Texture uiBackgroundTexture = new Texture(Gdx.files.internal("ui_background.png"));
-
-        // Create an Image object from the texture (so it can be added to a Stage)
-        uiBackground = new Image(uiBackgroundTexture);
-
-        // Set size, position and color of UI background
-        uiBackground.setSize(width, height);
-        uiBackground.setPosition((Main.WORLD_WIDTH - uiBackground.getWidth()) / 2, ((Main.WORLD_HEIGHT - uiBackground.getHeight()) / 2) + 15);
-        uiBackground.setColor(1, 1, 1, 0.85f);
-
-        // Add Image to the stage
-        stage.addActor(uiBackground);
     }
 
     @Override
@@ -174,7 +83,7 @@ public class HighscoreScreen implements Screen {
         game.spriteBatch.begin();
 
         // Draw moving background
-        drawBackground(delta);
+        drawMovingBackground(delta);
 
         // Draw menu particle effects sparkles
         effectsManager.drawMainMenuParticles(delta);
@@ -211,5 +120,105 @@ public class HighscoreScreen implements Screen {
         backgroundImage.dispose();
         stage.dispose();
         effectsManager.dispose();
+    }
+
+
+
+    //** Draw a moving background. */
+    private void drawMovingBackground(float deltaTime) {
+
+        // Adjust x-position of both background instances
+        bg1XPosition -= backgroundSpeed * deltaTime;
+        bg2XPosition -= backgroundSpeed * deltaTime;
+
+        // When background 1 is out of view, move it to the right edge of background 2
+        if (bg1XPosition + backgroundImage.getWidth() <= 0) {
+            bg1XPosition = bg2XPosition + backgroundWidth;
+        }
+
+        // When background 2 is out of view, move it to the right edge of background 1
+        if (bg2XPosition + backgroundImage.getWidth() <= 0) {
+            bg2XPosition = bg1XPosition + backgroundWidth;
+        }
+
+        // Draw both background instances
+        game.spriteBatch.draw(backgroundImage, bg1XPosition, 0, backgroundWidth, Main.WORLD_HEIGHT);
+        game.spriteBatch.draw(backgroundImage, bg2XPosition, 0, backgroundWidth, Main.WORLD_HEIGHT);
+    }
+
+    /** Create the game over background.
+     * @param width Width of background.
+     * @param height Height of background.
+     * */
+    private void createUIBackground(int width, int height) {
+
+        // Load the UI background image
+        Texture uiBackgroundTexture = new Texture(Gdx.files.internal("ui_background.png"));
+
+        // Create an Image object from the texture (so it can be added to a Stage)
+        uiBackground = new Image(uiBackgroundTexture);
+
+        // Set size, position and color of UI background
+        uiBackground.setSize(width, height);
+        uiBackground.setPosition((Main.WORLD_WIDTH - uiBackground.getWidth()) / 2, ((Main.WORLD_HEIGHT - uiBackground.getHeight()) / 2) + 15);
+        uiBackground.setColor(1, 1, 1, 0.85f);
+
+        // Add Image to the stage
+        stage.addActor(uiBackground);
+    }
+
+
+    //** Create the labels for the high score menu.
+    private void createHighscoreMenu() {
+
+        // Create labels
+        Label titleLabel = new Label("HIGH SCORES", skin, "extra_large");
+        Label nameHeader = new Label("Name", skin, "medium");
+        Label scoreHeader = new Label("Score", skin, "medium");
+
+        // Add labels to table
+        table.add(titleLabel).colspan(2).padBottom(5).center();
+        table.row();
+        table.add(nameHeader).padRight(50).left();
+        table.add(scoreHeader).padLeft(50).right();
+        table.row();
+
+        // Add the high scores
+        for (int i = 0; i < 10; i++) {
+            String nameText;
+            String scoreText;
+
+            // Get name and highscore
+            nameText = (i + 1) + ": " + highscoreNames.get(i); // Add rank before the name
+            scoreText = highscorePoints.get(i).toString();
+
+            // Labels for name and score
+            Label nameLabel = new Label(nameText, skin, "medium");
+            Label scoreLabel = new Label(scoreText, skin, "medium");
+
+            // Add labels to the table
+            table.add(nameLabel).padRight(50).left();
+            table.add(scoreLabel).padLeft(50).right();
+            table.row();
+        }
+    }
+
+
+    //** Create a back button. */
+    private void createBackButton() {
+        Skin buttonSkin = new Skin(Gdx.files.internal("atlas/main_menu.json")); // Ange rätt sökväg
+
+        // Create Back button
+        ImageButton backButton = new ImageButton(buttonSkin, "back_button");
+        backButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(startMenuScreen); // Go back to main menu
+            }
+        });
+
+        // Add Back button to table
+        table.row().padTop(20);
+        table.add(backButton).colspan(2).size(265, 70).center();
     }
 }
