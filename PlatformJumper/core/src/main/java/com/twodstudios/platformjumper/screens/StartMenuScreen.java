@@ -18,7 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.twodstudios.platformjumper.SharedAssets;
 import com.twodstudios.platformjumper.SoundManager;
 
-public class StartMenu implements Screen {
+public class StartMenuScreen implements Screen {
     private final Main game;
     private final SharedAssets sharedAssets;
     private final EffectsManager effectsManager;
@@ -40,11 +40,11 @@ public class StartMenu implements Screen {
     private final int buttonHeigth = 70;
 
 
-    public StartMenu(Main game, SharedAssets sharedAssets) {
+    public StartMenuScreen(Main game, SharedAssets sharedAssets, SoundManager soundManager) {
         this.game = game;
         this.sharedAssets = sharedAssets;
+        this.soundManager = soundManager;
         this.effectsManager = new EffectsManager(game.spriteBatch);
-        soundManager = new SoundManager();
 
         // Camera and ViewPort
         this.camera = new OrthographicCamera();
@@ -62,7 +62,6 @@ public class StartMenu implements Screen {
         table.setFillParent(true);
         table.center().padTop(100);
         table.setSize(200, 400);
-        Gdx.input.setInputProcessor(stage);
 
         // Set up the main menu
         createMainMenu();
@@ -83,7 +82,7 @@ public class StartMenu implements Screen {
 
         // Draw menu particle effects sparkles
         effectsManager.drawMainMenuParticles(delta);
-        
+
         game.spriteBatch.end();
 
         // Draw the stage
@@ -93,16 +92,22 @@ public class StartMenu implements Screen {
 
     //** Draw a moving background. */
     private void drawBackground(float deltaTime) {
+
+        // Adjust x-position of both background instances
         bg1XPosition -= backgroundSpeed * deltaTime;
         bg2XPosition -= backgroundSpeed * deltaTime;
 
+        // When background 1 is out of view, move it to the right edge of background 2
         if (bg1XPosition + backgroundImage.getWidth() <= 0) {
             bg1XPosition = bg2XPosition + backgroundWidth;
         }
+
+        // When background 2 is out of view, move it to the right edge of background 1
         if (bg2XPosition + backgroundImage.getWidth() <= 0) {
             bg2XPosition = bg1XPosition + backgroundWidth;
         }
 
+        // Draw both background instances
         game.spriteBatch.draw(backgroundImage, bg1XPosition, 0, backgroundWidth, Main.WORLD_HEIGHT);
         game.spriteBatch.draw(backgroundImage, bg2XPosition, 0, backgroundWidth, Main.WORLD_HEIGHT);
     }
@@ -114,12 +119,15 @@ public class StartMenu implements Screen {
 
     @Override
     public void show() {
-        soundManager.menuMusic();
+        Gdx.input.setInputProcessor(stage);
+        // If menu music is not already playing, start the playback
+        if (!soundManager.isMenuMusicPlaying()){
+            soundManager.menuMusic();
+        }
     }
 
     @Override
     public void hide() {
-        soundManager.stopMenuMusic();
     }
 
     @Override
@@ -149,7 +157,8 @@ public class StartMenu implements Screen {
         startButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new PlayScreen(game)); // Växla till spelet
+                game.setScreen(new PlayScreen(game, StartMenuScreen.this)); // Switch to game screen
+                soundManager.stopMenuMusic();
             }
         });
 
@@ -162,7 +171,7 @@ public class StartMenu implements Screen {
         highscoreButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new HighscoreScreen(game)); // avkommentera när highscore är med
+                game.setScreen(new HighscoreScreen(game, StartMenuScreen.this)); // Switch to high score screen
             }
         });
 
@@ -175,7 +184,7 @@ public class StartMenu implements Screen {
         quitButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Gdx.app.exit(); // Stäng spelet
+                Gdx.app.exit(); // Exit game
             }
         });
 

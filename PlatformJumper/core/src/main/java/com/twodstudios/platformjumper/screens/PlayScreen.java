@@ -37,6 +37,7 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
     private EffectsManager effectsManager;
     private GameOverState gameOverState;
     private PauseState pauseState;
+    private StartMenuScreen startMenuScreen;
 
     // Fonts
     private TypingLabel enterMessageLabel;
@@ -58,9 +59,10 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
 
 
     // Constructor
-    public PlayScreen(Main game){
+    public PlayScreen(Main game, StartMenuScreen startMenuScreen){
 
         this.game = game;
+        this.startMenuScreen = startMenuScreen;
         this.spriteBatch = game.spriteBatch;
         this.sharedAssets = game.sharedAssets;
         this.hud = new Hud(this);
@@ -83,7 +85,7 @@ public class PlayScreen implements Screen, HudListener, GameOverListener {
         gameOverState = new GameOverState(this, scoreManager);
         physicsManager = new PhysicsManager(player, tiles, soundManager, coinManager.getCoins(), scoreManager);
         effectsManager = new EffectsManager(this.spriteBatch);
-        pauseState = new PauseState(game,sharedAssets);
+        pauseState = new PauseState(game, startMenuScreen);
 
         // Create "Enter to start" message
         createEnterToStartMessage();

@@ -53,9 +53,15 @@ public class SoundManager implements Resettable <SoundManager> {
 
     /** Plays menuMusic while on start screen */
     public void menuMusic(){
-        menuMusic.setLooping(true);
-        menuMusic.setVolume(0.2f);
-        menuMusic.play();
+        if (!menuMusic.isPlaying()){
+            menuMusic.setLooping(true);
+            menuMusic.setVolume(0.2f);
+            menuMusic.play();
+        }
+    }
+
+    public boolean isMenuMusicPlaying(){
+        return menuMusic.isPlaying();
     }
 
     // stop menuMusic

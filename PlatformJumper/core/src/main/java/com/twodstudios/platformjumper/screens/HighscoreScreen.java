@@ -12,13 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.twodstudios.platformjumper.EffectsManager;
-import com.twodstudios.platformjumper.Main;
-import com.twodstudios.platformjumper.SharedAssets;
-import com.twodstudios.platformjumper.SoundManager;
+import com.twodstudios.platformjumper.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,29 +26,38 @@ import java.util.regex.Pattern;
 public class HighscoreScreen implements Screen {
 
     private final Main game;
-    private final List<HighscoreEntry> highscores;
     private final EffectsManager effectsManager;
-    private final SoundManager soundManager;
+    private ScoreManager scoreManager;
+    private  StartMenuScreen startMenuScreen;
+
+    // Stage, table and viewport
     private final Stage stage;
     private final Table table;
     private final Skin skin;
-    private final Texture backgroundImage;
+    private final Viewport viewport;
 
+    // Background variables
+    private final Texture backgroundImage;
     private float bg1XPosition;
     private float bg2XPosition;
     private final float backgroundSpeed = 15f;
     private final float backgroundWidth = Main.WORLD_WIDTH;
-    private final Viewport viewport;
 
-    private boolean isMenuActive = true;
+    private final List<HighscoreEntry> highscores;
 
     public static class HighscoreEntry {
         public String name;
         public int score;
     }
 
-    public HighscoreScreen(Main game) {
+    public HighscoreScreen(Main game, StartMenuScreen startMenuScreen) {
         this.game = game;
+        this.scoreManager = new ScoreManager();
+        this.startMenuScreen = startMenuScreen;
+
+        Array<String> highscoreNames = scoreManager.getNames(10);
+        Array<Integer> highscorePoints = scoreManager.getScores(10);
+
         this.highscores = readHighscores();
         sortHighscores(highscores);
 
@@ -72,7 +79,6 @@ public class HighscoreScreen implements Screen {
         this.table = new Table();
         table.setFillParent(true);
         table.top().padTop(10); // Flytta ner tabellen
-        Gdx.input.setInputProcessor(stage);
 
         // Lägg till Highscore-tabell och knappar
         createHighscoreTable();
@@ -82,30 +88,29 @@ public class HighscoreScreen implements Screen {
 
         // Effects och ljud
         this.effectsManager = new EffectsManager(game.spriteBatch);
-        this.soundManager = new SoundManager();
     }
 
     private void createHighscoreTable() {
-        // Rubriker
+        // Create labels
         Label titleLabel = new Label("HIGH SCORES", skin, "extra_large");
         Label nameHeader = new Label("Name", skin, "large");
         Label scoreHeader = new Label("Score", skin, "large");
 
-        // Lägg till rubriker i tabellen
+        // Add labels to table
         table.add(titleLabel).colspan(2).padBottom(20).center();
         table.row();
         table.add(nameHeader).padRight(50).left();
         table.add(scoreHeader).padLeft(50).right();
         table.row();
 
-        // Lägg till highscores
-        for (int i = 0; i < 10; i++) { // Visa topp 10
+        // Add the highscores
+        for (int i = 0; i < 10; i++) {
             String nameText;
             String scoreText;
 
             if (i < highscores.size()) {
                 HighscoreEntry score = highscores.get(i);
-                nameText = (i + 1) + ": " + score.name; // Lägg till rank före namnet
+                nameText = (i + 1) + ": " + score.name; // Add rank before the name
                 scoreText = String.valueOf(score.score);
             } else {
                 nameText = (i + 1) + ": -----"; // Rank med plats för tomma rader
@@ -124,23 +129,20 @@ public class HighscoreScreen implements Screen {
     }
 
 
+    //** Create the high score menu buttons. */
     private void createButtons() {
         Skin buttonSkin = new Skin(Gdx.files.internal("atlas/main_menu.json")); // Ange rätt sökväg
 
-        // Tillbaka-knapp
+        // Create Back button
         ImageButton backButton = new ImageButton(buttonSkin, "back_button");
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (isMenuActive) {
-                    game.setScreen(new StartMenu(game, new SharedAssets(game.spriteBatch))); // Växla till spelet
-                    isMenuActive = false;
-                }
-
+                game.setScreen(startMenuScreen); // Växla till spelet
             }
         });
 
-        // Lägg till knappen längst ned
+        // Add Back button to table
         table.row().padTop(10);
         table.add(backButton).colspan(2).size(265, 70).center();
     }
@@ -165,8 +167,11 @@ public class HighscoreScreen implements Screen {
         return entries;
     }
 
+
     private void sortHighscores(List<HighscoreEntry> highscores) {
         highscores.sort((o1, o2) -> Integer.compare(o2.score, o1.score));
+
+
     }
 
     private void drawBackground(float deltaTime) {
@@ -192,10 +197,8 @@ public class HighscoreScreen implements Screen {
         drawBackground(delta);
 
         // Rita knappar om menyn är aktiv
-        if (isMenuActive) {
-            stage.act(delta);
-            stage.draw();
-        }
+        stage.act(delta);
+        stage.draw();
     }
 
     @Override
@@ -205,12 +208,11 @@ public class HighscoreScreen implements Screen {
 
     @Override
     public void show() {
-        soundManager.menuMusic();
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void hide() {
-        soundManager.stopMenuMusic();
     }
 
     @Override
@@ -223,7 +225,6 @@ public class HighscoreScreen implements Screen {
     public void dispose() {
         backgroundImage.dispose();
         stage.dispose();
-        soundManager.dispose();
         effectsManager.dispose();
     }
 }

@@ -147,8 +147,8 @@ public class GameOverState implements Resettable <GameOverState>{
 
     /** Create the high score table which includes the top 3 high scores.*/
     private void createHighScoreTable(){
-        Array<String> highScoreNames = scoreManager.getNames();
-        Array<Integer> currentHighScores = scoreManager.getScores();
+        Array<String> highScoreNames = scoreManager.getNames(3);
+        Array<Integer> currentHighScores = scoreManager.getScores(3);
         highScoreTable = new Table();
         for (int i = 0; i < 3; i++) {
             Label nameLabel = new Label((i + 1) + ". " + highScoreNames.get(i), skin, "medium");
