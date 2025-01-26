@@ -26,11 +26,12 @@ import java.util.regex.Pattern;
 public class HighscoreScreen implements Screen {
 
     private final Main game;
+    private final StartMenuScreen startMenuScreen;
     private final EffectsManager effectsManager;
-    private ScoreManager scoreManager;
-    private  StartMenuScreen startMenuScreen;
+    private final ScoreManager scoreManager;
 
-    // Stage, table and viewport
+
+    // Stage, table and ViewPort
     private final Stage stage;
     private final Table table;
     private final Skin skin;
@@ -43,51 +44,45 @@ public class HighscoreScreen implements Screen {
     private final float backgroundSpeed = 15f;
     private final float backgroundWidth = Main.WORLD_WIDTH;
 
-    private final List<HighscoreEntry> highscores;
+    private Array<String> highscoreNames;
+    private Array<Integer> highscorePoints;
 
-    public static class HighscoreEntry {
-        public String name;
-        public int score;
-    }
-
-    public HighscoreScreen(Main game, StartMenuScreen startMenuScreen) {
+    public HighscoreScreen(Main game, StartMenuScreen startMenuScreen, EffectsManager effectsManager) {
         this.game = game;
-        this.scoreManager = new ScoreManager();
         this.startMenuScreen = startMenuScreen;
+        this.effectsManager = effectsManager;
 
-        Array<String> highscoreNames = scoreManager.getNames(10);
-        Array<Integer> highscorePoints = scoreManager.getScores(10);
+        this.scoreManager = new ScoreManager();
 
-        this.highscores = readHighscores();
-        sortHighscores(highscores);
+        // Get current high scores
+        highscoreNames = scoreManager.getNames(10);
+        highscorePoints = scoreManager.getScores(10);
 
         // Skin för Labels och knappar
         this.skin = new Skin(Gdx.files.internal("high_score_skin.json")); // Ange rätt sökväg till din skin-fil
 
-        // Kamera och vyport
+        // Camera and ViewPort
         OrthographicCamera camera = new OrthographicCamera();
         this.viewport = new FitViewport(Main.WORLD_WIDTH, Main.WORLD_HEIGHT, camera);
         camera.setToOrtho(false, Main.WORLD_WIDTH, Main.WORLD_HEIGHT);
 
-        // Bakgrund
+        // Background
         this.backgroundImage = new Texture("menu_background.png");
         this.bg1XPosition = 0;
         this.bg2XPosition = backgroundWidth;
 
-        // Stage och table
+        // Stage and table
         this.stage = new Stage(viewport);
         this.table = new Table();
         table.setFillParent(true);
-        table.top().padTop(10); // Flytta ner tabellen
+        table.top().padTop(10);
 
-        // Lägg till Highscore-tabell och knappar
+        // Create high score table and menu buttons
         createHighscoreTable();
         createButtons();
 
+        // Add table to stage
         stage.addActor(table);
-
-        // Effects och ljud
-        this.effectsManager = new EffectsManager(game.spriteBatch);
     }
 
     private void createHighscoreTable() {
@@ -103,25 +98,20 @@ public class HighscoreScreen implements Screen {
         table.add(scoreHeader).padLeft(50).right();
         table.row();
 
-        // Add the highscores
+        // Add the high scores
         for (int i = 0; i < 10; i++) {
             String nameText;
             String scoreText;
 
-            if (i < highscores.size()) {
-                HighscoreEntry score = highscores.get(i);
-                nameText = (i + 1) + ": " + score.name; // Add rank before the name
-                scoreText = String.valueOf(score.score);
-            } else {
-                nameText = (i + 1) + ": -----"; // Rank med plats för tomma rader
-                scoreText = "0";
-            }
+            // Get name and highscore
+            nameText = (i + 1) + ": " + highscoreNames.get(i); // Add rank before the name
+            scoreText = highscorePoints.get(i).toString();
 
-            // Labels för namn och poäng
+            // Labels for name and score
             Label nameLabel = new Label(nameText, skin, "medium");
             Label scoreLabel = new Label(scoreText, skin, "medium");
 
-            // Lägg till i tabellen
+            // Add labels to the table
             table.add(nameLabel).padRight(50).left();
             table.add(scoreLabel).padLeft(50).right();
             table.row();
@@ -138,7 +128,7 @@ public class HighscoreScreen implements Screen {
         backButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(startMenuScreen); // Växla till spelet
+                game.setScreen(startMenuScreen); // Go back to main menu
             }
         });
 
@@ -147,33 +137,7 @@ public class HighscoreScreen implements Screen {
         table.add(backButton).colspan(2).size(265, 70).center();
     }
 
-    private List<HighscoreEntry> readHighscores() {
-        List<HighscoreEntry> entries = new ArrayList<>();
-        FileHandle file = Gdx.files.local("high_scores.json");
-
-        if (!file.exists()) return entries;
-
-        String jsonContent = file.readString();
-        Pattern pattern = Pattern.compile("\\{name:([a-zA-Z\\s]+),score:(\\d+)\\}");
-        Matcher matcher = pattern.matcher(jsonContent);
-
-        while (matcher.find()) {
-            HighscoreEntry entry = new HighscoreEntry();
-            entry.name = matcher.group(1).trim();
-            entry.score = Integer.parseInt(matcher.group(2).trim());
-            entries.add(entry);
-        }
-
-        return entries;
-    }
-
-
-    private void sortHighscores(List<HighscoreEntry> highscores) {
-        highscores.sort((o1, o2) -> Integer.compare(o2.score, o1.score));
-
-
-    }
-
+    //** Draw moving background. */
     private void drawBackground(float deltaTime) {
         bg1XPosition -= backgroundSpeed * deltaTime;
         bg2XPosition -= backgroundSpeed * deltaTime;
@@ -185,18 +149,24 @@ public class HighscoreScreen implements Screen {
             bg2XPosition = bg1XPosition + backgroundWidth;
         }
 
-        game.spriteBatch.begin();
         game.spriteBatch.draw(backgroundImage, bg1XPosition, 0, backgroundWidth, Gdx.graphics.getHeight());
         game.spriteBatch.draw(backgroundImage, bg2XPosition, 0, backgroundWidth, Gdx.graphics.getHeight());
-        game.spriteBatch.end();
     }
 
     @Override
     public void render(float delta) {
         ScreenUtils.clear(0, 0, 0, 1);
+        game.spriteBatch.begin();
+
+        // Draw moving background
         drawBackground(delta);
 
-        // Rita knappar om menyn är aktiv
+        // Draw menu particle effects sparkles
+        effectsManager.drawMainMenuParticles(delta);
+
+        game.spriteBatch.end();
+
+        // Draw high score table and menu buttons
         stage.act(delta);
         stage.draw();
     }

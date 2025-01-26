@@ -171,7 +171,7 @@ public class StartMenuScreen implements Screen {
         highscoreButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new HighscoreScreen(game, StartMenuScreen.this)); // Switch to high score screen
+                game.setScreen(new HighscoreScreen(game, StartMenuScreen.this, effectsManager)); // Switch to high score screen
             }
         });
 
