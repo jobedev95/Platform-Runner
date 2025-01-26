@@ -2,14 +2,10 @@ package com.twodstudios.platformjumper.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
@@ -17,11 +13,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.twodstudios.platformjumper.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class HighscoreScreen implements Screen {
 
@@ -43,6 +34,7 @@ public class HighscoreScreen implements Screen {
     private float bg2XPosition;
     private final float backgroundSpeed = 15f;
     private final float backgroundWidth = Main.WORLD_WIDTH;
+    private Image uiBackground;
 
     private Array<String> highscoreNames;
     private Array<Integer> highscorePoints;
@@ -78,6 +70,7 @@ public class HighscoreScreen implements Screen {
         table.top().padTop(10);
 
         // Create high score table and menu buttons
+        createUIBackground(600, 510);
         createHighscoreTable();
         createButtons();
 
@@ -86,13 +79,14 @@ public class HighscoreScreen implements Screen {
     }
 
     private void createHighscoreTable() {
+
         // Create labels
         Label titleLabel = new Label("HIGH SCORES", skin, "extra_large");
-        Label nameHeader = new Label("Name", skin, "large");
-        Label scoreHeader = new Label("Score", skin, "large");
+        Label nameHeader = new Label("Name", skin, "medium");
+        Label scoreHeader = new Label("Score", skin, "medium");
 
         // Add labels to table
-        table.add(titleLabel).colspan(2).padBottom(20).center();
+        table.add(titleLabel).colspan(2).padBottom(5).center();
         table.row();
         table.add(nameHeader).padRight(50).left();
         table.add(scoreHeader).padLeft(50).right();
@@ -151,6 +145,27 @@ public class HighscoreScreen implements Screen {
 
         game.spriteBatch.draw(backgroundImage, bg1XPosition, 0, backgroundWidth, Gdx.graphics.getHeight());
         game.spriteBatch.draw(backgroundImage, bg2XPosition, 0, backgroundWidth, Gdx.graphics.getHeight());
+    }
+
+    /** Create the game over background.
+     * @param width Width of background.
+     * @param height Height of background.
+     * */
+    private void createUIBackground(int width, int height) {
+
+        // Load the UI background image
+        Texture uiBackgroundTexture = new Texture(Gdx.files.internal("ui_background.png"));
+
+        // Create an Image object from the texture (so it can be added to a Stage)
+        uiBackground = new Image(uiBackgroundTexture);
+
+        // Set size, position and color of UI background
+        uiBackground.setSize(width, height);
+        uiBackground.setPosition((Main.WORLD_WIDTH - uiBackground.getWidth()) / 2, ((Main.WORLD_HEIGHT - uiBackground.getHeight()) / 2) + 15);
+        uiBackground.setColor(1, 1, 1, 0.85f);
+
+        // Add Image to the stage
+        stage.addActor(uiBackground);
     }
 
     @Override
