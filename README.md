@@ -3,10 +3,12 @@
 ## Download Game Here (Desktop Only):
 [![Download Here](https://img.shields.io/badge/Download-Here-brightgreen?style=for-the-badge&logo=github)](https://github.com/jobedev95/Platform-Runner/releases/latest)
 
->You can run the game by simply **double clicking the *.jar* file**. Alternatively you can run it via the terminal:
+After downloading the file, the game can easily be launched via the terminal:
 ```bash
 java -jar path/to/file.jar
 ```
+
+>You can also run the game by double clicking the *.jar* file. On macOS however, Gatekeeper might prevent you from launching the game directly which will require you to go to **System Settings > Privacy & Security > Security** and press *Open Anyway*. 
 
 
 ## Beskrivning:
