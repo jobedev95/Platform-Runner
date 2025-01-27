@@ -12,12 +12,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.FocusListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TypingLabel;
 
 /** Creates and handles the game over UI. */
-public class GameOverState implements Resettable <GameOverState>{
+public class GameOverHud implements Resettable <GameOverHud>{
 
     private final GameOverListener gameOverListener;
     private final ScoreManager scoreManager;
@@ -45,7 +44,7 @@ public class GameOverState implements Resettable <GameOverState>{
      * @param gameOverListener A class which can reset the game when score has been submitted.
      * @param scoreManager For handling retrieval of score and validation of name submission.
      */
-    public GameOverState(GameOverListener gameOverListener, ScoreManager scoreManager) {
+    public GameOverHud(GameOverListener gameOverListener, ScoreManager scoreManager) {
         this.gameOverListener = gameOverListener;
         this.scoreManager = scoreManager;
 
